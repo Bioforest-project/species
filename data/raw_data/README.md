@@ -1,9 +1,10 @@
-# Outputs
+# Raw data
+Sylvain Schmitt -
 Oct 15, 2024
 
-All outputs and intermediary files of the analyses:
+This folder will contains the raw data for all anlayses. In particular:
 
-- …
+- `...`
 
 ``` r
 fs::dir_tree()

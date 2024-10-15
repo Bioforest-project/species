@@ -1,7 +1,7 @@
-# Outputs
+# Figures
 Oct 15, 2024
 
-All outputs and intermediary files of the analyses:
+All figures (.png, .pdf, etc.):
 
 - …
 

@@ -16,15 +16,19 @@ can be run with R and associated environment defined with [renv](#0).
 
 ## Project
 
-**environment** includes:
+**species** includes:
 
 - Analyse of the data with associated [documentation and
   figures](https://bioforest-project.github.io/species/):
   - Reproductive analyses in `files.qmd`
   - Resulting pages in `docs/`
   - Document structure definition in `_quarto.yml`
-- Data in `data/`
+- Data in `data/` with:
+  - All raw data in `raw_data/`
+  - All derived data in `derived_sata/`
+- R and other scripts in `scripts/`
 - Intermediary files in `outputs/`
+- Figures in `figures/`
 - R environment definition with
   [renv](https://rstudio.github.io/renv/articles/renv.html) in `renv/`
   and `renv/lock`

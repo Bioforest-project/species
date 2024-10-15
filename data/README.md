@@ -1,9 +1,8 @@
-# Raw species data
+# All data
 Sylvain Schmitt -
-Oct 8, 2024
+Oct 15, 2024
 
-This folder will contains the raw data for species anlayses. In
-particular:
+This folder will contains the data for all anlayses. In particular:
 
 - `...`
 
@@ -14,4 +13,10 @@ fs::dir_tree()
     .
     ├── README.md
     ├── README.qmd
-    └── README.rmarkdown
+    ├── README.rmarkdown
+    ├── derived_data
+    │   ├── README.md
+    │   └── README.qmd
+    └── raw_data
+        ├── README.md
+        └── README.qmd

@@ -1,9 +1,11 @@
-# Outputs
+# Scripts
+Sylvain Schmitt -
 Oct 15, 2024
 
-All outputs and intermediary files of the analyses:
+This folder will contains all scripts for species all analyses. In
+particular:
 
-- …
+- `...`
 
 ``` r
 fs::dir_tree()
