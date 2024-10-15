@@ -1,8 +1,8 @@
 # species
-Oct 8, 2024
+Oct 15, 2024
 
 [![](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-[![lint](https://github.com/Bioforest-project/environment/workflows/lint/badge.svg)](https://github.com/Bioforest-project/environment/actions?query=workflow%3Alint)
+[![lint](https://github.com/Bioforest-project/species/workflows/lint/badge.svg)](https://github.com/Bioforest-project/species/actions?query=workflow%3Alint)
 
 **species** is a sub-project of the
 [**BioForest**](https://github.com/Bioforest-project) project aimed at
@@ -19,7 +19,7 @@ can be run with R and associated environment defined with [renv](#0).
 **environment** includes:
 
 - Analyse of the data with associated [documentation and
-  figures](https://bioforest-project.github.io/DataAgr_Species/):
+  figures](https://bioforest-project.github.io/species/):
   - Reproductive analyses in `files.qmd`
   - Resulting pages in `docs/`
   - Document structure definition in `_quarto.yml`
@@ -40,14 +40,14 @@ You can contribute to the project by forking the repository on github
 and cloning the fork to your machine using several options, including
 GitHub desktop GUI. Further informations on contribution are detailed in
 the online document:
-<https://bioforest-project.github.io/DataAgr_Species/98_contributing.html>.
+<https://bioforest-project.github.io/species/98_contributing.html>.
 
 ## Help
 
 Please preferentially create an issue on GitHub for any questions, bugs
 or help needed regarding **species**:
-<https://github.com/Bioforest-project/DataAgr_Species/issues> . You may
-however reach us by mail with people from the core group (see below).
+<https://github.com/Bioforest-project/species/issues> . You may however
+reach us by mail with people from the core group (see below).
 
 ## Core group
 

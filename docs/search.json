@@ -25,14 +25,14 @@
     "href": "index.html#contribution",
     "title": "species",
     "section": "Contribution",
-    "text": "Contribution\nYou can contribute to the project by forking the repository on github and cloning the fork to your machine using several options, including GitHub desktop GUI. Further informations on contribution are detailed in the online document: https://bioforest-project.github.io/DataAgr_Species/98_contributing.html."
+    "text": "Contribution\nYou can contribute to the project by forking the repository on github and cloning the fork to your machine using several options, including GitHub desktop GUI. Further informations on contribution are detailed in the online document: https://bioforest-project.github.io/species/98_contributing.html."
   },
   {
     "objectID": "index.html#help",
     "href": "index.html#help",
     "title": "species",
     "section": "Help",
-    "text": "Help\nPlease preferentially create an issue on GitHub for any questions, bugs or help needed regarding species: https://github.com/Bioforest-project/DataAgr_Species/issues . You may however reach us by mail with people from the core group (see below)."
+    "text": "Help\nPlease preferentially create an issue on GitHub for any questions, bugs or help needed regarding species: https://github.com/Bioforest-project/species/issues . You may however reach us by mail with people from the core group (see below)."
   },
   {
     "objectID": "index.html#core-group",
@@ -81,7 +81,7 @@
     "href": "98_contributing.html#fork-the-repository",
     "title": "Contributing",
     "section": "Fork the repository",
-    "text": "Fork the repository\nThen you’ll need to create a copy of the project. Project in Git are stored in repository. The repository versions follow a tree. Creating a copy is then called a fork. To do so, go on the repository page: https://github.com/Bioforest-project/DataAgr_Species . Then use the button on the top right named “Fork” to fork the repository. I recommend you don’t change the name of your copy. More help an be found here: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo."
+    "text": "Fork the repository\nThen you’ll need to create a copy of the project. Project in Git are stored in repository. The repository versions follow a tree. Creating a copy is then called a fork. To do so, go on the repository page: https://github.com/Bioforest-project/species . Then use the button on the top right named “Fork” to fork the repository. I recommend you don’t change the name of your copy. More help an be found here: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo."
   },
   {
     "objectID": "98_contributing.html#clone-your-fork",

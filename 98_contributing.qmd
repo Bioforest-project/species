@@ -20,7 +20,7 @@ Simply go on <https://github.com/> and open an account.
 
 ## Fork the repository
 
-Then you'll need to create a copy of the project. Project in Git are stored in repository. The repository versions follow a tree. Creating a copy is then called a fork. To do so, go on the repository page: <https://github.com/Bioforest-project/DataAgr_Species> . Then use the button on the top right named "Fork" to fork the repository. I recommend you don't change the name of your copy. More help an be found here: <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo>.
+Then you'll need to create a copy of the project. Project in Git are stored in repository. The repository versions follow a tree. Creating a copy is then called a fork. To do so, go on the repository page: <https://github.com/Bioforest-project/species> . Then use the button on the top right named "Fork" to fork the repository. I recommend you don't change the name of your copy. More help an be found here: <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo>.
 
 ## Clone your fork
 
@@ -66,7 +66,7 @@ renv::restore()
 
 It can be a bit long the first time because it's setting up the whole environment but will be faster the next time.
 
-Then as described in the [README](https://github.com/Bioforest-project/DataAgr_Species/blob/main/README.md), you can use the scripts in `data/` to generate the data needed to run the project (for the moment only dummy data are available, and data access should be improved later).
+Then as described in the [README](https://github.com/Bioforest-project/species/blob/main/README.md), you can use the scripts in `data/` to generate the data needed to run the project (for the moment only dummy data are available, and data access should be improved later).
 
 Then you can have a look, modify, or edit text of the analyses. All the analyses are done in the Quarto documents `file.qmd`. Quarto are reproducible documents that mix text and code and that are the basis of the online pages that you are reading right now. More information on Quarto can be found here: <https://quarto.org/>.
 
@@ -96,7 +96,7 @@ Last but not least, if you've followed until here, you might have a question: "b
 
 ## Help
 
-If you need help to contribute please preferentially create an issue on GitHub: [https://github.com/Bioforest-project/](https://github.com/Bioforest-project/LoggingDiversity/issues){.uri}[environment](https://github.com/Bioforest-project/DataAgr_Species/issues){.uri}[/issues](https://github.com/Bioforest-project/LoggingDiversity/issues){.uri}. You may however reach us by mail with people from the core group.
+If you need help to contribute please preferentially create an issue on GitHub: [https://github.com/Bioforest-project/](https://github.com/Bioforest-project/LoggingDiversity/issues){.uri}[environment](https://github.com/Bioforest-project/species/issues){.uri}[/issues](https://github.com/Bioforest-project/LoggingDiversity/issues){.uri}. You may however reach us by mail with people from the core group.
 
 ## Contributing to this page
 
