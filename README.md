@@ -26,7 +26,7 @@ can be run with R and associated environment defined with [renv](#0).
 - Data in `data/` with:
   - All raw data in `raw_data/`
   - All derived data in `derived_sata/`
-- R and other scripts in `scripts/`
+- R scripts with funtions in `r/`
 - Intermediary files in `outputs/`
 - Figures in `figures/`
 - R environment definition with
