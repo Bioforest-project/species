@@ -1,9 +1,9 @@
-# Scripts
+# R
 Sylvain Schmitt -
-Oct 15, 2024
+Oct 16, 2024
 
-This folder will contains all scripts for species all analyses. In
-particular:
+This folder will contains all R scriptswith R functions for all analyses
+. In particular:
 
 - `...`
 
