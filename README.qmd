@@ -33,9 +33,7 @@ All **species** analyses rely on the quarto documents (`files.qmd`) that can be 
 -   R environment definition with [renv](https://rstudio.github.io/renv/articles/renv.html) in `renv/` and `renv/lock`
 -   R files (`.Rbuildignore` , `.Rdata` , `.Rprofile` , `.Rhistory`)
 -   Git and GitHub files (`.gitignore` , `.github/`)
--   Project documentation (`README.qmd` , `README.md` , `NEWS.md` )
-
-> Should we add a license?
+-   Project documentation (`README.qmd` , `README.md` , `NEWS.md`, `LICENSE` )
 
 ## Contribution
 
