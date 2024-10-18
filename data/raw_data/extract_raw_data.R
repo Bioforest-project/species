@@ -2,7 +2,7 @@
 library(tidyverse)
 
 # define were the raw inventories data are
-path <- "~/Documents/bioforest/diversity/data/raw_data/harmonized_datasets_ss"
+path <- "~/Documents/bioforest/inventories/data/raw_data/all_output_files/"
 
 # check available inventories
 files <- list.files(path, full.names = TRUE, pattern = ".csv")
@@ -10,7 +10,7 @@ files
 
 # explore taxonomy extraction
 file <- files[1]
-read_csv(file) %>%
+read_csv(file, locale = readr::locale(encoding = "latin1")) %>%
   select(any_of(c(
     "Site", "ScientificName", "VernName",
     "Family", "Genus", "Species"
@@ -22,7 +22,7 @@ read_csv(file) %>%
 
 # make it a function
 extract_taxo <- function(file) {
-  read_csv(file) %>%
+  read_csv(file, locale = readr::locale(encoding = "latin1")) %>%
     select(any_of(c(
       "Site", "ScientificName", "VernName",
       "Family", "Genus", "Species"

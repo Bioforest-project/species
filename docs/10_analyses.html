@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -156,9 +190,436 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<blockquote class="blockquote">
-<p>Where the analyses take place.</p>
-</blockquote>
+<p>We removed Moju because all taxonomic information is currently contained in the vernacular column and Mbaiki because only the scientific column as taxonomic information. Both should be cleaned before integration.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>taxo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/raw_data/raw_taxonomy.tsv"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_all</span>(tolower) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>(site <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Moju"</span>, <span class="st">"Mbaiki"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We had data for several sites with a varying number of family, genus, species and vernacular names:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>taxo <span class="sc">%&gt;%</span> <span class="fu">select</span>(site) <span class="sc">%&gt;%</span> <span class="fu">unique</span>() <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">sites =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">sites</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">14</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>In which we had a varying number of family, genus , and species:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>taxo <span class="sc">%&gt;%</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(site) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">family =</span> <span class="fu">length</span>(<span class="fu">unique</span>(family)),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">genus =</span> <span class="fu">length</span>(<span class="fu">unique</span>(genus)),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">species =</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">paste</span>(genus, species))),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">scientificname =</span> <span class="fu">length</span>(<span class="fu">unique</span>(scientificname)),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">vernname =</span> <span class="fu">length</span>(<span class="fu">unique</span>(vernname))) <span class="sc">%&gt;%</span> <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">site</th>
+<th style="text-align: right;">family</th>
+<th style="text-align: right;">genus</th>
+<th style="text-align: right;">species</th>
+<th style="text-align: right;">scientificname</th>
+<th style="text-align: right;">vernname</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Bafog</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">196</td>
+<td style="text-align: right;">258</td>
+<td style="text-align: right;">385</td>
+<td style="text-align: right;">211</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kabo</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">155</td>
+<td style="text-align: right;">197</td>
+<td style="text-align: right;">270</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Kibale</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">125</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lesong</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">161</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Malinau</td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">324</td>
+<td style="text-align: right;">670</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Manare</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">142</td>
+<td style="text-align: right;">212</td>
+<td style="text-align: right;">276</td>
+<td style="text-align: right;">197</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Misiones</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Montagne_Tortue</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">153</td>
+<td style="text-align: right;">217</td>
+<td style="text-align: right;">298</td>
+<td style="text-align: right;">201</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Paracou</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">463</td>
+<td style="text-align: right;">762</td>
+<td style="text-align: right;">247</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Peteco</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">345</td>
+<td style="text-align: right;">345</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sg Lalang</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">170</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tene</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">147</td>
+<td style="text-align: right;">166</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">209</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ulu Muda</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">179</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Uppangala</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">115</td>
+<td style="text-align: right;">130</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>In total this resulted in 2,947 scientific names:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>taxo <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">family =</span> <span class="fu">length</span>(<span class="fu">unique</span>(family)),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">genus =</span> <span class="fu">length</span>(<span class="fu">unique</span>(genus)),</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">species =</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">paste</span>(genus, species))),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">scientificname =</span> <span class="fu">length</span>(<span class="fu">unique</span>(scientificname)),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">vernname =</span> <span class="fu">length</span>(<span class="fu">unique</span>(vernname))) <span class="sc">%&gt;%</span> <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">family</th>
+<th style="text-align: right;">genus</th>
+<th style="text-align: right;">species</th>
+<th style="text-align: right;">scientificname</th>
+<th style="text-align: right;">vernname</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">664</td>
+<td style="text-align: right;">1288</td>
+<td style="text-align: right;">2947</td>
+<td style="text-align: right;">852</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>taxo2 <span class="ot">&lt;-</span> taxo <span class="sc">%&gt;%</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(scientificname) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(scientificname, <span class="fu">c</span>(<span class="st">"genus"</span>, <span class="st">"species"</span>), <span class="at">remove =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">species =</span> <span class="fu">gsub</span>(<span class="st">" "</span>, <span class="st">""</span>, species)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">genus =</span> <span class="fu">gsub</span>(<span class="st">" "</span>, <span class="st">""</span>, genus)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>species <span class="ot">&lt;-</span> taxo2<span class="sc">$</span>species <span class="sc">%&gt;%</span> <span class="fu">unique</span>() <span class="sc">%&gt;%</span> <span class="fu">sort</span>()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>species[<span class="fu">grepl</span>(<span class="st">"sp"</span>, species)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>taxo2 <span class="sc">%&gt;%</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="st">"NA - genus"</span> <span class="ot">=</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(genus)),</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">"NA - species"</span> <span class="ot">=</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(species)),</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">"empty - species"</span> <span class="ot">=</span> <span class="fu">sum</span>(species <span class="sc">==</span> <span class="st">""</span>, <span class="at">na.rm =</span> T),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">"length&lt;2 - species"</span> <span class="ot">=</span> <span class="fu">sum</span>(<span class="fu">str_length</span>(species) <span class="sc">&lt;</span> <span class="dv">2</span>, <span class="at">na.rm =</span> T),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"empty - genus"</span> <span class="ot">=</span> <span class="fu">sum</span>(genus <span class="sc">==</span> <span class="st">""</span>, <span class="at">na.rm =</span> T),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"length&lt;2 - genus"</span> <span class="ot">=</span> <span class="fu">sum</span>(<span class="fu">str_length</span>(genus) <span class="sc">&lt;</span> <span class="dv">2</span>, <span class="at">na.rm =</span> T),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Indet,Indet. - species"</span> <span class="ot">=</span> <span class="fu">sum</span>((species <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Indet"</span>, <span class="st">"Indet."</span>))</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>                                           , <span class="at">na.rm =</span> T),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"sp,spp - species"</span> <span class="ot">=</span> <span class="fu">sum</span>((species <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"sp"</span>, <span class="st">"spp"</span>)), <span class="at">na.rm =</span> T))<span class="sc">%&gt;%</span> </span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(key, <span class="fu">c</span>(<span class="st">"condition"</span>, <span class="st">"level"</span>), <span class="st">" - "</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> level, <span class="at">values_from =</span> value) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">condition</th>
+<th style="text-align: right;">genus</th>
+<th style="text-align: right;">species</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">108</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">empty</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">length&lt;2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Indet,Indet.</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">134</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sp,spp</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">261</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>taxo3 <span class="ot">&lt;-</span> taxo2 <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(genus), <span class="sc">!</span><span class="fu">is.na</span>(species),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>         <span class="fu">str_length</span>(genus) <span class="sc">&gt;</span> <span class="dv">1</span>, <span class="fu">str_length</span>(species) <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">species =</span> <span class="fu">recode</span>(species, <span class="st">"sp"</span> <span class="ot">=</span> <span class="st">"spp"</span>, <span class="st">"sp"</span> <span class="ot">=</span> <span class="st">"Indet"</span>, <span class="at">sp =</span> <span class="st">"Indet."</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">scientificname =</span> <span class="fu">paste</span>(genus, species)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>cleaned <span class="ot">&lt;-</span> <span class="fu">WFO.match.fuzzyjoin</span>(<span class="at">spec.data =</span> taxo3<span class="sc">$</span>scientificname,</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                               <span class="at">WFO.file =</span> <span class="st">"data/raw_data/WFO_Backbone.zip"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(cleaned, <span class="st">"data/derived_data/cleaned.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>cleaned <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/cleaned.tsv"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>cleaned <span class="sc">%&gt;%</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(spec.name, Matched, family, genus, specificEpithet) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 10%">
+<col style="width: 23%">
+<col style="width: 16%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">spec.name</th>
+<th style="text-align: left;">Matched</th>
+<th style="text-align: left;">family</th>
+<th style="text-align: left;">genus</th>
+<th style="text-align: left;">specificEpithet</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Tapirira guianensis</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">Anacardiaceae</td>
+<td style="text-align: left;">Tapirira</td>
+<td style="text-align: left;">guianensis</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Indet Moraceae</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Brosimum rubescens</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">Moraceae</td>
+<td style="text-align: left;">Brosimum</td>
+<td style="text-align: left;">rubescens</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Eschweilera Indet</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">Lecythidaceae</td>
+<td style="text-align: left;">Eschweilera</td>
+<td style="text-align: left;">neei</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Eperua Indet</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pterocarpus Indet</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">Fabaceae</td>
+<td style="text-align: left;">Pterocarpus</td>
+<td style="text-align: left;">indicus</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pterocarpus Indet</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">Fabaceae</td>
+<td style="text-align: left;">Pterocarpus</td>
+<td style="text-align: left;">amazonum</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pterocarpus Indet</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">Fabaceae</td>
+<td style="text-align: left;">Dalbergia</td>
+<td style="text-align: left;">nigra</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Couepia guianensis</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">Chrysobalanaceae</td>
+<td style="text-align: left;">Couepia</td>
+<td style="text-align: left;">guianensis</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Terminalia amazonia</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">Combretaceae</td>
+<td style="text-align: left;">Terminalia</td>
+<td style="text-align: left;">amazonia</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Miconia lepidota</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">Melastomataceae</td>
+<td style="text-align: left;">Miconia</td>
+<td style="text-align: left;">lepidota</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Miconia lepidota</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">Melastomataceae</td>
+<td style="text-align: left;">Miconia</td>
+<td style="text-align: left;">kapplerii</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Abarema jupunba</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">Fabaceae</td>
+<td style="text-align: left;">Jupunba</td>
+<td style="text-align: left;">trapezifolia</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Options for cleaning taxonomy:</p>
+<ul>
+<li><strong>worldflora</strong></li>
+<li>plantR</li>
+<li>U.Taxonstand</li>
+<li>taxlist</li>
+<li>bdclean</li>
+</ul>
 
 
 
