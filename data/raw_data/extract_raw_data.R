@@ -10,27 +10,32 @@ files
 
 # explore taxonomy extraction
 file <- files[1]
-read_csv(file) %>% 
-  select(any_of(c("Site", "ScientificName", "VernName", 
-                  "Family", "Genus", "Species"))) %>%
+read_csv(file) %>%
+  select(any_of(c(
+    "Site", "ScientificName", "VernName",
+    "Family", "Genus", "Species"
+  ))) %>%
   # in case a column doesn't exist but this should not be the case ?
-  unique() %>% 
-  mutate_all(as.character) 
-  # in case a column is badly read
+  unique() %>%
+  mutate_all(as.character)
+# in case a column is badly read
 
 # make it a function
-extract_taxo <- function(file)
-  read_csv(file) %>% 
-  select(any_of(c("Site", "ScientificName", "VernName", 
-                  "Family", "Genus", "Species"))) %>% 
-  unique() %>% 
-  mutate_all(as.character)
+extract_taxo <- function(file) {
+  read_csv(file) %>%
+    select(any_of(c(
+      "Site", "ScientificName", "VernName",
+      "Family", "Genus", "Species"
+    ))) %>%
+    unique() %>%
+    mutate_all(as.character)
+}
 
 # test
 extract_taxo(files[1])
 
 # apply
-raw_taxo <- lapply(files, extract_taxo) %>% 
+raw_taxo <- lapply(files, extract_taxo) %>%
   bind_rows()
 
 # save
