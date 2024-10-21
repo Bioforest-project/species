@@ -9,6 +9,8 @@ library(knitr)
 
 # Cleaning {.unnumbered}
 
+Then we started by cleaning raw species data content. This corresponds to **version 1**.
+
 ```{r}
 #| warning: false
 taxo2 <- read_tsv("data/raw_data/raw_taxonomy.tsv") %>%
@@ -16,11 +18,10 @@ taxo2 <- read_tsv("data/raw_data/raw_taxonomy.tsv") %>%
   filter(!(site %in% c(
     "Kibale", "Lesong", "Moju", "Mbaiki", "Peteco",
     "Misiones", "Ulu Muda", "Sg Lalang"
-  ))) %>%
-  select(scientificname) %>%
-  separate(scientificname, c("genus", "species"), remove = FALSE) %>%
+  ))) %>% 
   mutate(species = gsub(" ", "", species)) %>%
   mutate(genus = gsub(" ", "", genus)) %>%
+  mutate(species = paste(genus, species)) %>%
   unique()
 ```
 
