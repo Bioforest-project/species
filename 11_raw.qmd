@@ -28,7 +28,7 @@ taxo %>%
   select(site) %>%
   unique() %>%
   summarise(sites = n()) %>%
-  kable()
+  kable(caption = "Total number of sites.")
 ```
 
 We had a 43 to 69 families, with 101 to 256 genera, and with 130 to 762 species corresponding to 198 to 247 vernacular names when registered:
@@ -43,7 +43,7 @@ taxo %>%
     scientific = length(unique(na.omit(scientificname))),
     vernacular = length(unique(na.omit(vernname)))
   ) %>%
-  kable()
+  kable(caption = "Numbers per taxonomic levels for each site.")
 ```
 
 In total, we thus add 1,140 species before cleaning:
@@ -57,19 +57,38 @@ taxo %>%
     scientific = length(unique(na.omit(scientificname))),
     vernacular = length(unique(na.omit(vernname)))
   ) %>%
-  kable(format.args = list(big.mark = ","))
+  kable(format.args = list(big.mark = ","),
+        caption = "Total numbers per taxonomic levels.")
 ```
 
-Species name construction using genus and species should be preferred as the scientific name column which increases diversity with slight differences:
+Species name construction using genus and species should be preferred as the scientific name column increases diversity with only slight differences:
 
 ```{r diffs}
 taxo %>%
   mutate(species = paste(genus, species)) %>%
   select(species, scientificname) %>%
   unique() %>%
-  arrange(species) %>%
+  group_by(species) %>% 
+  mutate(N = n()) %>% 
+  ungroup() %>% 
+  filter(N == 11) %>% 
+  kable(caption = "Example of multiple scientific names for one species genus pair.")
+```
+
+```{r diffs_fig}
+#| message: false
+#| fig-cap: Scientific names per genus species pairs.
+taxo %>%
+  mutate(species = paste(genus, species)) %>%
+  select(species, scientificname) %>%
+  unique() %>%
   group_by(species) %>%
-  filter(n() > 1) %>%
-  tail(9) %>%
-  kable()
+  summarise(N = n()) %>% 
+  filter(N > 1) %>% 
+  ggplot(aes(N)) +
+  geom_histogram() +
+  theme_bw() +
+  scale_y_sqrt() +
+  scale_x_sqrt() +
+  xlab("Scientific names per genus species pairs") + ylab("")
 ```

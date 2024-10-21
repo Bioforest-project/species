@@ -31,7 +31,7 @@ All **species** analyses rely on the quarto documents (`files.qmd`) that can be 
 -   Intermediary files in `outputs/`
 -   Figures in `figures/`
 -   R environment definition with [renv](https://rstudio.github.io/renv/articles/renv.html) in `renv/` and `renv/lock`
--   R files (`.Rbuildignore` , `.Rdata` , `.Rprofile` , `.Rhistory`)
+-   R files (`.Rbuildignore` , `.Rdata` , `.Rprofile` , `.Rhistory`, `.lintr`)
 -   Git and GitHub files (`.gitignore` , `.github/`)
 -   Project documentation (`README.qmd` , `README.md` , `NEWS.md`, `LICENSE` )
 

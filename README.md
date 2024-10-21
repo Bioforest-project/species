@@ -1,5 +1,5 @@
 # species
-Oct 16, 2024
+Oct 21, 2024
 
 [![](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![lint](https://github.com/Bioforest-project/species/workflows/lint/badge.svg)](https://github.com/Bioforest-project/species/actions?query=workflow%3Alint)
@@ -32,7 +32,8 @@ can be run with R and associated environment defined with [renv](#0).
 - R environment definition with
   [renv](https://rstudio.github.io/renv/articles/renv.html) in `renv/`
   and `renv/lock`
-- R files (`.Rbuildignore` , `.Rdata` , `.Rprofile` , `.Rhistory`)
+- R files (`.Rbuildignore` , `.Rdata` , `.Rprofile` , `.Rhistory`,
+  `.lintr`)
 - Git and GitHub files (`.gitignore` , `.github/`)
 - Project documentation (`README.qmd` , `README.md` , `NEWS.md`,
   `LICENSE` )
