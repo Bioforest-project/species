@@ -1,0 +1,95 @@
+```{r setup}
+#| message: false
+#| include: false
+library(tidyverse)
+library(WorldFlora)
+library(fuzzyjoin)
+library(knitr)
+```
+
+# Cleaning {.unnumbered}
+
+```{r}
+#| warning: false
+taxo2 <- read_tsv("data/raw_data/raw_taxonomy.tsv") %>%
+  rename_all(tolower) %>%
+  filter(!(site %in% c(
+    "Kibale", "Lesong", "Moju", "Mbaiki", "Peteco",
+    "Misiones", "Ulu Muda", "Sg Lalang"
+  ))) %>%
+  select(scientificname) %>%
+  separate(scientificname, c("genus", "species"), remove = FALSE) %>%
+  mutate(species = gsub(" ", "", species)) %>%
+  mutate(genus = gsub(" ", "", genus)) %>%
+  unique()
+```
+
+```{r}
+#| eval: false
+species <- taxo2$species %>%
+  unique() %>%
+  sort()
+species[grepl("sp", species)]
+```
+
+```{r}
+taxo2 %>%
+  summarise(
+    "NA - genus" = sum(is.na(genus)),
+    "NA - species" = sum(is.na(species)),
+    "empty - species" = sum(species == "", na.rm = TRUE),
+    "length<2 - species" = sum(str_length(species) < 2, na.rm = TRUE),
+    "empty - genus" = sum(genus == "", na.rm = TRUE),
+    "length<2 - genus" = sum(str_length(genus) < 2, na.rm = TRUE),
+    "Indet,Indet. - species" = sum((species %in% c("Indet", "Indet.")),
+      na.rm = TRUE
+    ),
+    "sp,spp - species" = sum((species %in% c("sp", "spp")), na.rm = TRUE)
+  ) %>%
+  gather() %>%
+  separate(key, c("condition", "level"), " - ") %>%
+  pivot_wider(names_from = level, values_from = value) %>%
+  kable()
+```
+
+```{r}
+taxo3 <- taxo2 %>%
+  filter(
+    !is.na(genus), !is.na(species),
+    str_length(genus) > 1, str_length(species) > 1
+  ) %>%
+  mutate(species = recode(species,
+    "sp" = "spp",
+    "sp" = "Indet", sp = "Indet."
+  )) %>%
+  unique() %>%
+  mutate(scientificname = paste(genus, species)) %>%
+  head(n = 10)
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| eval: false
+cleaned <- WFO.match.fuzzyjoin(
+  spec.data = taxo3$scientificname,
+  WFO.file = "data/raw_data/WFO_Backbone.zip"
+)
+write_tsv(cleaned, "data/derived_data/cleaned.tsv")
+```
+
+```{r}
+#| message: false
+cleaned <- read_tsv("data/derived_data/cleaned.tsv")
+cleaned %>%
+  select(spec.name, Matched, family, genus, specificEpithet) %>%
+  kable()
+```
+
+Options for cleaning taxonomy:
+
+-   **worldflora**
+-   plantR
+-   U.Taxonstand
+-   taxlist
+-   bdclean

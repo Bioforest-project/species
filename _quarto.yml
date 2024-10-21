@@ -7,7 +7,10 @@ book:
   date: last-modified
   chapters:
     - index.qmd
-    - 10_analyses.qmd
+    - 11_raw.qmd
+    - 12_cleaned.qmd
+    - 13_phylogeny.qmd
+    - 14_functional.qmd
   appendices:
     - 99_references.qmd
 

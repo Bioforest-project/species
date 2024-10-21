@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-10-21">
 
-<title>species</title>
+<title>species - Phylogeny</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -31,7 +30,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./11_raw.html" rel="next">
+<link href="./14_functional.html" rel="next">
+<link href="./12_cleaned.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -74,7 +74,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Introduction</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./13_phylogeny.html">Phylogeny</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -101,7 +101,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Introduction</span></a>
   </div>
 </li>
@@ -119,7 +119,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./13_phylogeny.html" class="sidebar-item-text sidebar-link">
+  <a href="./13_phylogeny.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Phylogeny</span></a>
   </div>
 </li>
@@ -152,27 +152,14 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
-  <ul class="collapse">
-  <li><a href="#usage" id="toc-usage" class="nav-link" data-scroll-target="#usage">Usage</a></li>
-  <li><a href="#project" id="toc-project" class="nav-link" data-scroll-target="#project">Project</a></li>
-  <li><a href="#contribution" id="toc-contribution" class="nav-link" data-scroll-target="#contribution">Contribution</a></li>
-  <li><a href="#help" id="toc-help" class="nav-link" data-scroll-target="#help">Help</a></li>
-  <li><a href="#core-group" id="toc-core-group" class="nav-link" data-scroll-target="#core-group">Core group</a></li>
-  </ul></li>
-  </ul>
-</nav>
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">species</h1>
+<h1 class="title">Phylogeny</h1>
 </div>
 
 
@@ -180,12 +167,6 @@ ul.task-list li input[type="checkbox"] {
 <div class="quarto-title-meta">
 
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">October 21, 2024</p>
-    </div>
-  </div>
   
     
   </div>
@@ -193,58 +174,9 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p><a href="#0"><img src="https://www.repostatus.org/badges/latest/wip.svg" class="img-fluid"></a> <a href="https://github.com/Bioforest-project/species/actions?query=workflow%3Alint"><img src="https://github.com/Bioforest-project/species/workflows/lint/badge.svg" class="img-fluid" alt="lint"></a></p>
-<section id="introduction" class="level1 unnumbered">
-<h1 class="unnumbered">Introduction</h1>
-<p><strong>species</strong> is a sub-project of the <a href="https://github.com/Bioforest-project"><strong>BioForest</strong></a> project aimed at species related data (correct names, functional traits, phylogeny) as part of the data preparation for data preparation within the project.</p>
-<section id="usage" class="level2">
-<h2 class="anchored" data-anchor-id="usage">Usage</h2>
-<p>All <strong>species</strong> analyses rely on the quarto documents (<code>files.qmd</code>) that can be run with R and associated environment defined with <a href="#0">renv</a>.</p>
-</section>
-<section id="project" class="level2">
-<h2 class="anchored" data-anchor-id="project">Project</h2>
-<p><strong>environment</strong> includes:</p>
-<ul>
-<li>Analyse of the data with associated <a href="https://bioforest-project.github.io/species/">documentation and figures</a>:
-<ul>
-<li>Reproductive analyses in <code>files.qmd</code></li>
-<li>Resulting pages in <code>docs/</code></li>
-<li>Document structure definition in <code>_quarto.yml</code></li>
-</ul></li>
-<li>Data in <code>data/</code></li>
-<li>Intermediary files in <code>outputs/</code></li>
-<li>R environment definition with <a href="https://rstudio.github.io/renv/articles/renv.html">renv</a> in <code>renv/</code> and <code>renv/lock</code></li>
-<li>R files (<code>.Rbuildignore</code> , <code>.Rdata</code> , <code>.Rprofile</code> , <code>.Rhistory</code>)</li>
-<li>Git and GitHub files (<code>.gitignore</code> , <code>.github/</code>)</li>
-<li>Project documentation (<code>README.qmd</code> , <code>README.md</code> , <code>NEWS.md</code> )</li>
-</ul>
-<blockquote class="blockquote">
-<p>Should we add a license?</p>
-</blockquote>
-</section>
-<section id="contribution" class="level2">
-<h2 class="anchored" data-anchor-id="contribution">Contribution</h2>
-<p>You can contribute to the project by forking the repository on github and cloning the fork to your machine using several options, including GitHub desktop GUI. Further informations on contribution are detailed in the online document: <a href="https://bioforest-project.github.io/data_preparation/98_contributing.html" class="uri">https://bioforest-project.github.io/data_preparation/98_contributing.html</a>.</p>
-</section>
-<section id="help" class="level2">
-<h2 class="anchored" data-anchor-id="help">Help</h2>
-<p>Please preferentially create an issue on GitHub for any questions, bugs or help needed regarding <strong>species</strong>: <a href="https://github.com/Bioforest-project/species/issues" class="uri">https://github.com/Bioforest-project/species/issues</a> . You may however reach us by mail with people from the core group (see below).</p>
-</section>
-<section id="core-group" class="level2">
-<h2 class="anchored" data-anchor-id="core-group">Core group</h2>
-<ul>
-<li>Sylvain Schmitt (sylvain.schmitt@cirad.fr)</li>
-<li>Camille Piponiot-Laroche (camille.piponiot-laroche@cirad.fr)</li>
-<li>Géraldine Derroire (geraldine.derroire@cirad.fr)</li>
-<li>Mithila Unkule (mithila.unkule@fondationbiodiversite.fr)</li>
-<li>Irié Cazimir Zo-Bi (iczobi@gmail.com)</li>
-<li>Anand Roopsind (aroopsind@gmail.com)</li>
-</ul>
-<p>The whole group consist of participants to the <a href="https://www.fondationbiodiversite.fr/la-frb-en-action/programmes-et-projets/le-cesab/bioforest/">Bioforest project</a>.</p>
+<p>Bla.</p>
 
 
-</section>
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -482,10 +414,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./12_cleaned.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Cleaning</span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./11_raw.html" class="pagination-link">
-        <span class="nav-page-text">Raw</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./14_functional.html" class="pagination-link">
+        <span class="nav-page-text">Functional</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

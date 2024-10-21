@@ -1,0 +1,75 @@
+```{r setup}
+#| message: false
+#| include: false
+library(tidyverse)
+library(knitr)
+```
+
+# Raw {.unnumbered}
+
+First we explored raw species data content. This corresponds to **version 1**.
+
+We first removed Kibale, Lesong, Misiones, Mbaiki, Moju, Peteco, Sg Lalang, and Ulu Muda as taxonomic information is currently contained only either in the vernacular or scientifc column. **They should be cleaned before integration.**
+
+```{r taxo}
+#| message: false
+taxo <- read_tsv("data/raw_data/raw_taxonomy.tsv") %>%
+  rename_all(tolower) %>%
+  filter(!(site %in% c(
+    "Kibale", "Lesong", "Moju", "Mbaiki", "Peteco",
+    "Misiones", "Ulu Muda", "Sg Lalang"
+  )))
+```
+
+We had data for 8 sites:
+
+```{r sites}
+taxo %>%
+  select(site) %>%
+  unique() %>%
+  summarise(sites = n()) %>%
+  kable()
+```
+
+We had a 43 to 69 families, with 101 to 256 genera, and with 130 to 762 species corresponding to 198 to 247 vernacular names when registered:
+
+```{r stats}
+taxo %>%
+  group_by(site) %>%
+  summarise(
+    family = length(unique(na.omit(family))),
+    genus = length(unique(na.omit(genus))),
+    species = length(unique(paste(genus, species))),
+    scientific = length(unique(na.omit(scientificname))),
+    vernacular = length(unique(na.omit(vernname)))
+  ) %>%
+  kable()
+```
+
+In total, we thus add 1,140 species before cleaning:
+
+```{r totals}
+taxo %>%
+  summarise(
+    family = length(unique(na.omit(family))),
+    genus = length(unique(na.omit(genus))),
+    species = length(unique(paste(genus, species))),
+    scientific = length(unique(na.omit(scientificname))),
+    vernacular = length(unique(na.omit(vernname)))
+  ) %>%
+  kable(format.args = list(big.mark = ","))
+```
+
+Species name construction using genus and species should be preferred as the scientific name column which increases diversity with slight differences:
+
+```{r diffs}
+taxo %>%
+  mutate(species = paste(genus, species)) %>%
+  select(species, scientificname) %>%
+  unique() %>%
+  arrange(species) %>%
+  group_by(species) %>%
+  filter(n() > 1) %>%
+  tail(9) %>%
+  kable()
+```
