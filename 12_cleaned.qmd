@@ -11,62 +11,123 @@ library(knitr)
 
 Then we started by cleaning raw species data content. This corresponds to **version 1**.
 
-```{r}
-#| warning: false
-taxo2 <- read_tsv("data/raw_data/raw_taxonomy.tsv") %>%
+## Names corrections
+
+First we cleaned family, genus and species names using contingency table built on the information of dubious names from the previous chapter. We obtained **1,032** corrections in total.
+
+```{r namescor}
+#| eval: false
+family_tab <- data.frame(
+  family_corrected = NA,
+  family = c("Indet.", "Not in DB", "unid.", "unidentified", "#N/A", "+"),
+  family_reason = c(
+    rep("missing", 2),
+    rep("family-only", 4)
+  )
+)
+write_tsv(family_tab, "outputs/family_correction_table.tsv")
+genus_tab <- data.frame(
+  genus_corrected = NA,
+  genus = c(
+    " #N/A", "Indet.", "Indet.Apocynaceae", "Indet.Arecaceae",
+    "Indet.Bignoniaceae", "Indet.Burseraceae",
+    "Indet.Capparaceae", "Indet.Chrysobalanaceae", "Indet.Clusiaceae",
+    "Indet.Combretaceae", "Indet.Dichapetalaceae", "Indet.Euphorbiaceae",
+    "Indet.Fabaceae", "Indet.FabaceaeCaesalpinioideae(mimosoid_clade)",
+    "Indet.FabaceaePapilionoideae", "Indet.Humiriaceae", "Indet.Indet.",
+    "Indet.Lamiaceae", "Indet.Lauraceae", "Indet.Lecythidaceae",
+    "Indet.Malvaceae", "Indet.MalvaceaeBombacoideae",
+    "Indet.Melastomataceae", "Indet.Moraceae", "Indet.Myrtaceae",
+    "Indet.Nyctaginaceae", "Indet.Olacaceae", "Indet.Rubiaceae",
+    "Indet.Salicaceae", "Indet.Sapindaceae", "Indet.Sapotaceae",
+    "Indet.Urticaceae", "Indet.Violaceae", "Indet.Vochysiaceae"
+  ),
+  genus_reason = c(
+    rep("unidentified", 1),
+    rep("missing", 1),
+    rep("family-only", 32)
+  )
+)
+write_tsv(genus_tab, "outputs/genus_correction_table.tsv")
+
+
+species_tab1 <- data.frame(
+  species_corrected = NA,
+  species = c(
+    "Indet.", "sp", "sp.", "Schaeff.",
+    "sp.1", "sp.1-CAY", "sp.10-CAY", "sp.11-CAY", "sp.12-CAY",
+    "sp.13-CAY", "sp.14-CAY", "sp.15-CAY", "sp.16-CAY",
+    "sp.17-CAY", "sp.18-CAY", "sp.1Guyafor", "sp.2", "sp.2-CAY",
+    "sp.21_DS", "sp.22-CAY", "sp.23-CAY", "sp.24-CAY", "sp.2BAF",
+    "sp.2Guyafor", "sp.3", "sp.3-CAY", "sp.30-CAY", "sp.33-CAY",
+    "sp.34-CAY", "sp.35-CAY", "sp.35Guyafor", "sp.36-CAY",
+    "sp.38Guyafor", "sp.3BAF", "sp.3Guyafor", "sp.4-CAY",
+    "sp.42-CAY", "sp.5-CAY", "sp.5Guyafor", "sp.6-CAY", "sp.6Guyafor",
+    "sp.7-CAY", "sp.70-CAY", "sp.71-CAY", "sp.7Guyafor", "sp.8-CAY",
+    "sp.9-CAY", "sp.B1", "sp.B10", "sp.B2", "sp.B35", "sp.B5", "sp.B8",
+    "sp.B9", "sp.C", "sp.D", "sp.FG13-Holst", "sp.FG14-Holst",
+    "sp.FG2-Holst", "sp.FG21-Holst", "sp.FG9-Holst", "sp.P1", "sp.P11",
+    "sp.P22", "sp.P3", "sp.P33", "sp.P4", "sp.P6", "sp.P9"
+  ),
+  species_reason = c(
+    rep("unidentified", 4),
+    rep("undescribed", 65)
+  )
+)
+species_tab2 <- data.frame(
+  species_corrected = c(
+    "guyanensis", "acuminatum", "cuspidata", "guyanensis",
+    "guyanensis", "opacum", "panacoco", "persistens",
+    "tomentosa", "venosa", "vera"
+  ),
+  species = c(
+    "guyanensis subsp. Guyanensis", "acuminatum_subsp.juniperinum",
+    "cuspidata_subsp.dura", "guyanensis subsp. Guyanensis",
+    "guyanensis_subsp.duckeana", "opacum_subsp.rabelianum",
+    "panacoco_var.panacoco", "persistens_subsp.aurantiaca",
+    "tomentosa_subsp.maroniensis", "venosa_subsp.amazonica",
+    "vera_subsp.affinis"
+  ),
+  species_reason = "sub-taxonomic "
+)
+bind_rows(species_tab1, species_tab2) %>%
+  write_tsv("outputs/species_correction_table.tsv")
+cleaned <- read_tsv("data/raw_data/raw_taxonomy.tsv") %>%
   rename_all(tolower) %>%
   filter(!(site %in% c(
     "Kibale", "Lesong", "Moju", "Mbaiki", "Peteco",
     "Misiones", "Ulu Muda", "Sg Lalang"
-  ))) %>% 
-  mutate(species = gsub(" ", "", species)) %>%
-  mutate(genus = gsub(" ", "", genus)) %>%
-  mutate(species = paste(genus, species)) %>%
-  unique()
-```
-
-```{r}
-#| eval: false
-species <- taxo2$species %>%
-  unique() %>%
-  sort()
-species[grepl("sp", species)]
-```
-
-```{r}
-taxo2 %>%
-  summarise(
-    "NA - genus" = sum(is.na(genus)),
-    "NA - species" = sum(is.na(species)),
-    "empty - species" = sum(species == "", na.rm = TRUE),
-    "length<2 - species" = sum(str_length(species) < 2, na.rm = TRUE),
-    "empty - genus" = sum(genus == "", na.rm = TRUE),
-    "length<2 - genus" = sum(str_length(genus) < 2, na.rm = TRUE),
-    "Indet,Indet. - species" = sum((species %in% c("Indet", "Indet.")),
-      na.rm = TRUE
-    ),
-    "sp,spp - species" = sum((species %in% c("sp", "spp")), na.rm = TRUE)
-  ) %>%
-  gather() %>%
-  separate(key, c("condition", "level"), " - ") %>%
-  pivot_wider(names_from = level, values_from = value) %>%
-  kable()
-```
-
-```{r}
-taxo3 <- taxo2 %>%
-  filter(
-    !is.na(genus), !is.na(species),
-    str_length(genus) > 1, str_length(species) > 1
-  ) %>%
-  mutate(species = recode(species,
-    "sp" = "spp",
-    "sp" = "Indet", sp = "Indet."
+  ))) %>%
+  left_join(read_tsv("outputs/family_correction_table.tsv")) %>%
+  mutate(family = ifelse(!is.na(family_reason), family_corrected, family)) %>%
+  select(-family_corrected) %>%
+  left_join(read_tsv("outputs/genus_correction_table.tsv")) %>%
+  mutate(genus = ifelse(!is.na(genus_reason), genus_corrected, genus)) %>%
+  select(-genus_corrected) %>%
+  left_join(read_tsv("outputs/species_correction_table.tsv")) %>%
+  mutate(species = ifelse(!is.na(species_reason),
+    species_corrected, species
   )) %>%
-  unique() %>%
-  mutate(scientificname = paste(genus, species)) %>%
-  head(n = 10)
+  select(-species_corrected)
+write_tsv(cleaned, "outputs/taxonomy_names_corrected.tsv")
 ```
+
+```{r namecortab}
+#| message: false
+#| warning: false
+read_tsv("outputs/taxonomy_names_corrected.tsv") %>%
+  select(family_reason, genus_reason, species_reason) %>%
+  gather("level", "reason") %>%
+  na.omit() %>%
+  group_by(level, reason) %>%
+  summarise(corrections = n()) %>%
+  kable(
+    format.args = list(big.mark = ","),
+    caption = "Number of corrections per level and reason."
+  )
+```
+
+## Synonymy
 
 ```{r}
 #| message: false

@@ -1,3 +1,4 @@
+-   species 0.1.0.9009: cleaning - names corrections
 -   species 0.1.0.9008: family, genus, and species raw details
 -   species 0.1.0.9007: org & raw expl
 -   species 0.1.0.9006: data cleaning first test with WorldFlora #1

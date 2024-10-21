@@ -10,7 +10,8 @@ format:
 
 All outputs and intermediary files of the analyses:
 
--   ...
+-   `family_correction_table.tsv`, `genus_correction_table.tsv`, and `species_correction_table.tsv`: contingency tables to correct names
+-   `taxonomy_names_corrected.tsv`: taxonomy after names corrections
 
 ```{r, comment=""}
 fs::dir_tree()

@@ -76,7 +76,7 @@ taxo %>%
   mutate(N = n()) %>%
   ungroup() %>%
   filter(N == 11) %>%
-  kable(caption = "Example of multiple scientific names for one species genus pair.") #nolint
+  kable(caption = "Example of multiple scientific names for one species genus pair.") # nolint
 ```
 
 ```{r diffs_fig}
@@ -137,7 +137,8 @@ taxo %>%
 
 Genera includes the following dubious names:
 
--   **Missing**: #N/A, Indet.
+-   **Missing**: #N/A,
+-   **Unidentified**: Indet.
 -   **Family-only**: Indet.Apocynaceae, Indet.Arecaceae, Indet.Bignoniaceae, Indet.Burseraceae, Indet.Capparaceae, Indet.Chrysobalanaceae, Indet.Clusiaceae, Indet.Combretaceae, Indet.Dichapetalaceae, Indet.Euphorbiaceae, Indet.Fabaceae, Indet.FabaceaeCaesalpinioideae(mimosoid_clade), Indet.FabaceaePapilionoideae, Indet.Humiriaceae, Indet.Indet., Indet.Lamiaceae, Indet.Lauraceae, Indet.Lecythidaceae, Indet.Malvaceae, Indet.MalvaceaeBombacoideae, Indet.Melastomataceae, Indet.Moraceae, Indet.Myrtaceae, Indet.Nyctaginaceae, Indet.Olacaceae, Indet.Rubiaceae, Indet.Salicaceae, Indet.Sapindaceae, Indet.Sapotaceae, Indet.Urticaceae, Indet.Violaceae, Indet.Vochysiaceae
 
 See the list below:
