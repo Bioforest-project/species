@@ -1,6 +1,9 @@
 # load packages
 library(tidyverse)
 
+#
+here::here()
+
 # define were the raw inventories data are
 path <- "~/Documents/bioforest/inventories/data/raw_data/all_output_files/"
 
