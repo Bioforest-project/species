@@ -2,8 +2,6 @@
 #| message: false
 #| include: false
 library(tidyverse)
-library(WorldFlora)
-library(fuzzyjoin)
 library(knitr)
 ```
 
@@ -49,8 +47,6 @@ genus_tab <- data.frame(
   )
 )
 write_tsv(genus_tab, "outputs/genus_correction_table.tsv")
-
-
 species_tab1 <- data.frame(
   species_corrected = NA,
   species = c(
@@ -109,13 +105,13 @@ cleaned <- read_tsv("data/raw_data/raw_taxonomy.tsv") %>%
     species_corrected, species
   )) %>%
   select(-species_corrected)
-write_tsv(cleaned, "outputs/taxonomy_names_corrected.tsv")
+write_tsv(cleaned, "data/derived_data/taxonomy_names_corrected.tsv")
 ```
 
 ```{r namecortab}
 #| message: false
 #| warning: false
-read_tsv("outputs/taxonomy_names_corrected.tsv") %>%
+read_tsv("data/derived_data/taxonomy_names_corrected.tsv") %>%
   select(family_reason, genus_reason, species_reason) %>%
   gather("level", "reason") %>%
   na.omit() %>%
@@ -127,31 +123,162 @@ read_tsv("outputs/taxonomy_names_corrected.tsv") %>%
   )
 ```
 
-## Synonymy
+## World Flora Online (WFO)
 
-```{r}
+We used `WorldFlora` and `fuzzyjoin` for synonymy and misspelling corrections.
+
+```{r wfo}
 #| message: false
 #| warning: false
 #| eval: false
+library(WorldFlora)
+library(fuzzyjoin)
+taxo <- read_tsv("data/derived_data/taxonomy_names_corrected.tsv") %>% 
+  filter(!is.na(species)) %>% 
+  transmute(scientificname = paste(genus, species)) %>% 
+  arrange(scientificname) %>% 
+  unique()
 cleaned <- WFO.match.fuzzyjoin(
-  spec.data = taxo3$scientificname,
+  spec.data = taxo$scientificname,
   WFO.file = "data/raw_data/WFO_Backbone.zip"
 )
-write_tsv(cleaned, "data/derived_data/cleaned.tsv")
+write_tsv(cleaned, "outputs/wfo_out.tsv")
 ```
 
-```{r}
+1525 species matched a species from the World Flora Online (WFO) except 4:
+
+```{r matches}
 #| message: false
-cleaned <- read_tsv("data/derived_data/cleaned.tsv")
-cleaned %>%
-  select(spec.name, Matched, family, genus, specificEpithet) %>%
-  kable()
+#| warning: false
+wfo <- read_tsv("outputs/wfo_out.tsv")
+wfo %>% 
+  group_by(spec.name) %>% 
+  summarise(matched = all(Matched)) %>% 
+  group_by(matched) %>% 
+  summarise(N = n(), names = ifelse(!matched, paste(spec.name), "")) %>% 
+  unique() %>% 
+  kable(
+    format.args = list(big.mark = ","),
+    caption = "Number of matched and unmatched species."
+  )
 ```
 
-Options for cleaning taxonomy:
+Among matched species, most were exact (not fuzzy misspelled species) and with a single match in WFO, still 113 had multiple matches and 159 were fuzzy misspelled species, both to investigate:
 
--   **worldflora**
--   plantR
--   U.Taxonstand
--   taxlist
--   bdclean
+```{r fuzzy_unique}
+#| message: false
+wfo %>% 
+  filter(Matched) %>% 
+  group_by(spec.name) %>% 
+  summarise(fuzzy = all(Fuzzy), unique = all(Unique)) %>% 
+  group_by(fuzzy, unique) %>% 
+  summarise(N = n()) %>% 
+  mutate(fuzzy = ifelse(fuzzy, "fuzzy", "exact"),
+         unique = ifelse(unique, "unique", "multiple")) %>% 
+  pivot_wider(names_from = "unique", values_from = "N") %>% 
+  kable(
+    format.args = list(big.mark = ","),
+    caption = "Number of fuzzy and unique species."
+  )
+```
+
+## Misspelling (fuzzy)
+
+By default `WorldFlora` limits fuzzy distance to 4, which seems more than acceptable and could be increased. Indeed one of the unmatched species, *Palaquium cochlariflorum* might be *Palaquium cochleariifolium* with a fuzzy distance of 6, but this can also be dealt with manually.
+
+```{r fuzzy_dist}
+wfo %>% 
+  filter(Matched, Fuzzy) %>% 
+  group_by(spec.name) %>% 
+  summarise(fuzzy_dist = unique(Fuzzy.dist)) %>% 
+  group_by(fuzzy_dist) %>% 
+  summarise(N = n()) %>% 
+  kable(caption = "Number of misspelled species by the number of misspelled letters.")
+```
+
+However, among the misspelled species with multiple matches, 4 have multiple newly accepted names:
+
+```{r fuzzy_multiple}
+wfo %>% 
+  filter(Matched, Fuzzy, !Unique, New.accepted) %>% 
+  select(spec.name, scientificName) %>% 
+  unique() %>% 
+  group_by(spec.name) %>% 
+  filter(n() > 1) %>% 
+  summarise(scientificName = paste0(scientificName, collapse = ", ")) %>% 
+  kable(caption = "Fuzzy match with multiple newly accepted names.")
+```
+
+## Synonymy (multiple matches)
+
+Similarly, among the correctly spelled species with multiple matches, 6 have multiple newly accepted names:
+
+```{r exact_multiple}
+wfo %>% 
+  filter(Matched, !Fuzzy, !Unique, New.accepted) %>% 
+  select(spec.name, scientificName) %>% 
+  unique() %>% 
+  group_by(spec.name) %>% 
+  filter(n() > 1) %>% 
+  summarise(scientificName = paste0(scientificName, collapse = ", ")) %>% 
+  kable(caption = "Exact match with multiple newly accepted names.")
+```
+
+## Synonymy & misspelling corrections
+
+> **⚠️ Multiple newly accepted names should be discussed.**
+
+However, for the moment we will randomly select the first newly accepted name in this case. We will thus correct synonymy and misspelling by:
+
+1.  Using closest correct spelling
+2.  Accepting single exact matches
+3.  Accepting single newly accepted names for multiple matches
+4.  Accepting the first newly accepted names for multiple matches in case of multiples (to be changed later)
+
+```{r wfo_clean}
+#| eval: false
+taxo <- read_tsv("data/derived_data/taxonomy_names_corrected.tsv") %>% 
+  mutate(scientificname = paste(genus, species)) %>% 
+  arrange(site, scientificname) %>% 
+  unique()
+wfo <- read_tsv("outputs/wfo_out.tsv") %>% 
+  filter(Matched)
+wfo_exact <- wfo %>% 
+  filter(Unique)
+wfo_mult <- wfo %>% 
+  filter(!Unique) %>%
+  group_by(spec.name) %>% 
+  filter(New.accepted) %>% 
+  sample_n(1)
+wfo_clean <- bind_rows(wfo_exact, wfo_mult) %>% 
+  select(spec.name, family, genus, specificEpithet,
+         scientificName) %>% 
+  rename(scientificname = spec.name, 
+         family_wfo = family, 
+         genus_wfo = genus,
+         species_wfo = specificEpithet,
+         scientificname_wfo = scientificName)
+write_tsv(wfo_clean, "outputs/wfo_correction_table.tsv")
+left_join(taxo, wfo_clean) %>% 
+  write_tsv("data/derived_data/taxonomy_names_cleaned.tsv")
+```
+
+```{r wfo_clean_stat}
+#| message: false
+clean <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") 
+fam_cor <- select(clean, family, family_wfo) %>% 
+  unique() %>% 
+  na.omit() %>% 
+  filter(family != family_wfo)
+gen_cor <- select(clean, genus, genus_wfo) %>% 
+  unique() %>% 
+  na.omit() %>% 
+  filter(genus != genus_wfo)
+sp_cor <- select(clean, species, species_wfo) %>% 
+  unique() %>% 
+  na.omit() %>% 
+  filter(species != species_wfo)
+data.frame(level = c("family", "genus", "species"),
+           N = c(nrow(fam_cor), nrow(gen_cor), nrow(sp_cor))) %>% 
+  kable(caption = "Number of synonymy, misspelling, and update corrections per taxonomic level")
+```
