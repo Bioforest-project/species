@@ -2,8 +2,88 @@
 #| message: false
 #| include: false
 library(tidyverse)
+library(ape)
+library(phylobase)
+library(ggtree)
 ```
 
 # Phylogeny {.unnumbered}
 
-Bla.
+We used cleaned taxonomy to build a global phylogeny using `V.PhyloMaker`. This corresponds to **version 1**.
+
+```{r phylo}
+#| eval: false
+library(V.PhyloMaker)
+library(ape)
+splist <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") %>%
+  select(species_wfo, genus_wfo, family_wfo) %>%
+  na.omit() %>%
+  unique() %>%
+  rename_all(~ gsub("_wfo", "", .)) %>%
+  mutate(species = paste(genus, species))
+tree <- phylo.maker(
+  sp.list = splist,
+  tree = GBOTB.extended,
+  nodes = nodes.info.1,
+  scenarios = "S3"
+)
+write.tree(tree$scenario.3, "outputs/phylogeny_full.tree")
+```
+
+We can see the results with all families (*a better representation might be found*):
+
+```{r phyloall}
+#| fig-width: 12
+#| fig-height: 6
+#| message: false
+#| warning: false
+splist <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") %>%
+  select(species_wfo, genus_wfo, family_wfo) %>%
+  na.omit() %>%
+  unique() %>%
+  rename_all(~ gsub("_wfo", "", .)) %>%
+  mutate(species = paste(genus, species))
+phylo <- ape::read.tree("outputs/phylogeny_full.tree")
+phylo_df <- phylo4d(
+  phylo,
+  data.frame(species = gsub("_", " ", phylo$tip.label)) %>%
+    left_join(splist)
+)
+ggtree(phylo_df, aes(col = family), layout = "circular") +
+  theme_tree(legend.text = element_text(face = "italic", size = 6)) +
+  scale_color_discrete("")
+```
+
+And we can further explore the phylogeny per plot compared to the global phylogeny:
+
+```{r phylosite}
+#| fig-width: 12
+#| fig-height: 12
+#| message: false
+#| warning: false
+phylo_site <- function(sit) {
+  taxo <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") %>%
+    filter(site == sit) %>%
+    select(species_wfo, genus_wfo, family_wfo) %>%
+    na.omit() %>%
+    unique() %>%
+    rename_all(~ gsub("_wfo", "", .)) %>%
+    mutate(species = paste(genus, species))
+  phylo_df@data$site <- phylo_df@data$species %in% taxo$species
+  ggtree(phylo_df, aes(col = site, alpha = site), layout = "circular") +
+    scale_color_manual(
+      guide = "none",
+      values = c("grey", "darkgreen", "grey")
+    ) +
+    scale_alpha_manual(
+      guide = "none",
+      values = c(.1, 1, .1)
+    ) +
+    ggtitle(sit)
+}
+figs <- lapply(c(
+  "Bafog", "Kabo", "Malinau", "Manare", "Montagne_Tortue",
+  "Paracou", "Tene", "Uppangala"
+), phylo_site)
+cowplot::plot_grid(plotlist = figs)
+```
