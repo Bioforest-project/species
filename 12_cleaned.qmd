@@ -195,7 +195,7 @@ wfo %>%
   summarise(fuzzy_dist = unique(Fuzzy.dist)) %>%
   group_by(fuzzy_dist) %>%
   summarise(N = n()) %>%
-  kable(caption = "Number of misspelled species by the number of misspelled letters.") #nolint
+  kable(caption = "Number of misspelled species by the number of misspelled letters.") # nolint
 ```
 
 However, among the misspelled species with multiple matches, 4 have multiple newly accepted names:
@@ -288,5 +288,5 @@ data.frame(
   level = c("family", "genus", "species"),
   N = c(nrow(fam_cor), nrow(gen_cor), nrow(sp_cor))
 ) %>%
-  kable(caption = "Number of synonymy, misspelling, and update corrections per taxonomic level") #nolint
+  kable(caption = "Number of synonymy, misspelling, and update corrections per taxonomic level") # nolint
 ```

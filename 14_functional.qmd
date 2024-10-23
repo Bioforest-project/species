@@ -2,8 +2,39 @@
 #| message: false
 #| include: false
 library(tidyverse)
+library(BIOMASS)
 ```
 
 # Functional {.unnumbered}
 
-Bla.
+We used cleaned taxonomy to retrieve data from TRY [@kattge2019] and BIOMASS [@réjou-méchain2017]. This corresponds to **version 1**.
+
+## Wood density
+
+```{r wd}
+#| message: false
+#| warning: false
+taxo <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv")
+wd <- getWoodDensity(taxo$genus_wfo, taxo$species_wfo) %>%
+  group_by(genus, species) %>%
+  summarise(wd = mean(meanWD)) %>%
+  na.omit() %>%
+  rename(genus_wfo = genus, species_wfo = species)
+taxo_wd <- left_join(taxo, wd)
+g1 <- ggplot(taxo_wd, aes(wd, col = site)) +
+  geom_density() +
+  theme_bw() +
+  xlab(expression("Wood Density [" ~ g / cm^3 ~ "]"))
+g2 <- ggplot(taxo_wd, aes(wd, col = site)) +
+  geom_boxplot() +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
+  xlab(expression("Wood Density [" ~ g / cm^3 ~ "]"))
+cowplot::plot_grid(g1, g2, nrow = 2, rel_heights = c(2, 1))
+```
+
+## TRY
