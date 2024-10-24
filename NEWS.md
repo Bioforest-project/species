@@ -1,3 +1,4 @@
+-   species 0.1.0.9013: ah, hmax inferred from TALLO & TRY first request #2
 -   species 0.1.0.9012: wd from biomass #2
 -   species 0.1.0.9011: phylo v1 #3 done
 -   species 0.1.0.9010: cleaning with WFO v1

@@ -3,17 +3,22 @@
 #| include: false
 library(tidyverse)
 library(BIOMASS)
+library(knitr)
+library(bayesplot)
+library(sjPlot)
+library(corrplot)
 ```
 
 # Functional {.unnumbered}
 
-We used cleaned taxonomy to retrieve data from TRY [@kattge2019] and BIOMASS [@réjou-méchain2017]. This corresponds to **version 1**.
+We used cleaned taxonomy to retrieve data from TRY [@kattge2019], BIOMASS [@réjou-méchain2017], and TALLO [@jucker2022]. This corresponds to **version 1**.
 
 ## Wood density
 
 ```{r wd}
 #| message: false
 #| warning: false
+#| fig-cap: "Caption."
 taxo <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv")
 wd <- getWoodDensity(taxo$genus_wfo, taxo$species_wfo) %>%
   group_by(genus, species) %>%
@@ -25,16 +30,251 @@ g1 <- ggplot(taxo_wd, aes(wd, col = site)) +
   geom_density() +
   theme_bw() +
   xlab(expression("Wood Density [" ~ g / cm^3 ~ "]"))
-g2 <- ggplot(taxo_wd, aes(wd, col = site)) +
-  geom_boxplot() +
+g2 <- ggplot(taxo_wd, aes(site, wd, col = site)) +
+  geom_violin() +
+  geom_boxplot(width = .2) +
+  coord_flip() +
   theme_bw() +
   theme(
     legend.position = "none",
     axis.text.y = element_blank(),
     axis.ticks.y = element_blank()
   ) +
-  xlab(expression("Wood Density [" ~ g / cm^3 ~ "]"))
-cowplot::plot_grid(g1, g2, nrow = 2, rel_heights = c(2, 1))
+  ylab(expression("Wood Density [" ~ g / cm^3 ~ "]"))
+cowplot::plot_grid(g1, g2, nrow = 2)
 ```
 
 ## TRY
+
+```{r try_sp}
+#| eval: false
+try_sp <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") %>%
+  select(scientificname_wfo) %>%
+  na.omit() %>%
+  unique() %>%
+  left_join(read_tsv("data/raw_data/TryAccSpecies.txt"),
+    by = c("scientificname_wfo" = "AccSpeciesName")
+  )
+sp_req <- try_sp %>%
+  select(AccSpeciesID) %>%
+  na.omit() %>%
+  unique() %>%
+  arrange() %>%
+  mutate(request = rep(1:100, each = 200)[1:n()]) %>%
+  group_by(request) %>%
+  summarise(species_list = paste0(AccSpeciesID, collapse = ", "))
+write_tsv(sp_req, "outputs/try_species_requests.tvs")
+```
+
+```{r try_req}
+#| message: false
+#| warning: false
+read_tsv("outputs/try_species_requests.tvs", n_max = 1) %>%
+  kable(caption = "Example of species ID list for TRY Data Explorer requests (limited to 200) for the first chunk.")
+```
+
+```{r try_sp_traits}
+#| message: false
+#| warning: false
+#| fig-cap: "Traits available for at least 50% of species available on TRY."
+list.files("data/raw_data", full.names = TRUE, pattern = "try_req") %>%
+  lapply(read_tsv, skip = 3) %>%
+  lapply(gather, species, N, -Trait, -TraitID) %>%
+  bind_rows() %>%
+  filter(N > 0) %>%
+  group_by(Trait, TraitID) %>%
+  summarise(N = n()) %>%
+  filter(N > 0.5 * 1255) %>%
+  ggplot(aes(fct_rev(fct_infreq(Trait, N)), N)) +
+  geom_point() +
+  theme_bw() +
+  coord_flip() +
+  theme(axis.title = element_blank())
+```
+
+We will thus use:
+
+-   14: Leaf nitrogen (N) content per leaf dry mass
+-   3117: Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded
+-   4: Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density
+
+> Request in progress on TRY servers.
+
+## Tallo
+
+```{r tallo}
+#| warning: false
+#| message: false
+#| fig-cap: "Caption."
+tallo <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") %>%
+  select(scientificname_wfo) %>%
+  na.omit() %>%
+  unique() %>%
+  left_join(read_csv("data/raw_data/Tallo.csv?download=1"),
+    by = c("scientificname_wfo" = "species")
+  ) %>%
+  filter(!is.na(tree_id))
+tallo %>%
+  ggplot(aes(stem_diameter_cm, height_m)) +
+  geom_point(aes(col = scientificname_wfo), alpha = 0.25) +
+  theme_bw() +
+  geom_smooth(formula = y ~ log(x)) +
+  scale_color_discrete(guide = "none") +
+  xlab("diameter (cm)") +
+  ylab("height (m)") +
+  ggtitle("TALLO", paste(length(unique(tallo$scientificname_wfo)), "species"))
+```
+
+We inferred hmax and ah using the following allometry in `brms`:
+
+$$
+\begin{array}{c} 
+log(height) \sim N [ log(h_{max,s} \times \frac{dbh}{a_{h,s}+dbh^2}), \sigma^2] \\
+h_{max,s} \sim N (h_{max}, \sigma_h^2) \\
+a_{h,s} \sim N (a_{h}, \sigma_a^2)
+\end{array}
+$$
+
+```{r fit}
+#| eval: false
+library(brms)
+library(tidybayes)
+mdata <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") %>%
+  select(scientificname_wfo) %>%
+  na.omit() %>%
+  unique() %>%
+  left_join(read_csv("data/raw_data/Tallo.csv?download=1"),
+    by = c("scientificname_wfo" = "species")
+  ) %>%
+  filter(!is.na(tree_id)) %>%
+  select(scientificname_wfo, height_m, stem_diameter_cm) %>%
+  rename(h = height_m, d = stem_diameter_cm) %>%
+  mutate(d = d / 100) %>%
+  na.omit()
+fit <- brm(
+  bf(log(h) ~ log(hmax * (d / (ah + d))),
+    hmax ~ 1 + 1 | scientificname_wfo,
+    ah ~ 1 + 1 | scientificname_wfo,
+    nl = TRUE
+  ),
+  prior = c(
+    prior(normal(40, 10), lb = 10, nlpar = "hmax"),
+    prior(normal(0.5, 0.5), lb = 0, nlpar = "ah")
+  ),
+  data = mdata, chains = 2, cores = 2, threads = 10
+)
+save(mdata, fit, file = "outputs/tallo_brms.Rdata")
+fit %>%
+  spread_draws(
+    b_hmax_Intercept, r_scientificname_wfo__hmax[scientificname_wfo, ],
+    b_ah_Intercept, r_scientificname_wfo__ah[scientificname_wfo, ]
+  ) %>%
+  mutate(ah = b_ah_Intercept + r_scientificname_wfo__ah) %>%
+  mutate(hmax = b_hmax_Intercept + r_scientificname_wfo__hmax) %>%
+  group_by(scientificname_wfo) %>%
+  summarise(ah = median(ah), hmax = median(hmax)) %>%
+  mutate(scientificname_wfo = gsub(".", " ", scientificname_wfo, fixed = TRUE)) %>%
+  write_tsv("outputs/tallo_pars.tsv")
+```
+
+We had good convergence and good post-predictive checks.
+
+```{r rhat}
+#| message: false
+#| fig-cap: "Goodness of convergence assessed by Rhat. All Rhat are below 1.05 indicating a very good convergence of all chains."
+load("outputs/tallo_brms.Rdata")
+mcmc_rhat(bayesplot::rhat(fit$fit))
+```
+
+```{r ppc}
+#| message: false
+#| fig-cap: "Posterior post-predictive check of simulated response variable against observed values indicating a good representation of the whole distribution in posteriors."
+load("outputs/tallo_brms.Rdata")
+pp_check(fit)
+```
+
+We thus inferred 494 (ah,hmax) couple of parameters.
+
+```{r tabfit}
+load("outputs/tallo_brms.Rdata")
+sjPlot::tab_model(fit)
+```
+
+```{r ahhmax}
+#| message: false
+#| warning: false
+#| fig-cap: "Inferred species allometric parameters hmax and ah and their relations per site."
+read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") %>%
+  left_join(read_tsv("outputs/tallo_pars.tsv")) %>%
+  filter(!is.na(ah)) %>%
+  ggplot(aes(ah, hmax)) +
+  geom_point() +
+  theme_bw() +
+  facet_wrap(~site) +
+  xlab(expression(a[h])) +
+  ylab(expression(h[max]))
+```
+
+```{r hmaxsite}
+#| message: false
+#| warning: false
+#| fig-cap: "Inferred species allometric parameters hmax per site."
+taxo_hmax <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") %>%
+  left_join(read_tsv("outputs/tallo_pars.tsv")) %>%
+  filter(!is.na(hmax))
+g1 <- ggplot(taxo_hmax, aes(hmax, col = site)) +
+  geom_density() +
+  theme_bw() +
+  ylab(expression(h[max]))
+g2 <- ggplot(taxo_hmax, aes(site, hmax, col = site)) +
+  geom_violin() +
+  geom_boxplot(width = .2) +
+  coord_flip() +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
+  ylab(expression(h[max]))
+cowplot::plot_grid(g1, g2, nrow = 2)
+```
+
+## All
+
+```{r all_traits}
+#| warning: false
+#| message: false
+#| fig-cap: Species traits pairwise correlations.
+taxo <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv")
+wd <- getWoodDensity(taxo$genus_wfo, taxo$species_wfo) %>%
+  group_by(genus, species) %>%
+  summarise(wd = mean(meanWD)) %>%
+  na.omit() %>%
+  rename(genus_wfo = genus, species_wfo = species)
+h <- read_tsv("outputs/tallo_pars.tsv")
+taxo_traits <- left_join(taxo, wd) %>%
+  left_join(h)
+taxo_traits %>%
+  select(wd, ah, hmax) %>%
+  cor(use = "pairwise.complete.obs") %>%
+  corrplot::corrplot(type = "upper", diag = FALSE)
+```
+
+## Imputation
+
+We used simple predictive mean matching (PMM) data imputation with `mice`.
+
+```{r mice}
+#| eval: false
+library(mice)
+imputation <- taxo_traits %>%
+  select(scientificname, wd, ah, hmax) %>%
+  mice(maxit = 100)
+imputation <- filtered %>%
+  mice::mice(maxit = 100)
+complete(imputation)
+write_tsv("outputs/traits_imputation.tsv")
+```
+
+> Currently we do not have enough data for imputation, waiting for TRY release.
