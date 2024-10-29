@@ -11,7 +11,9 @@ First we explored raw species data content. This corresponds to **version 1**.
 
 ## All
 
-We first removed Kibale, Lesong, Misiones, Mbaiki, Moju, Peteco, Sg Lalang, and Ulu Muda as taxonomic information is currently contained only either in the vernacular or scientifc column. **They should be cleaned before integration.**
+We first removed Kibale, Lesong, Misiones, Mbaiki, Moju, Peteco, Sg Lalang, and Ulu Muda as taxonomic information is currently contained only either in the vernacular or scientific column.
+
+> **Version 2 should include specific cleaning of sites with know issue as discussed with Camille.**
 
 ```{r taxo}
 #| message: false

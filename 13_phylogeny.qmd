@@ -37,6 +37,7 @@ We can see the results with all families (*a better representation might be foun
 #| fig-height: 6
 #| message: false
 #| warning: false
+#| fig-cap: "Global phylogeny of species across all sites."
 splist <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") %>%
   select(species_wfo, genus_wfo, family_wfo) %>%
   na.omit() %>%
@@ -61,6 +62,7 @@ And we can further explore the phylogeny per plot compared to the global phyloge
 #| fig-height: 12
 #| message: false
 #| warning: false
+#| fig-cap: "Global phylogeny of species across all sites with taxa coloured per site." #nolint
 phylo_site <- function(sit) {
   taxo <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") %>%
     filter(site == sit) %>%

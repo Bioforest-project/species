@@ -242,6 +242,7 @@ div.csl-indent {
 <p>We used cleaned taxonomy to retrieve data from TRY <span class="citation" data-cites="kattge2019">(<a href="99_references.html#ref-kattge2019" role="doc-biblioref">Kattge et al. 2019</a>)</span>, BIOMASS <span class="citation" data-cites="réjou-méchain2017">(<a href="99_references.html#ref-réjou-méchain2017" role="doc-biblioref">Réjou-Méchain et al. 2017</a>)</span>, and TALLO <span class="citation" data-cites="jucker2022">(<a href="99_references.html#ref-jucker2022" role="doc-biblioref">Jucker et al. 2022</a>)</span>. This corresponds to <strong>version 1</strong>.</p>
 <section id="wood-density" class="level2">
 <h2 class="anchored" data-anchor-id="wood-density">Wood density</h2>
+<p>Using BIOMASS <span class="citation" data-cites="réjou-méchain2017">(<a href="99_references.html#ref-réjou-méchain2017" role="doc-biblioref">Réjou-Méchain et al. 2017</a>)</span>, we retrieved wood density for most species, with little differences between sites means.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -273,7 +274,7 @@ div.csl-indent {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="14_functional_files/figure-html/wd-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Caption.</figcaption>
+<figcaption class="figure-caption">Wood density extracted from <span class="citation" data-cites="réjou-méchain2017">Réjou-Méchain et al. (<a href="99_references.html#ref-réjou-méchain2017" role="doc-biblioref">2017</a>)</span>.</figcaption>
 </figure>
 </div>
 </div>
@@ -281,6 +282,7 @@ div.csl-indent {
 </section>
 <section id="try" class="level2">
 <h2 class="anchored" data-anchor-id="try">TRY</h2>
+<p>In order to make a request for data on TRY <span class="citation" data-cites="kattge2019">(<a href="99_references.html#ref-kattge2019" role="doc-biblioref">Kattge et al. 2019</a>)</span>, we first retrieved the total species list available from TRY and matched our species to their species list to obtain corresponding species ID on TRY. By chance TRY is also using WordFlora reference. But they limit the requests to 200 species. We thus retrieved available species data by batch of 200 (see example below).</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -330,6 +332,10 @@ div.csl-indent {
 </table>
 </div>
 </div>
+<p>Next we could investigate trait data available for more than 50% of species, which were not many.</p>
+<blockquote class="blockquote">
+<p>We could go to less represented traits in the future, and some trait might be redundant and results in the low observed values.</p>
+</blockquote>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -356,14 +362,14 @@ div.csl-indent {
 </div>
 </div>
 </div>
-<p>We will thus use:</p>
+<p>For the first test we thus used:</p>
 <ul>
 <li>14: Leaf nitrogen (N) content per leaf dry mass, mg/g</li>
 <li>3117: Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded, mm2 mg-1</li>
 <li>4: Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density, g/cm3</li>
 </ul>
 <blockquote class="blockquote">
-<p>Request in progress on TRY servers.</p>
+<p>The request takes times to be ready. Moreover, we should try to minimise the number of requests. This was a first test. But future tests should be discussed before.</p>
 </blockquote>
 <div class="cell">
 <details>
@@ -384,6 +390,7 @@ div.csl-indent {
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>taxo_try <span class="ot">&lt;-</span> <span class="fu">left_join</span>(taxo, try, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"scientificname_wfo"</span> <span class="ot">=</span> <span class="st">"species"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+<p>We obtained numerous data across species for SLA, WD, and N:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -408,7 +415,7 @@ div.csl-indent {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="14_functional_files/figure-html/trywd-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Caption.</figcaption>
+<figcaption class="figure-caption">Wood density extracted from <span class="citation" data-cites="kattge2019">Kattge et al. (<a href="99_references.html#ref-kattge2019" role="doc-biblioref">2019</a>)</span>.</figcaption>
 </figure>
 </div>
 </div>
@@ -443,7 +450,7 @@ div.csl-indent {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="14_functional_files/figure-html/trysla-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Caption.</figcaption>
+<figcaption class="figure-caption">Specific leaf area extracted from <span class="citation" data-cites="kattge2019">Kattge et al. (<a href="99_references.html#ref-kattge2019" role="doc-biblioref">2019</a>)</span>.</figcaption>
 </figure>
 </div>
 </div>
@@ -472,7 +479,7 @@ div.csl-indent {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="14_functional_files/figure-html/tryn-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Caption.</figcaption>
+<figcaption class="figure-caption">Leaf nitrogen extracted from <span class="citation" data-cites="kattge2019">Kattge et al. (<a href="99_references.html#ref-kattge2019" role="doc-biblioref">2019</a>)</span>.</figcaption>
 </figure>
 </div>
 </div>
@@ -480,6 +487,7 @@ div.csl-indent {
 </section>
 <section id="tallo" class="level2">
 <h2 class="anchored" data-anchor-id="tallo">Tallo</h2>
+<p>Using TALLO <span class="citation" data-cites="jucker2022">(<a href="99_references.html#ref-jucker2022" role="doc-biblioref">Jucker et al. 2022</a>)</span>, we retrieved tree diameter and height measurements for 495 species from our dataset:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -505,12 +513,12 @@ div.csl-indent {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="14_functional_files/figure-html/tallo-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Caption.</figcaption>
+<figcaption class="figure-caption">Height-diameter relation for species of our datasets in TALLO.</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>We inferred hmax and ah using the following allometry in <code>brms</code>:</p>
+<p>We inferred species maximum height hmax and the allometric parameter ah using the following allometry in <code>brms</code>:</p>
 <p><span class="math display">\[
 \begin{array}{c}
 log(height) \sim N [ log(h_{max,s} \times \frac{dbh}{a_{h,s}+dbh^2}), \sigma^2] \\
@@ -693,6 +701,7 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 </section>
 <section id="all" class="level2">
 <h2 class="anchored" data-anchor-id="all">All</h2>
+<p>We assembled all traits data from TRY <span class="citation" data-cites="kattge2019">(<a href="99_references.html#ref-kattge2019" role="doc-biblioref">Kattge et al. 2019</a>)</span>, BIOMASS <span class="citation" data-cites="réjou-méchain2017">(<a href="99_references.html#ref-réjou-méchain2017" role="doc-biblioref">Réjou-Méchain et al. 2017</a>)</span>, and TALLO <span class="citation" data-cites="jucker2022">(<a href="99_references.html#ref-jucker2022" role="doc-biblioref">Jucker et al. 2022</a>)</span>, and obtained the following correlations:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -739,7 +748,7 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 </section>
 <section id="imputation" class="level2">
 <h2 class="anchored" data-anchor-id="imputation">Imputation</h2>
-<p>We used simple predictive mean matching (PMM) data imputation with <code>mice</code>.</p>
+<p>We used simple predictive mean matching (PMM) data imputation with <code>mice</code> to further impute missing trait values. We obtained the global PCA below showed globally and per site:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -776,7 +785,7 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="14_functional_files/figure-html/pca-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Caption.</figcaption>
+<figcaption class="figure-caption">Imputed traits global principal component analysis.</figcaption>
 </figure>
 </div>
 </div>
@@ -801,7 +810,7 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="14_functional_files/figure-html/pcasite-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Caption.</figcaption>
+<figcaption class="figure-caption">Imputed traits global principal component analysis per site.</figcaption>
 </figure>
 </div>
 </div>
