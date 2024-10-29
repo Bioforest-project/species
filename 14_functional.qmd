@@ -7,6 +7,7 @@ library(knitr)
 library(bayesplot)
 library(sjPlot)
 library(corrplot)
+library(ggfortify)
 ```
 
 # Functional {.unnumbered}
@@ -60,7 +61,7 @@ sp_req <- try_sp %>%
   na.omit() %>%
   unique() %>%
   arrange() %>%
-  mutate(request = rep(1:100, each = 200)[1:n()]) %>%
+  mutate(request = rep(1:100, each = 200)[seq_len(n())]) %>%
   group_by(request) %>%
   summarise(species_list = paste0(AccSpeciesID, collapse = ", "))
 write_tsv(sp_req, "outputs/try_species_requests.tvs")
@@ -70,7 +71,7 @@ write_tsv(sp_req, "outputs/try_species_requests.tvs")
 #| message: false
 #| warning: false
 read_tsv("outputs/try_species_requests.tvs", n_max = 1) %>%
-  kable(caption = "Example of species ID list for TRY Data Explorer requests (limited to 200) for the first chunk.")
+  kable(caption = "Example of species ID list for TRY Data Explorer requests (limited to 200) for the first chunk.") #nolint
 ```
 
 ```{r try_sp_traits}
@@ -94,11 +95,102 @@ list.files("data/raw_data", full.names = TRUE, pattern = "try_req") %>%
 
 We will thus use:
 
--   14: Leaf nitrogen (N) content per leaf dry mass
--   3117: Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded
--   4: Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density
+-   14: Leaf nitrogen (N) content per leaf dry mass, mg/g
+-   3117: Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded, mm2 mg-1
+-   4: Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density, g/cm3
 
 > Request in progress on TRY servers.
+
+```{r tryrel}
+#| message: false
+#| warning: false
+taxo <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv")
+try <- read_tsv("data/raw_data/36779_25102024131149/36779.txt") %>%
+  select(AccSpeciesName, TraitName, StdValue) %>%
+  na.omit() %>%
+  rename(species = AccSpeciesName, trait = TraitName, value = StdValue) %>%
+  group_by(species, trait) %>%
+  summarise(value = mean(value)) %>%
+  mutate(trait = recode(trait,
+    "Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density" = "wd", #nolint
+    "Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded" = "sla", #nolint
+    "Leaf nitrogen (N) content per leaf dry mass" = "n"
+  )) %>%
+  pivot_wider(values_from = "value", names_from = "trait")
+taxo_try <- left_join(taxo, try, by = c("scientificname_wfo" = "species"))
+```
+
+```{r trywd}
+#| message: false
+#| warning: false
+#| fig-cap: "Caption."
+g1 <- ggplot(taxo_try, aes(wd, col = site)) +
+  geom_density() +
+  theme_bw() +
+  xlab(expression("Wood Density [" ~ g / cm^3 ~ "]"))
+g2 <- ggplot(taxo_try, aes(site, wd, col = site)) +
+  geom_violin() +
+  geom_boxplot(width = .2) +
+  coord_flip() +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
+  ylab(expression("Wood Density [" ~ g / cm^3 ~ "]"))
+cowplot::plot_grid(g1, g2, nrow = 2)
+```
+
+```{r trysla}
+#| message: false
+#| warning: false
+#| fig-cap: "Caption."
+g1 <- ggplot(taxo_try, aes(sla, col = site)) +
+  geom_density() +
+  theme_bw() +
+  xlab(expression("Specific Leaf Area [" ~ mm^2 ~ mg^{
+    -1
+  } ~ "]")) +
+  scale_x_log10()
+g2 <- ggplot(taxo_try, aes(site, sla, col = site)) +
+  geom_violin() +
+  geom_boxplot(width = .2) +
+  coord_flip() +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
+  ylab(expression("Specific Leaf Area [" ~ mm^2 ~ mg^{
+    -1
+  } ~ "]")) +
+  scale_y_log10()
+cowplot::plot_grid(g1, g2, nrow = 2)
+```
+
+```{r tryn}
+#| message: false
+#| warning: false
+#| fig-cap: "Caption."
+g1 <- ggplot(taxo_try, aes(n, col = site)) +
+  geom_density() +
+  theme_bw() +
+  xlab(expression("Nitrogen [" ~ mg / g ~ "]"))
+g2 <- ggplot(taxo_try, aes(site, n, col = site)) +
+  geom_violin() +
+  geom_boxplot(width = .2) +
+  coord_flip() +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
+  ylab(expression("Nitrogen [" ~ mg / g ~ "]"))
+cowplot::plot_grid(g1, g2, nrow = 2)
+```
 
 ## Tallo
 
@@ -173,7 +265,8 @@ fit %>%
   mutate(hmax = b_hmax_Intercept + r_scientificname_wfo__hmax) %>%
   group_by(scientificname_wfo) %>%
   summarise(ah = median(ah), hmax = median(hmax)) %>%
-  mutate(scientificname_wfo = gsub(".", " ", scientificname_wfo, fixed = TRUE)) %>%
+  mutate(scientificname_wfo = gsub(".", " ",
+                                   scientificname_wfo, fixed = TRUE)) %>%
   write_tsv("outputs/tallo_pars.tsv")
 ```
 
@@ -181,14 +274,14 @@ We had good convergence and good post-predictive checks.
 
 ```{r rhat}
 #| message: false
-#| fig-cap: "Goodness of convergence assessed by Rhat. All Rhat are below 1.05 indicating a very good convergence of all chains."
+#| fig-cap: "Goodness of convergence assessed by Rhat. All Rhat are below 1.05 indicating a very good convergence of all chains." #nolint
 load("outputs/tallo_brms.Rdata")
 mcmc_rhat(bayesplot::rhat(fit$fit))
 ```
 
 ```{r ppc}
 #| message: false
-#| fig-cap: "Posterior post-predictive check of simulated response variable against observed values indicating a good representation of the whole distribution in posteriors."
+#| fig-cap: "Posterior post-predictive check of simulated response variable against observed values indicating a good representation of the whole distribution in posteriors." #nolint
 load("outputs/tallo_brms.Rdata")
 pp_check(fit)
 ```
@@ -203,7 +296,7 @@ sjPlot::tab_model(fit)
 ```{r ahhmax}
 #| message: false
 #| warning: false
-#| fig-cap: "Inferred species allometric parameters hmax and ah and their relations per site."
+#| fig-cap: "Inferred species allometric parameters hmax and ah and their relations per site." #nolint
 read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") %>%
   left_join(read_tsv("outputs/tallo_pars.tsv")) %>%
   filter(!is.na(ah)) %>%
@@ -253,10 +346,27 @@ wd <- getWoodDensity(taxo$genus_wfo, taxo$species_wfo) %>%
   na.omit() %>%
   rename(genus_wfo = genus, species_wfo = species)
 h <- read_tsv("outputs/tallo_pars.tsv")
+try <- read_tsv("data/raw_data/36779_25102024131149/36779.txt") %>%
+  select(AccSpeciesName, TraitName, StdValue) %>%
+  na.omit() %>%
+  rename(
+    scientificname_wfo = AccSpeciesName,
+    trait = TraitName, value = StdValue
+  ) %>%
+  group_by(scientificname_wfo, trait) %>%
+  summarise(value = mean(value)) %>%
+  mutate(trait = recode(trait,
+    "Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density" = "wd", #nolint
+    "Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded" = "sla", #nolint
+    "Leaf nitrogen (N) content per leaf dry mass" = "n"
+  )) %>%
+  pivot_wider(values_from = "value", names_from = "trait") %>%
+  select(-wd)
 taxo_traits <- left_join(taxo, wd) %>%
-  left_join(h)
+  left_join(h) %>%
+  left_join(try)
 taxo_traits %>%
-  select(wd, ah, hmax) %>%
+  select(wd, ah, hmax, sla, n) %>%
   cor(use = "pairwise.complete.obs") %>%
   corrplot::corrplot(type = "upper", diag = FALSE)
 ```
@@ -269,12 +379,49 @@ We used simple predictive mean matching (PMM) data imputation with `mice`.
 #| eval: false
 library(mice)
 imputation <- taxo_traits %>%
-  select(scientificname, wd, ah, hmax) %>%
+  select(wd, ah, hmax, sla, n) %>%
   mice(maxit = 100)
-imputation <- filtered %>%
-  mice::mice(maxit = 100)
-complete(imputation)
-write_tsv("outputs/traits_imputation.tsv")
+bind_cols(taxo_traits %>% select(-wd, -ah, -hmax, -sla, -n),
+          complete(imputation)) %>%
+  write_tsv("data/derived_data/imputed_traits.tsv")
 ```
 
-> Currently we do not have enough data for imputation, waiting for TRY release.
+```{r pca}
+#| message: false
+#| warning: false
+#| fig-cap: Caption.
+data <- read_tsv("data/derived_data/imputed_traits.tsv")
+autoplot(
+  princomp(select(data, wd, ah, hmax, sla, n) %>%
+             mutate(sla = log(sla)), cor = TRUE),
+  data = data, alpha = 0.25, col = "lightgrey",
+  loadings.label.size = 6,
+  loadings.label.colour = "red", loadings.label.vjust = 1.1,
+  loadings.label.repel = TRUE,
+  loadings = TRUE, loadings.label = TRUE, loadings.colour = "red"
+) +
+  coord_equal() +
+  geom_hline(aes(yintercept = 0), col = "black", linetype = "dotted") +
+  geom_vline(aes(xintercept = 0), col = "black", linetype = "dotted") +
+  theme_bw() +
+  geom_density_2d_filled(alpha = .5) +
+  theme(legend.position = "none")
+```
+
+```{r pcasite}
+#| message: false
+#| warning: false
+#| fig-cap: Caption.
+autoplot(
+  princomp(select(data, wd, ah, hmax, sla, n) %>%
+             mutate(sla = log(sla)), cor = TRUE),
+  data = data, alpha = 0.25
+) +
+  coord_equal() +
+  geom_hline(aes(yintercept = 0), col = "black", linetype = "dotted") +
+  geom_vline(aes(xintercept = 0), col = "black", linetype = "dotted") +
+  theme_bw() +
+  facet_wrap(~site) +
+  geom_density_2d_filled(alpha = .5) +
+  theme(legend.position = "none")
+```

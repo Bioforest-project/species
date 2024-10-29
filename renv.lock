@@ -891,6 +891,24 @@
       ],
       "Hash": "997506986afce41200cc6e9090496654"
     },
+    "ggfortify": {
+      "Package": "ggfortify",
+      "Version": "0.4.17",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "dplyr",
+        "ggplot2",
+        "grid",
+        "gridExtra",
+        "methods",
+        "scales",
+        "stringr",
+        "tibble",
+        "tidyr"
+      ],
+      "Hash": "28eb83fd20b824710e681fc4e1a9ac94"
+    },
     "ggfun": {
       "Package": "ggfun",
       "Version": "0.1.6",
@@ -1059,6 +1077,20 @@
         "withr"
       ],
       "Hash": "d6db1667059d027da730decdc214b959"
+    },
+    "gridExtra": {
+      "Package": "gridExtra",
+      "Version": "2.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "grDevices",
+        "graphics",
+        "grid",
+        "gtable",
+        "utils"
+      ],
+      "Hash": "7d7f283939f563670a697165b2cf5560"
     },
     "gridGraphics": {
       "Package": "gridGraphics",
