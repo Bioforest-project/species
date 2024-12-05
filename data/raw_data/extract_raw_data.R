@@ -1,11 +1,8 @@
 # load packages
 library(tidyverse)
 
-#
-here::here()
-
 # define were the raw inventories data are
-path <- "~/Documents/bioforest/inventories/data/raw_data/all_output_files/"
+path <- "../inventories/data/raw_data/all_output_files/"
 
 # check available inventories
 files <- list.files(path, full.names = TRUE, pattern = ".csv")
@@ -42,5 +39,4 @@ raw_taxo <- lapply(files, extract_taxo) %>%
   bind_rows()
 
 # save
-write_tsv(raw_taxo, "data/raw_data/raw_taxonomy.tsv")
-# I'm more a tsv guy, but it's just a preference
+write_tsv(raw_taxo, "data/raw_data/raw_taxonomy_v1.tsv")

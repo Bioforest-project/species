@@ -7,35 +7,43 @@ library(knitr)
 
 # Raw {.unnumbered}
 
-First we explored raw species data content. This corresponds to **version 1**.
+First we explored raw species data content. This corresponds to **version 2**.
 
-## All
+## Taxonomy preparation
 
-We first removed Kibale, Lesong, Misiones, Mbaiki, Moju, Peteco, Sg Lalang, and Ulu Muda as taxonomic information is currently contained only either in the vernacular or scientific column.
+Taxonomic information for Moju and Peteco was only contained in the vernacular column, while similarly taxonomic information for Kibale, Lesong, Mbaiki, Misiones, Ulu Muda, Sg Lalang was only contained in the scientific column. We thus smoothed all taxonomic information with five columns: scientific, vernacular, family, genus, species (`derived_data/raw_taxo_preped_v2.tsv`).
 
-> **Version 2 should include specific cleaning of sites with know issue as discussed with Camille.**
-
-```{r taxo}
+```{r taxo_prep}
 #| message: false
-taxo <- read_tsv("data/raw_data/raw_taxonomy.tsv") %>%
+#| warning: false
+taxo_easy <- read_tsv("data/raw_data/raw_taxonomy_v1.tsv") %>%
   rename_all(tolower) %>%
   filter(!(site %in% c(
     "Kibale", "Lesong", "Moju", "Mbaiki", "Peteco",
     "Misiones", "Ulu Muda", "Sg Lalang"
   )))
+taxo_vernacular_only <- read_tsv("data/raw_data/raw_taxonomy_v1.tsv") %>%
+  rename_all(tolower) %>%
+  filter(site %in% c("Moju", "Peteco")) %>%
+  separate(vernname, c("vernname", "scientificname"), sep = "\\[") %>%
+  separate(vernname, "vernname", sep = "\\/") %>%
+  mutate(scientificname = gsub("]", "", scientificname)) %>%
+  separate(scientificname, c("genus", "species"), remove = FALSE)
+taxo_scientific_only <- read_tsv("data/raw_data/raw_taxonomy_v1.tsv") %>%
+  rename_all(tolower) %>%
+  filter(site %in% c(
+    "Kibale", "Lesong", "Mbaiki",
+    "Misiones", "Ulu Muda", "Sg Lalang"
+  )) %>%
+  separate(scientificname, c("genus", "species"), remove = FALSE)
+taxo <- bind_rows(taxo_easy, taxo_vernacular_only, taxo_scientific_only) %>%
+  rename(scientific = scientificname, vernacular = vernname)
+write_tsv(taxo, "data/derived_data/raw_taxo_preped_v2.tsv")
 ```
 
-We had data for 8 sites:
+## All
 
-```{r sites}
-taxo %>%
-  select(site) %>%
-  unique() %>%
-  summarise(sites = n()) %>%
-  kable(caption = "Total number of sites.")
-```
-
-We had a 43 to 69 families, with 101 to 256 genera, and with 130 to 762 species corresponding to 198 to 247 vernacular names when registered:
+We had data for 16 sites with 0 to 68 families, with 49 to 301 genera, and with 123 to 762 species corresponding to 0 to 364 vernacular names when registered:
 
 ```{r stats}
 taxo %>%
@@ -44,13 +52,13 @@ taxo %>%
     family = length(unique(na.omit(family))),
     genus = length(unique(na.omit(genus))),
     species = length(unique(paste(genus, species))),
-    scientific = length(unique(na.omit(scientificname))),
-    vernacular = length(unique(na.omit(vernname)))
+    scientific = length(unique(na.omit(scientific))),
+    vernacular = length(unique(na.omit(vernacular)))
   ) %>%
   kable(caption = "Numbers per taxonomic levels for each site.")
 ```
 
-In total, we thus add 1,140 species before cleaning:
+In total, we thus add 1,611 species before cleaning:
 
 ```{r totals}
 taxo %>%
@@ -58,8 +66,8 @@ taxo %>%
     family = length(unique(na.omit(family))),
     genus = length(unique(na.omit(genus))),
     species = length(unique(paste(genus, species))),
-    scientific = length(unique(na.omit(scientificname))),
-    vernacular = length(unique(na.omit(vernname)))
+    scientific = length(unique(na.omit(scientific))),
+    vernacular = length(unique(na.omit(vernacular)))
   ) %>%
   kable(
     format.args = list(big.mark = ","),
@@ -72,12 +80,12 @@ Species name construction using genus and species should be preferred as the sci
 ```{r diffs}
 taxo %>%
   mutate(species = paste(genus, species)) %>%
-  select(species, scientificname) %>%
+  select(species, scientific) %>%
   unique() %>%
   group_by(species) %>%
   mutate(N = n()) %>%
   ungroup() %>%
-  filter(N == 11) %>%
+  filter(N == 12) %>%
   kable(caption = "Example of multiple scientific names for one species genus pair.") # nolint
 ```
 
@@ -86,7 +94,7 @@ taxo %>%
 #| fig-cap: Scientific names per genus species pairs.
 taxo %>%
   mutate(species = paste(genus, species)) %>%
-  select(species, scientificname) %>%
+  select(species, scientific) %>%
   unique() %>%
   group_by(species) %>%
   summarise(N = n()) %>%
@@ -104,8 +112,8 @@ taxo %>%
 
 Families includes the following dubious names:
 
--   **Missing**: #N/A, +
--   **Unidentified**: Indet., Not in DB, unid., unidentified
+-   **Missing**: #N/A, +, muerto
+-   **Unidentified**: Indet., Not in DB, unid., unidentified, ND, No determinado
 
 See the list below:
 
@@ -118,8 +126,11 @@ unique(taxo$family) %>%
 With the following counts:
 
 ```{r familytab}
-unid <- c("Indet.", "Not in DB", "unid.", "unidentified")
-missing <- c("#N/A", "+")
+unid <- c(
+  "Indet.", "Not in DB", "unid.",
+  "unidentified", "ND", "No determinado"
+)
+missing <- c("#N/A", "+", "muerto")
 taxo %>%
   select(family) %>%
   unique() %>%
@@ -139,9 +150,9 @@ taxo %>%
 
 Genera includes the following dubious names:
 
--   **Missing**: #N/A,
--   **Unidentified**: Indet.
--   **Family-only**: Indet.Apocynaceae, Indet.Arecaceae, Indet.Bignoniaceae, Indet.Burseraceae, Indet.Capparaceae, Indet.Chrysobalanaceae, Indet.Clusiaceae, Indet.Combretaceae, Indet.Dichapetalaceae, Indet.Euphorbiaceae, Indet.Fabaceae, Indet.FabaceaeCaesalpinioideae(mimosoid_clade), Indet.FabaceaePapilionoideae, Indet.Humiriaceae, Indet.Indet., Indet.Lamiaceae, Indet.Lauraceae, Indet.Lecythidaceae, Indet.Malvaceae, Indet.MalvaceaeBombacoideae, Indet.Melastomataceae, Indet.Moraceae, Indet.Myrtaceae, Indet.Nyctaginaceae, Indet.Olacaceae, Indet.Rubiaceae, Indet.Salicaceae, Indet.Sapindaceae, Indet.Sapotaceae, Indet.Urticaceae, Indet.Violaceae, Indet.Vochysiaceae
+-   **Missing**: #N/A, A
+-   **Unidentified**: Indet., nd, sp, sp1, sp5, Indetermined, KERUING, MERANTI, MERSAWA, BALAU, muerto
+-   **Family-only**: Indet.Apocynaceae, Indet.Arecaceae, Indet.Bignoniaceae, Indet.Burseraceae, Indet.Capparaceae, Indet.Chrysobalanaceae, Indet.Clusiaceae, Indet.Combretaceae, Indet.Dichapetalaceae, Indet.Euphorbiaceae, Indet.Fabaceae, Indet.FabaceaeCaesalpinioideae(mimosoid_clade), Indet.FabaceaePapilionoideae, Indet.Humiriaceae, Indet.Indet., Indet.Lamiaceae, Indet.Lauraceae, Indet.Lecythidaceae, Indet.Malvaceae, Indet.MalvaceaeBombacoideae, Indet.Melastomataceae, Indet.Moraceae, Indet.Myrtaceae, Indet.Nyctaginaceae, Indet.Olacaceae, Indet.Rubiaceae, Indet.Salicaceae, Indet.Sapindaceae, Indet.Sapotaceae, Indet.Urticaceae, Indet.Violaceae, Indet.Vochysiaceae, Indet.Anacardiaceae, Indet.Annonaceae
 
 See the list below:
 
@@ -158,7 +169,15 @@ taxo %>%
   select(genus) %>%
   unique() %>%
   summarise(
-    "Missing" = sum((genus %in% c("#N/A", "Indet.")),
+    "Missing" = sum((genus %in% c("#N/A", "A")),
+      na.omit = TRUE
+    ),
+    "Indet" = sum(
+      (genus %in% c(
+        "Indet.", "nd", "sp", "sp1", "sp5", "Indetermined",
+        "No", "KERUING", "MERANTI", "MERSAWA",
+        "BALAU", "muerto"
+      )),
       na.omit = TRUE
     ),
     "Family-only" = sum(grepl("Indet.", genus), na.omit = TRUE)
@@ -171,7 +190,8 @@ taxo %>%
 
 Species includes the following dubious names:
 
--   **Unidentified** ("det", "\^sp"). Indet., sp, sp., Schaeff.
+-   **Unidentified** ("det", "\^sp"). Indet., sp, sp., Schaeff., Mast, Welw, Stapf, Hook, Gilg, Benth, flacouirtiaceae, Determinado, BERMINYAK, TIDAK,KUNING, spp,
+-   sp1, sp5, L, muerto
 -   **Sub-taxonomic** ("\[\[:punct:\]\]"): guyanensis subsp. Guyanensis, acuminatum_subsp.juniperinum, cuspidata_subsp.dura, guyanensis subsp. Guyanensis, guyanensis_subsp.duckeana, opacum_subsp.rabelianum, panacoco_var.panacoco, persistens_subsp.aurantiaca, tomentosa_subsp.maroniensis, venosa_subsp.amazonica, vera_subsp.affinis
 -   **Undescribed** ("\^sp"). sp.1, sp.1-CAY, sp.10-CAY, sp.11-CAY, sp.12-CAY, sp.13-CAY, sp.14-CAY, sp.15-CAY, sp.16-CAY, sp.17-CAY, sp.18-CAY, sp.1Guyafor, sp.2, sp.2-CAY, sp.21_DS, sp.22-CAY, sp.23-CAY, sp.24-CAY, sp.2BAF, sp.2Guyafor, sp.3, sp.3-CAY, sp.30-CAY, sp.33-CAY, sp.34-CAY, sp.35-CAY, sp.35Guyafor, sp.36-CAY, sp.38Guyafor, sp.3BAF, sp.3Guyafor, sp.4-CAY, sp.42-CAY, sp.5-CAY, sp.5Guyafor, sp.6-CAY, sp.6Guyafor, sp.7-CAY, sp.70-CAY, sp.71-CAY, sp.7Guyafor, sp.8-CAY, sp.9-CAY, sp.B1, sp.B10, sp.B2, sp.B35, sp.B5, sp.B8, sp.B9, sp.C, sp.D, sp.FG13-Holst, sp.FG14-Holst, sp.FG2-Holst, sp.FG21-Holst, sp.FG9-Holst, sp.P1, sp.P11, sp.P22, sp.P3, sp.P33, sp.P4, sp.P6, sp.P9
 
@@ -187,7 +207,12 @@ unique(taxo$species) %>%
 ```
 
 ```{r speciestab}
-unid <- c("Indet.", "sp", "sp.", "Schaeff.")
+unid <- c(
+  "Indet.", "sp", "sp.", "Schaeff.",
+  "Mast", "Welw", "Stapf", "Hook", "Gilg", "Benth",
+  "flacouirtiaceae", "Determinado", "BERMINYAK", "TIDAK", "KUNING", "spp",
+  "sp1", "sp5", "L", "muerto"
+)
 subtaxo <- c(
   "guyanensis subsp. Guyanensis", "acuminatum_subsp.juniperinum",
   "cuspidata_subsp.dura", "guyanensis subsp. Guyanensis",

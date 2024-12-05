@@ -9,17 +9,17 @@ library(ggtree)
 
 # Phylogeny {.unnumbered}
 
-We used cleaned taxonomy to build a global phylogeny using `V.PhyloMaker`. This corresponds to **version 1**.
+We used cleaned taxonomy to build a global phylogeny using `V.PhyloMaker`. This corresponds to **version 2**.
 
 ```{r phylo}
 #| eval: false
 library(V.PhyloMaker)
 library(ape)
-splist <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") %>%
-  select(species_wfo, genus_wfo, family_wfo) %>%
+splist <- read_tsv("outputs/taxonomy_v2.tsv") %>%
+  select(species_cleaned, genus_cleaned, family_cleaned) %>%
   na.omit() %>%
   unique() %>%
-  rename_all(~ gsub("_wfo", "", .)) %>%
+  rename_all(~ gsub("_cleaned", "", .)) %>%
   mutate(species = paste(genus, species))
 tree <- phylo.maker(
   sp.list = splist,
@@ -27,7 +27,7 @@ tree <- phylo.maker(
   nodes = nodes.info.1,
   scenarios = "S3"
 )
-write.tree(tree$scenario.3, "outputs/phylogeny_full.tree")
+write.tree(tree$scenario.3, "outputs/phylogeny_v2.tree")
 ```
 
 We can see the results with all families (*a better representation might be found*):
@@ -38,13 +38,13 @@ We can see the results with all families (*a better representation might be foun
 #| message: false
 #| warning: false
 #| fig-cap: "Global phylogeny of species across all sites."
-splist <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") %>%
-  select(species_wfo, genus_wfo, family_wfo) %>%
+splist <- read_tsv("outputs/taxonomy_v2.tsv") %>%
+  select(species_cleaned, genus_cleaned, family_cleaned) %>%
   na.omit() %>%
   unique() %>%
-  rename_all(~ gsub("_wfo", "", .)) %>%
+  rename_all(~ gsub("_cleaned", "", .)) %>%
   mutate(species = paste(genus, species))
-phylo <- ape::read.tree("outputs/phylogeny_full.tree")
+phylo <- ape::read.tree("outputs/phylogeny_v2.tree")
 phylo_df <- phylo4d(
   phylo,
   data.frame(species = gsub("_", " ", phylo$tip.label)) %>%
@@ -64,12 +64,12 @@ And we can further explore the phylogeny per plot compared to the global phyloge
 #| warning: false
 #| fig-cap: "Global phylogeny of species across all sites with taxa coloured per site." #nolint
 phylo_site <- function(sit) {
-  taxo <- read_tsv("data/derived_data/taxonomy_names_cleaned.tsv") %>%
+  taxo <- read_tsv("outputs/taxonomy_v2.tsv") %>%
     filter(site == sit) %>%
-    select(species_wfo, genus_wfo, family_wfo) %>%
+    select(species_cleaned, genus_cleaned, family_cleaned) %>%
     na.omit() %>%
     unique() %>%
-    rename_all(~ gsub("_wfo", "", .)) %>%
+    rename_all(~ gsub("_cleaned", "", .)) %>%
     mutate(species = paste(genus, species))
   phylo_df@data$site <- phylo_df@data$species %in% taxo$species
   ggtree(phylo_df, aes(col = site, alpha = site), layout = "circular") +
@@ -84,8 +84,26 @@ phylo_site <- function(sit) {
     ggtitle(sit)
 }
 figs <- lapply(c(
-  "Bafog", "Kabo", "Malinau", "Manare", "Montagne_Tortue",
-  "Paracou", "Tene", "Uppangala"
+  "Bafog",
+  "Kabo",
+  "Malinau",
+  "Manare",
+  "Montagne_Tortue",
+  "Paracou",
+  "Tene",
+  "Uppangala",
+  "Moju",
+  "Peteco",
+  "Kibale",
+  "Lesong",
+  "Mbaiki",
+  "Misiones",
+  "Sg Lalang",
+  "Ulu Muda"
 ), phylo_site)
 cowplot::plot_grid(plotlist = figs)
 ```
+
+## **Phylogenic data**
+
+The full phylogeny is saved in `outputs/phylogeny_v2.tree` in parenthetic format using the Newick (also known as New Hampshire) format.
