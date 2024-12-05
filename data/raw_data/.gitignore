@@ -4,4 +4,6 @@
 !README.qmd
 !extract_raw_data.R
 !get_wfo.sh
+!get_try.sh
+!get_tallo.sh
 
