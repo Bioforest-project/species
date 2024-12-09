@@ -11,7 +11,8 @@ format:
 
 This folder will contains the raw data for all anlayses. In particular:
 
--   **36779_25102024131149/**: try request result
+-   **36779_25102024131149/**: try request result v1
+-   **37729/**: try request result v2
 -   **get_tallo.sh,** **get_try.sh**, **get_wfo.sh**: bash scripts to retrieve tallo, try, and wfo raw data
 -   **extract_raw_data.R**: R script to extract raw taxonomic information
 -   **WFO_Backbone.zip**: wfo raw information

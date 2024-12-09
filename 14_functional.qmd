@@ -105,7 +105,7 @@ For the first test we thus used:
 -   3117: Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded, mm2 mg-1
 -   4: Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density, g/cm3
 -   28: Dispersal syndrome
--   3114: Leaf area (in case of compound leaves: leaflet, undefined if petiole is in- or excluded)
+-   3114: Leaf area (in case of compound leaves: leaflet, undefined if petiole is in- or excluded), mm2
 
 > The request takes times to be ready. Moreover, we should try to minimise the number of requests. This was a first test. But future tests should be discussed before.
 
@@ -113,7 +113,7 @@ For the first test we thus used:
 #| message: false
 #| warning: false
 taxo <- read_tsv("outputs/taxonomy_v2.tsv")
-try <- read_tsv("data/raw_data/36779_25102024131149/36779.txt") %>%
+try <- read_tsv("data/raw_data/37729/37729.txt") %>%
   select(AccSpeciesName, TraitName, StdValue) %>%
   na.omit() %>%
   rename(species = AccSpeciesName, trait = TraitName, value = StdValue) %>%
@@ -122,7 +122,8 @@ try <- read_tsv("data/raw_data/36779_25102024131149/36779.txt") %>%
   mutate(trait = recode(trait,
     "Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density" = "wd", # nolint
     "Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded" = "sla", # nolint
-    "Leaf nitrogen (N) content per leaf dry mass" = "n"
+    "Leaf nitrogen (N) content per leaf dry mass" = "n",
+    "Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)" = "la"
   )) %>%
   pivot_wider(values_from = "value", names_from = "trait")
 taxo_try <- left_join(taxo, try, by = c("scientific_cleaned" = "species"))
@@ -176,6 +177,30 @@ g2 <- ggplot(taxo_try, aes(site, sla, col = site)) +
   ylab(expression("Specific Leaf Area [" ~ mm^2 ~ mg^{
     -1
   } ~ "]")) +
+  scale_y_log10()
+cowplot::plot_grid(g1, g2, nrow = 2)
+```
+
+```{r tryla}
+#| message: false
+#| warning: false
+#| fig-cap: "Leaf area extracted from @kattge2019."
+g1 <- ggplot(taxo_try, aes(la, col = site)) +
+  geom_density() +
+  theme_bw() +
+  xlab(expression("Leaf Area [" ~ mm^2 ~ "]")) +
+  scale_x_log10()
+g2 <- ggplot(taxo_try, aes(site, la, col = site)) +
+  geom_violin() +
+  geom_boxplot(width = .2) +
+  coord_flip() +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
+  ylab(expression("Leaf Area [" ~ mm^2 ~ "]")) +
   scale_y_log10()
 cowplot::plot_grid(g1, g2, nrow = 2)
 ```
@@ -362,27 +387,25 @@ wd <- getWoodDensity(taxo$genus_cleaned, taxo$species_cleaned) %>%
   na.omit() %>%
   rename(genus_cleaned = genus, species_cleaned = species)
 h <- read_tsv("data/derived_data/tallo_pars.tsv")
-try <- read_tsv("data/raw_data/36779_25102024131149/36779.txt") %>%
+try <- read_tsv("data/raw_data/37729/37729.txt") %>%
   select(AccSpeciesName, TraitName, StdValue) %>%
   na.omit() %>%
-  rename(
-    scientific_cleaned = AccSpeciesName,
-    trait = TraitName, value = StdValue
-  ) %>%
+  rename(scientific_cleaned = AccSpeciesName, trait = TraitName, value = StdValue) %>%
   group_by(scientific_cleaned, trait) %>%
   summarise(value = mean(value)) %>%
   mutate(trait = recode(trait,
     "Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density" = "wd", # nolint
     "Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded" = "sla", # nolint
-    "Leaf nitrogen (N) content per leaf dry mass" = "n"
+    "Leaf nitrogen (N) content per leaf dry mass" = "n",
+    "Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)" = "la"
   )) %>%
-  pivot_wider(values_from = "value", names_from = "trait") %>%
+  pivot_wider(values_from = "value", names_from = "trait") %>% 
   rename(wd_try = wd)
 taxo_traits <- left_join(taxo, wd) %>%
   left_join(h) %>%
   left_join(try)
 taxo_traits %>%
-  select(wd, wd_try, hmax, sla, n) %>%
+  select(wd, wd_try, hmax, sla, la, n) %>%
   cor(use = "pairwise.complete.obs") %>%
   corrplot::corrplot(type = "upper", diag = FALSE)
 ```
@@ -395,7 +418,7 @@ We used simple predictive mean matching (PMM) data imputation with `mice` to fur
 #| eval: false
 library(mice)
 imputation <- taxo_traits %>%
-  select(scientific_cleaned, wd, hmax, sla, n) %>%
+  select(scientific_cleaned, wd, hmax, sla, la, n) %>%
   unique() %>%
   mice(maxit = 100)
 complete(imputation) %>%
@@ -408,8 +431,8 @@ complete(imputation) %>%
 #| fig-cap: Imputed traits global principal component analysis.
 imputed <- read_tsv("data/derived_data/imputed_traits.tsv")
 autoplot(
-  princomp(select(imputed, wd, hmax, sla, n) %>%
-             mutate(sla = log(sla)), cor = TRUE),
+  princomp(select(imputed, wd, hmax, sla, la, n) %>%
+             mutate(sla = log(sla), la = log(la)), cor = TRUE),
   data = imputed, alpha = 0.25, col = "lightgrey",
   loadings.label.size = 6,
   loadings.label.colour = "red", loadings.label.vjust = 1.1,
@@ -429,14 +452,14 @@ autoplot(
 #| warning: false
 #| fig-cap: Imputed traits global principal component analysis per site.
 data <- taxo_traits %>%
-  select(-wd, -ah, -hmax, -wd_try, -sla, -n) %>%
+  select(-wd, -ah, -hmax, -wd_try, -sla, -n, -la) %>%
   left_join(imputed) %>%
-  select(site, scientific_cleaned, wd, hmax, sla, n) %>%
+  select(site, scientific_cleaned, wd, hmax, sla, la, n) %>%
   unique() %>%
   na.omit()
 autoplot(
-  princomp(select(data, wd, hmax, sla, n) %>%
-             mutate(sla = log(sla)), cor = TRUE),
+  princomp(select(data, wd, hmax, sla, la, n) %>%
+             mutate(sla = log(sla), la = log(la)), cor = TRUE),
   data = data, alpha = 0.25
 ) +
   coord_equal() +
@@ -463,24 +486,26 @@ All traits data are saved in `outputs/traits_v2.tsv` with the following columns:
 #| message: false
 #| warning: false
 all_traits <- taxo_traits %>%
-  select(scientific_cleaned, wd, hmax, sla, n) %>%
+  select(scientific_cleaned, wd, hmax, sla, la, n) %>%
   gather(trait, trait_value_raw, -scientific_cleaned) %>%
   filter(!is.na(scientific_cleaned)) %>%
   unique() %>%
   left_join(imputed %>%
-              select(scientific_cleaned, wd, hmax, sla, n) %>%
+              select(scientific_cleaned, wd, hmax, sla, la, n) %>%
               na.omit() %>%
               gather(trait, trait_value_imputed, -scientific_cleaned)) %>%
-  mutate(trait = recode(trait, "wd" = "WD", "sla" = "SLA", "n" = "N")) %>%
+  mutate(trait = recode(trait, "wd" = "WD", "sla" = "SLA", 'la' = "LA", "n" = "N")) %>%
   mutate(definition = recode(trait,
     "WD" = "Stem specific wood density",
     "SLA" = "Specific leaf area",
+    "LA" = "Leaf area",
     "N" = "Leaf nitrogen content per leaf dry mass",
     "hmax" = "Asymptotic height"
   )) %>%
   mutate(unit = recode(trait,
     "WD" = "g cm-3",
     "SLA" = "mm2 mg-1",
+    "LA" = "mm2",
     "N" = "mg g-1",
     "hmax" = "m"
   ))
