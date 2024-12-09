@@ -123,7 +123,7 @@ try <- read_tsv("data/raw_data/37729/37729.txt") %>%
     "Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density" = "wd", # nolint
     "Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded" = "sla", # nolint
     "Leaf nitrogen (N) content per leaf dry mass" = "n",
-    "Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)" = "la"
+    "Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)" = "la" #nolint
   )) %>%
   pivot_wider(values_from = "value", names_from = "trait")
 taxo_try <- left_join(taxo, try, by = c("scientific_cleaned" = "species"))
@@ -390,16 +390,17 @@ h <- read_tsv("data/derived_data/tallo_pars.tsv")
 try <- read_tsv("data/raw_data/37729/37729.txt") %>%
   select(AccSpeciesName, TraitName, StdValue) %>%
   na.omit() %>%
-  rename(scientific_cleaned = AccSpeciesName, trait = TraitName, value = StdValue) %>%
+  rename(scientific_cleaned = AccSpeciesName,
+         trait = TraitName, value = StdValue) %>%
   group_by(scientific_cleaned, trait) %>%
   summarise(value = mean(value)) %>%
   mutate(trait = recode(trait,
     "Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density" = "wd", # nolint
     "Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded" = "sla", # nolint
     "Leaf nitrogen (N) content per leaf dry mass" = "n",
-    "Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)" = "la"
+    "Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)" = "la" #nolint
   )) %>%
-  pivot_wider(values_from = "value", names_from = "trait") %>% 
+  pivot_wider(values_from = "value", names_from = "trait") %>%
   rename(wd_try = wd)
 taxo_traits <- left_join(taxo, wd) %>%
   left_join(h) %>%
@@ -494,7 +495,8 @@ all_traits <- taxo_traits %>%
               select(scientific_cleaned, wd, hmax, sla, la, n) %>%
               na.omit() %>%
               gather(trait, trait_value_imputed, -scientific_cleaned)) %>%
-  mutate(trait = recode(trait, "wd" = "WD", "sla" = "SLA", 'la' = "LA", "n" = "N")) %>%
+  mutate(trait = recode(trait, "wd" = "WD", "sla" = "SLA",
+                        "la" = "LA", "n" = "N")) %>%
   mutate(definition = recode(trait,
     "WD" = "Stem specific wood density",
     "SLA" = "Specific leaf area",
