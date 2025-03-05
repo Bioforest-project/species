@@ -12,7 +12,7 @@ library(ggfortify)
 
 # Functional {.unnumbered}
 
-We used cleaned taxonomy to retrieve data from TRY [@kattge2019], BIOMASS [@réjou-méchain2017], and TALLO [@jucker2022]. This corresponds to **version 2**.
+We used cleaned taxonomy to retrieve data from TRY [@kattge2019], BIOMASS [@réjou-méchain2017], and TALLO [@jucker2022]. This corresponds to **version 3**.
 
 ## Wood density
 
@@ -22,7 +22,7 @@ Using BIOMASS [@réjou-méchain2017], we retrieved wood density for most species
 #| message: false
 #| warning: false
 #| fig-cap: "Wood density extracted from @réjou-méchain2017."
-taxo <- read_tsv("outputs/taxonomy_v2.tsv")
+taxo <- read_tsv("outputs/taxonomy_v3.tsv")
 wd <- getWoodDensity(taxo$genus_cleaned, taxo$species_cleaned) %>%
   group_by(genus, species) %>%
   summarise(wd = mean(meanWD)) %>%
@@ -32,7 +32,8 @@ taxo_wd <- left_join(taxo, wd)
 g1 <- ggplot(taxo_wd, aes(wd, col = site)) +
   geom_density() +
   theme_bw() +
-  xlab(expression("Wood Density [" ~ g / cm^3 ~ "]"))
+  xlab(expression("Wood Density [" ~ g / cm^3 ~ "]")) +
+  theme(legend.key.size = unit(.5, "line"))
 g2 <- ggplot(taxo_wd, aes(site, wd, col = site)) +
   geom_violin() +
   geom_boxplot(width = .2) +
@@ -53,7 +54,7 @@ In order to make a request for data on TRY [@kattge2019], we first retrieved the
 
 ```{r try_sp}
 #| eval: false
-try_sp <- read_tsv("outputs/taxonomy_v2.tsv") %>%
+try_sp <- read_tsv("outputs/taxonomy_v3.tsv") %>%
   select(scientific_cleaned) %>%
   na.omit() %>%
   unique() %>%
@@ -104,7 +105,6 @@ For the first test we thus used:
 -   14: Leaf nitrogen (N) content per leaf dry mass, mg/g
 -   3117: Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded, mm2 mg-1
 -   4: Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density, g/cm3
--   28: Dispersal syndrome
 -   3114: Leaf area (in case of compound leaves: leaflet, undefined if petiole is in- or excluded), mm2
 
 > The request takes times to be ready. Moreover, we should try to minimise the number of requests. This was a first test. But future tests should be discussed before.
@@ -112,21 +112,42 @@ For the first test we thus used:
 ```{r tryrel}
 #| message: false
 #| warning: false
-taxo <- read_tsv("outputs/taxonomy_v2.tsv")
-try <- read_tsv("data/raw_data/37729/37729.txt") %>%
-  select(AccSpeciesName, TraitName, StdValue) %>%
-  na.omit() %>%
-  rename(species = AccSpeciesName, trait = TraitName, value = StdValue) %>%
-  group_by(species, trait) %>%
-  summarise(value = mean(value)) %>%
-  mutate(trait = recode(trait,
+taxo <- read_tsv("outputs/taxonomy_v3.tsv")
+try <- read_tsv("data/raw_data/try/38775.txt") %>%
+  filter(!is.na(TraitName)) %>%
+  select(AccSpeciesName, TraitName, OriglName, StdValue, OrigValueStr) %>%
+  mutate(TraitName = recode(TraitName,
     "Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density" = "wd", # nolint
     "Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded" = "sla", # nolint
     "Leaf nitrogen (N) content per leaf dry mass" = "n",
-    "Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)" = "la" #nolint
+    "Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)" = "la", # nolint
+    "Plant nitrogen(N) fixation capacity" = "n_fixation",
+    "Dispersal syndrome" = "dispersal",
+    "Leaf phenology type" = "phenology"
   )) %>%
-  pivot_wider(values_from = "value", names_from = "trait")
-taxo_try <- left_join(taxo, try, by = c("scientific_cleaned" = "species"))
+  mutate(value = StdValue) %>%
+  mutate(value = ifelse(TraitName %in% c("dispersal", "n_fixation"),
+    OrigValueStr, value
+  )) %>%
+  mutate(value = ifelse(TraitName %in% c("phenology"), OriglName, value)) %>%
+  rename(species = AccSpeciesName, trait = TraitName) %>%
+  select(-StdValue, -OriglName, -OrigValueStr)
+t <- try %>%
+  mutate(obs = seq_len(n())) %>%
+  pivot_wider(values_from = "value", names_from = "trait") %>%
+  group_by(species) %>%
+  summarise(
+    phenology = paste(sort(unique(na.omit(phenology))), collapse = ", "),
+    n_fixation = paste(sort(unique(tolower(na.omit(n_fixation)))),
+                       collapse = ", "),
+    dispersal = paste(sort(unique(na.omit(dispersal))), collapse = ", "),
+    wd = mean(as.numeric(wd), na.rm = TRUE),
+    n = mean(as.numeric(n), na.rm = TRUE),
+    sla = mean(as.numeric(sla), na.rm = TRUE),
+    la = mean(as.numeric(la), na.rm = TRUE)
+  ) %>%
+  filter(species %in% taxo$scientific_cleaned)
+taxo_try <- left_join(taxo, t, by = c("scientific_cleaned" = "species"))
 ```
 
 We obtained numerous data across species for SLA, WD, and N:
@@ -138,7 +159,8 @@ We obtained numerous data across species for SLA, WD, and N:
 g1 <- ggplot(taxo_try, aes(wd, col = site)) +
   geom_density() +
   theme_bw() +
-  xlab(expression("Wood Density [" ~ g / cm^3 ~ "]"))
+  xlab(expression("Wood Density [" ~ g / cm^3 ~ "]")) +
+  theme(legend.key.size = unit(.5, "line"))
 g2 <- ggplot(taxo_try, aes(site, wd, col = site)) +
   geom_violin() +
   geom_boxplot(width = .2) +
@@ -163,7 +185,8 @@ g1 <- ggplot(taxo_try, aes(sla, col = site)) +
   xlab(expression("Specific Leaf Area [" ~ mm^2 ~ mg^{
     -1
   } ~ "]")) +
-  scale_x_log10()
+  scale_x_log10() +
+  theme(legend.key.size = unit(.5, "line"))
 g2 <- ggplot(taxo_try, aes(site, sla, col = site)) +
   geom_violin() +
   geom_boxplot(width = .2) +
@@ -189,7 +212,8 @@ g1 <- ggplot(taxo_try, aes(la, col = site)) +
   geom_density() +
   theme_bw() +
   xlab(expression("Leaf Area [" ~ mm^2 ~ "]")) +
-  scale_x_log10()
+  scale_x_log10() +
+  theme(legend.key.size = unit(.5, "line"))
 g2 <- ggplot(taxo_try, aes(site, la, col = site)) +
   geom_violin() +
   geom_boxplot(width = .2) +
@@ -212,7 +236,8 @@ cowplot::plot_grid(g1, g2, nrow = 2)
 g1 <- ggplot(taxo_try, aes(n, col = site)) +
   geom_density() +
   theme_bw() +
-  xlab(expression("Nitrogen [" ~ mg / g ~ "]"))
+  xlab(expression("Nitrogen [" ~ mg / g ~ "]")) +
+  theme(legend.key.size = unit(.5, "line"))
 g2 <- ggplot(taxo_try, aes(site, n, col = site)) +
   geom_violin() +
   geom_boxplot(width = .2) +
@@ -229,13 +254,13 @@ cowplot::plot_grid(g1, g2, nrow = 2)
 
 ## Tallo
 
-Using TALLO [@jucker2022], we retrieved tree diameter and height measurements for 730 species from our dataset:
+Using TALLO [@jucker2022], we retrieved tree diameter and height measurements for 910 species from our dataset:
 
 ```{r tallo}
 #| warning: false
 #| message: false
 #| fig-cap: "Height-diameter relation for species of our datasets in TALLO."
-tallo <- read_tsv("outputs/taxonomy_v2.tsv") %>%
+tallo <- read_tsv("outputs/taxonomy_v3.tsv") %>%
   select(scientific_cleaned) %>%
   na.omit() %>%
   unique() %>%
@@ -268,7 +293,7 @@ $$
 #| eval: false
 library(brms)
 library(tidybayes)
-mdata <- read_tsv("outputs/taxonomy_v2.tsv") %>%
+mdata <- read_tsv("outputs/taxonomy_v3.tsv") %>%
   select(scientific_cleaned) %>%
   na.omit() %>%
   unique() %>%
@@ -325,7 +350,7 @@ load("data/derived_data/tallo_brms.Rdata")
 pp_check(fit)
 ```
 
-We thus inferred 730 (ah,hmax) couple of parameters.
+We thus inferred 910 (ah,hmax) couple of parameters.
 
 ```{r tabfit}
 load("data/derived_data/tallo_brms.Rdata")
@@ -336,7 +361,7 @@ sjPlot::tab_model(fit)
 #| message: false
 #| warning: false
 #| fig-cap: "Inferred species allometric parameters hmax and ah and their relations per site." #nolint
-read_tsv("outputs/taxonomy_v2.tsv") %>%
+read_tsv("outputs/taxonomy_v3.tsv") %>%
   left_join(read_tsv("data/derived_data/tallo_pars.tsv")) %>%
   filter(!is.na(ah)) %>%
   ggplot(aes(ah, hmax)) +
@@ -351,13 +376,14 @@ read_tsv("outputs/taxonomy_v2.tsv") %>%
 #| message: false
 #| warning: false
 #| fig-cap: "Inferred species allometric parameters hmax per site."
-taxo_hmax <- read_tsv("outputs/taxonomy_v2.tsv") %>%
+taxo_hmax <- read_tsv("outputs/taxonomy_v3.tsv") %>%
   left_join(read_tsv("data/derived_data/tallo_pars.tsv")) %>%
   filter(!is.na(hmax))
 g1 <- ggplot(taxo_hmax, aes(hmax, col = site)) +
   geom_density() +
   theme_bw() +
-  ylab(expression(h[max]))
+  ylab(expression(h[max])) +
+  theme(legend.key.size = unit(.5, "line"))
 g2 <- ggplot(taxo_hmax, aes(site, hmax, col = site)) +
   geom_violin() +
   geom_boxplot(width = .2) +
@@ -380,31 +406,49 @@ We assembled all traits data from TRY [@kattge2019], BIOMASS [@réjou-méchain20
 #| warning: false
 #| message: false
 #| fig-cap: Species traits pairwise correlations.
-taxo <- read_tsv("outputs/taxonomy_v2.tsv")
+taxo <- read_tsv("outputs/taxonomy_v3.tsv")
 wd <- getWoodDensity(taxo$genus_cleaned, taxo$species_cleaned) %>%
   group_by(genus, species) %>%
   summarise(wd = mean(meanWD)) %>%
   na.omit() %>%
   rename(genus_cleaned = genus, species_cleaned = species)
 h <- read_tsv("data/derived_data/tallo_pars.tsv")
-try <- read_tsv("data/raw_data/37729/37729.txt") %>%
+try <- read_tsv("data/raw_data/try/38775.txt") %>%
   select(AccSpeciesName, TraitName, StdValue) %>%
   na.omit() %>%
-  rename(scientific_cleaned = AccSpeciesName,
-         trait = TraitName, value = StdValue) %>%
+  rename(
+    scientific_cleaned = AccSpeciesName,
+    trait = TraitName, value = StdValue
+  ) %>%
   group_by(scientific_cleaned, trait) %>%
   summarise(value = mean(value)) %>%
   mutate(trait = recode(trait,
     "Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density" = "wd", # nolint
     "Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded" = "sla", # nolint
     "Leaf nitrogen (N) content per leaf dry mass" = "n",
-    "Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)" = "la" #nolint
+    "Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)" = "la" # nolint
   )) %>%
   pivot_wider(values_from = "value", names_from = "trait") %>%
   rename(wd_try = wd)
 taxo_traits <- left_join(taxo, wd) %>%
   left_join(h) %>%
   left_join(try)
+```
+
+```{r traitcount}
+taxo_traits %>%
+  select(site, scientific_cleaned, wd, ah, hmax, la, sla, n, wd_try) %>%
+  gather(trait, value, -site, -scientific_cleaned) %>%
+  na.omit() %>%
+  group_by(site, trait, scientific_cleaned) %>%
+  summarise(mean = mean(value)) %>%
+  group_by(site, trait) %>%
+  summarise(n = n()) %>%
+  pivot_wider(names_from = trait, values_from = n) %>%
+  kable()
+```
+
+```{r traitcor}
 taxo_traits %>%
   select(wd, wd_try, hmax, sla, la, n) %>%
   cor(use = "pairwise.complete.obs") %>%
@@ -474,7 +518,7 @@ autoplot(
 
 ## Traits data
 
-All traits data are saved in `outputs/traits_v2.tsv` with the following columns:
+All traits data are saved in `outputs/traits_vX.tsv` with the following columns:
 
 -   scientific_cleaned: the cleaned scientific name for junction with the taxonomic data
 -   trait: the trait acronym or code
@@ -495,8 +539,10 @@ all_traits <- taxo_traits %>%
               select(scientific_cleaned, wd, hmax, sla, la, n) %>%
               na.omit() %>%
               gather(trait, trait_value_imputed, -scientific_cleaned)) %>%
-  mutate(trait = recode(trait, "wd" = "WD", "sla" = "SLA",
-                        "la" = "LA", "n" = "N")) %>%
+  mutate(trait = recode(trait,
+    "wd" = "WD", "sla" = "SLA",
+    "la" = "LA", "n" = "N"
+  )) %>%
   mutate(definition = recode(trait,
     "WD" = "Stem specific wood density",
     "SLA" = "Specific leaf area",
@@ -511,5 +557,5 @@ all_traits <- taxo_traits %>%
     "N" = "mg g-1",
     "hmax" = "m"
   ))
-write_tsv(all_traits, "outputs/traits_v2.tsv")
+write_tsv(all_traits, "outputs/traits_v3.tsv")
 ```

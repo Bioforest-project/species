@@ -218,42 +218,63 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>First we explored raw species data content. This corresponds to <strong>version 2</strong>.</p>
+<p>First we explored raw species data content. This corresponds to <strong>version 3</strong>.</p>
 <section id="taxonomy-preparation" class="level2">
 <h2 class="anchored" data-anchor-id="taxonomy-preparation">Taxonomy preparation</h2>
-<p>Taxonomic information for Moju and Peteco was only contained in the vernacular column, while similarly taxonomic information for Kibale, Lesong, Mbaiki, Misiones, Ulu Muda, Sg Lalang was only contained in the scientific column. We thus smoothed all taxonomic information with five columns: scientific, vernacular, family, genus, species (<code>derived_data/raw_taxo_preped_v2.tsv</code>).</p>
+<p>We got different types of misstructured taxonomic informations:</p>
+<ul>
+<li>Good: BAFOG, Iwokrama, Kabo, Malinau, Manare, Montagne Tortue, Paracou, Tene, Uppangala</li>
+<li>Vernacular only - taxonomic information only in vernacular name: Jari, Moju, Peteco, Tapajos Km114, Tapajos Km67</li>
+<li>Scientific only - taxonomic information only in scientific name: Ecosilva, Jenaro Herrera, Kibale, Lesong, Mbaiki, Misiones, Nelliyampathy, STREK, Sungai Lalang, Ulu Muda</li>
+<li>Scientific in species - scientifc name in the species column: Sao Nicolau</li>
+</ul>
+<p>We smoothed all taxonomic information with five columns: scientific, vernacular, family, genus, species (<code>derived_data/raw_taxo_preped_vX.tsv</code>).</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>taxo_easy <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/raw_data/raw_taxonomy_v1.tsv"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_all</span>(tolower) <span class="sc">%&gt;%</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>(site <span class="sc">%in%</span> <span class="fu">c</span>(</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Kibale"</span>, <span class="st">"Lesong"</span>, <span class="st">"Moju"</span>, <span class="st">"Mbaiki"</span>, <span class="st">"Peteco"</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Misiones"</span>, <span class="st">"Ulu Muda"</span>, <span class="st">"Sg Lalang"</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  )))</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>taxo_vernacular_only <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/raw_data/raw_taxonomy_v1.tsv"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_all</span>(tolower) <span class="sc">%&gt;%</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(site <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Moju"</span>, <span class="st">"Peteco"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(vernname, <span class="fu">c</span>(<span class="st">"vernname"</span>, <span class="st">"scientificname"</span>), <span class="at">sep =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">["</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(vernname, <span class="st">"vernname"</span>, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">/"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">scientificname =</span> <span class="fu">gsub</span>(<span class="st">"]"</span>, <span class="st">""</span>, scientificname)) <span class="sc">%&gt;%</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(scientificname, <span class="fu">c</span>(<span class="st">"genus"</span>, <span class="st">"species"</span>), <span class="at">remove =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>taxo_scientific_only <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/raw_data/raw_taxonomy_v1.tsv"</span>) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>vernacular_only <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Moju"</span>, <span class="st">"Peteco"</span>, <span class="st">"Jari"</span>, <span class="st">"Tapajos Km114"</span>, <span class="st">"Tapajos Km67"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>scientific_only <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Kibale"</span>, <span class="st">"Lesong"</span>, <span class="st">"Mbaiki"</span>, <span class="st">"Ecosilva"</span>, <span class="st">"Jenaro Herrera"</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Misiones"</span>, <span class="st">"Ulu Muda"</span>, <span class="st">"Sungai Lalang"</span>, <span class="st">"Nelliyampathy"</span>, <span class="st">"STREK"</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>scientific_in_species <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Sao Nicolau"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>raw_file <span class="ot">&lt;-</span> <span class="st">"raw_taxonomy_v3.tsv"</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">"data"</span>, <span class="st">"raw_data"</span>, raw_file)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>taxo_easy <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(path) <span class="sc">%&gt;%</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_all</span>(tolower) <span class="sc">%&gt;%</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>(site <span class="sc">%in%</span> <span class="fu">c</span>(vernacular_only, </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                       scientific_only, </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                       scientific_in_species)))</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>taxo_vernacular_only <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(path) <span class="sc">%&gt;%</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_all</span>(tolower) <span class="sc">%&gt;%</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(site <span class="sc">%in%</span> <span class="fu">c</span>(</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Kibale"</span>, <span class="st">"Lesong"</span>, <span class="st">"Mbaiki"</span>,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Misiones"</span>, <span class="st">"Ulu Muda"</span>, <span class="st">"Sg Lalang"</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(site <span class="sc">%in%</span> vernacular_only) <span class="sc">%&gt;%</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(vernname, <span class="fu">c</span>(<span class="st">"vernname"</span>, <span class="st">"scientificname"</span>), <span class="at">sep =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">["</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(vernname, <span class="st">"vernname"</span>, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">/"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">scientificname =</span> <span class="fu">gsub</span>(<span class="st">"]"</span>, <span class="st">""</span>, scientificname)) <span class="sc">%&gt;%</span></span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(scientificname, <span class="fu">c</span>(<span class="st">"genus"</span>, <span class="st">"species"</span>), <span class="at">remove =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>taxo <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(taxo_easy, taxo_vernacular_only, taxo_scientific_only) <span class="sc">%&gt;%</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">scientific =</span> scientificname, <span class="at">vernacular =</span> vernname)</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(taxo, <span class="st">"data/derived_data/raw_taxo_preped_v2.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>taxo_scientific_only <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(path) <span class="sc">%&gt;%</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_all</span>(tolower) <span class="sc">%&gt;%</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(site <span class="sc">%in%</span> scientific_only) <span class="sc">%&gt;%</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(scientificname, <span class="fu">c</span>(<span class="st">"genus"</span>, <span class="st">"species"</span>), <span class="at">remove =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>taxo_scientific_in_species <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(path) <span class="sc">%&gt;%</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_all</span>(tolower) <span class="sc">%&gt;%</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(site <span class="sc">%in%</span> scientific_in_species) <span class="sc">%&gt;%</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(species, <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"species"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>a)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>taxo <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(taxo_easy, taxo_vernacular_only, </span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>                  taxo_scientific_only, taxo_scientific_in_species) <span class="sc">%&gt;%</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">scientific =</span> scientificname, <span class="at">vernacular =</span> vernname) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>site_raw) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(genus, <span class="st">"genus"</span>, <span class="at">sep =</span> <span class="st">"[</span><span class="sc">\\</span><span class="st">.]"</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(species, <span class="st">"species"</span>, <span class="at">sep =</span> <span class="st">"[_</span><span class="sc">\\</span><span class="st">.]"</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_all</span>(str_squish)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(taxo, <span class="st">"data/derived_data/raw_taxo_preped_v3.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section id="all" class="level2">
 <h2 class="anchored" data-anchor-id="all">All</h2>
-<p>We had data for 16 sites with 0 to 68 families, with 49 to 301 genera, and with 123 to 762 species corresponding to 0 to 364 vernacular names when registered:</p>
+<p>We had data for 25 sites:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -265,7 +286,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">species =</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">paste</span>(genus, species))),</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">scientific =</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(scientific))),</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">vernacular =</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(vernacular)))</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Numbers per taxonomic levels for each site."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
@@ -283,19 +304,51 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Bafog</td>
+<td style="text-align: left;">BAFOG</td>
 <td style="text-align: right;">58</td>
-<td style="text-align: right;">196</td>
-<td style="text-align: right;">258</td>
+<td style="text-align: right;">190</td>
+<td style="text-align: right;">250</td>
 <td style="text-align: right;">385</td>
 <td style="text-align: right;">211</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">Ecosilva</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">140</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">236</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Iwokrama</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">156</td>
+<td style="text-align: right;">157</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Jari</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">206</td>
+<td style="text-align: right;">329</td>
+<td style="text-align: right;">501</td>
+<td style="text-align: right;">455</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Jenaro Herrera</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">190</td>
+<td style="text-align: right;">340</td>
+<td style="text-align: right;">464</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">Kabo</td>
-<td style="text-align: right;">53</td>
+<td style="text-align: right;">52</td>
 <td style="text-align: right;">154</td>
 <td style="text-align: right;">197</td>
-<td style="text-align: right;">270</td>
+<td style="text-align: right;">269</td>
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="odd">
@@ -303,7 +356,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">104</td>
 <td style="text-align: right;">69</td>
-<td style="text-align: right;">124</td>
+<td style="text-align: right;">123</td>
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
@@ -316,17 +369,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Malinau</td>
-<td style="text-align: right;">68</td>
-<td style="text-align: right;">174</td>
-<td style="text-align: right;">324</td>
-<td style="text-align: right;">670</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">215</td>
+<td style="text-align: right;">437</td>
+<td style="text-align: right;">684</td>
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Manare</td>
 <td style="text-align: right;">50</td>
-<td style="text-align: right;">142</td>
-<td style="text-align: right;">212</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">193</td>
 <td style="text-align: right;">276</td>
 <td style="text-align: right;">197</td>
 </tr>
@@ -352,41 +405,81 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: right;">166</td>
 <td style="text-align: right;">276</td>
 <td style="text-align: right;">398</td>
-<td style="text-align: right;">364</td>
+<td style="text-align: right;">340</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Montagne_Tortue</td>
+<td style="text-align: left;">Montagne Tortue</td>
 <td style="text-align: right;">50</td>
-<td style="text-align: right;">153</td>
-<td style="text-align: right;">217</td>
+<td style="text-align: right;">147</td>
+<td style="text-align: right;">210</td>
 <td style="text-align: right;">298</td>
 <td style="text-align: right;">201</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">Nelliyampathy</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">106</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">Paracou</td>
 <td style="text-align: right;">64</td>
-<td style="text-align: right;">256</td>
-<td style="text-align: right;">463</td>
+<td style="text-align: right;">223</td>
+<td style="text-align: right;">409</td>
 <td style="text-align: right;">762</td>
 <td style="text-align: right;">247</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Peteco</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">165</td>
 <td style="text-align: right;">247</td>
 <td style="text-align: right;">340</td>
-<td style="text-align: right;">295</td>
+<td style="text-align: right;">288</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STREK</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">244</td>
+<td style="text-align: right;">340</td>
+<td style="text-align: right;">859</td>
+<td style="text-align: right;">0</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Sg Lalang</td>
+<td style="text-align: left;">Sao Nicolau</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">117</td>
+<td style="text-align: right;">109</td>
+<td style="text-align: right;">275</td>
+<td style="text-align: right;">293</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sungai Lalang</td>
 <td style="text-align: right;">52</td>
 <td style="text-align: right;">115</td>
 <td style="text-align: right;">76</td>
 <td style="text-align: right;">170</td>
 <td style="text-align: right;">0</td>
 </tr>
+<tr class="odd">
+<td style="text-align: left;">Tapajos Km114</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">216</td>
+<td style="text-align: right;">314</td>
+<td style="text-align: right;">467</td>
+<td style="text-align: right;">457</td>
+</tr>
 <tr class="even">
+<td style="text-align: left;">Tapajos Km67</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">198</td>
+<td style="text-align: right;">306</td>
+<td style="text-align: right;">442</td>
+<td style="text-align: right;">665</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">Tene</td>
 <td style="text-align: right;">49</td>
 <td style="text-align: right;">146</td>
@@ -394,7 +487,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: right;">200</td>
 <td style="text-align: right;">208</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Ulu Muda</td>
 <td style="text-align: right;">53</td>
 <td style="text-align: right;">112</td>
@@ -402,7 +495,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: right;">179</td>
 <td style="text-align: right;">0</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Uppangala</td>
 <td style="text-align: right;">43</td>
 <td style="text-align: right;">101</td>
@@ -414,7 +507,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
-<p>In total, we thus add 1,611 species before cleaning:</p>
+<p>In total, we thus add 2,163 species before cleaning:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -425,7 +518,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">species =</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">paste</span>(genus, species))),</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">scientific =</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(scientific))),</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">vernacular =</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(vernacular)))</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">","</span>),</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Total numbers per taxonomic levels."</span></span>
@@ -445,11 +538,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">159</td>
-<td style="text-align: right;">926</td>
-<td style="text-align: right;">1,611</td>
-<td style="text-align: right;">3,544</td>
-<td style="text-align: right;">1,306</td>
+<td style="text-align: right;">151</td>
+<td style="text-align: right;">1,167</td>
+<td style="text-align: right;">2,163</td>
+<td style="text-align: right;">5,304</td>
+<td style="text-align: right;">2,634</td>
 </tr>
 </tbody>
 </table>
@@ -466,12 +559,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species) <span class="sc">%&gt;%</span></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">N =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(N <span class="sc">==</span> <span class="dv">12</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(species <span class="sc">==</span> <span class="st">"Paracroton pendulus"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Example of multiple scientific names for one species genus pair."</span>) <span class="co"># nolint</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <caption>Example of multiple scientific names for one species genus pair.</caption>
+<colgroup>
+<col style="width: 21%">
+<col style="width: 75%">
+<col style="width: 3%">
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;">species</th>
@@ -481,64 +579,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Shorea parvifolia</td>
-<td style="text-align: left;">Shorea parvifolia Dyer</td>
-<td style="text-align: right;">12</td>
+<td style="text-align: left;">Paracroton pendulus</td>
+<td style="text-align: left;">Paracroton pendulus subsp. zeylanicus (Thwaites) N.P.Balakr. &amp; Chakrab.</td>
+<td style="text-align: right;">2</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Shorea parvifolia</td>
-<td style="text-align: left;">Shorea parvifolia Dyer ssp. parvifolia</td>
-<td style="text-align: right;">12</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Shorea parvifolia</td>
-<td style="text-align: left;">Shorea parvifolia Dyer ssp.parvifolia</td>
-<td style="text-align: right;">12</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Shorea parvifolia</td>
-<td style="text-align: left;">Shorea parvifolia Dyer ssp. velutina</td>
-<td style="text-align: right;">12</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Shorea parvifolia</td>
-<td style="text-align: left;">Shorea parvifolia Dyer.</td>
-<td style="text-align: right;">12</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Shorea parvifolia</td>
-<td style="text-align: left;">Shorea parvifolia Dter</td>
-<td style="text-align: right;">12</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Shorea parvifolia</td>
-<td style="text-align: left;">Shorea parvifolia Dyer ssp. Parvifolia</td>
-<td style="text-align: right;">12</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Shorea parvifolia</td>
-<td style="text-align: left;">Shorea parvifolia Warb.</td>
-<td style="text-align: right;">12</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Shorea parvifolia</td>
-<td style="text-align: left;">Shorea parvifolia Dyer ssp parvifolia</td>
-<td style="text-align: right;">12</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Shorea parvifolia</td>
-<td style="text-align: left;">Shorea parvifolia Dyr ssp parvifolia</td>
-<td style="text-align: right;">12</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Shorea parvifolia</td>
-<td style="text-align: left;">Shorea parvifolia Dyr</td>
-<td style="text-align: right;">12</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Shorea parvifolia</td>
-<td style="text-align: left;">Shorea parvifolia</td>
-<td style="text-align: right;">12</td>
+<td style="text-align: left;">Paracroton pendulus</td>
+<td style="text-align: left;">Paracroton pendulus</td>
+<td style="text-align: right;">2</td>
 </tr>
 </tbody>
 </table>
@@ -574,63 +622,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="family" class="level2">
 <h2 class="anchored" data-anchor-id="family">Family</h2>
-<p>Families includes the following dubious names:</p>
-<ul>
-<li><strong>Missing</strong>: #N/A, +, muerto</li>
-<li><strong>Unidentified</strong>: Indet., Not in DB, unid., unidentified, ND, No determinado</li>
-</ul>
+<p>Families includes the following dubious names: #N/A, +, Indet, Indet., muerto, ND, No determinado, Not in DB, unid., unidentified, Unidentified</p>
 <p>See the list below:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(taxo<span class="sc">$</span>family) <span class="sc">%&gt;%</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sort</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="at">collapse =</span> <span class="st">", "</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fam_wrong <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"#N/A"</span>, <span class="st">"+"</span>, <span class="st">"muerto"</span>, <span class="st">"Indet."</span>, <span class="st">"Not in DB"</span>, <span class="st">"unid."</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Unidentified"</span>, <span class="st">"unidentified"</span>, <span class="st">"ND"</span>, <span class="st">"No determinado"</span>, <span class="st">"Indet"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(<span class="fu">filter</span>(taxo, <span class="sc">!</span>(family <span class="sc">%in%</span> fam_wrong))<span class="sc">$</span>family) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sort</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="at">collapse =</span> <span class="st">", "</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "&nbsp;Rubiaceae, #N/A, +, Acanthaceae, Achariaceae, Achatocarpaceae, Alangiaceae, Anacardiaceae, Anarcadiaceae, Anarcardiaceae, Annonaceae, Anonaceae, Apocynaceae, Aponyceae, Aquifoliaceae, Araceae, Araliaceae, Araucariaceae, Areacaceae, Arecaceae, Asparagaceae, Bignoniaceae, Bixaceae, Bombacaceae, Boraginaceae, Burseraceae, Calophyllaceae, Cannabaceae, Capparaceae, Cardiopteridaceae, Caricaceae, Carnaraceae, Caryocaraceae, Celastraceae, Chrysobalanaceae, Cluciaceae, Clusiaceae, Combretaceae, Compositae, Connaraceae, Convolvulaceae, Cordiaceae, Cornaceae, Crypteroniaceae, Dichapetalaceae, Dilleniaceae, Dipterocarpaceae, Dipterocarpus, Diptewrocarpaceae, Ebenaceae, Elaeocarpaceae, Erythroxylaceae, Euphobiaceae, Euphorbiaceae, Euphorbuaceae, Fabaceae, Fagaceae, Flacourtiaceae, Gentianaceae, Gnetaceae, Goupiaceae, Greyiaceae, Humiriaceae, Hypericaceae, Icacinaceae, Indet., Irvingiaceae, Ixonanthaceae, Lacistemataceae, Lamiaceae, Lauracea, Lauraceae, Lecythidaceae, Leguminosae, Linaceae, Loganiaceae, Lythraceae, Malpighiaceae, Malvacea, Malvaceae, Melastomaceae, Melastomataceae, Meliaceae, Memecyclaceae, Metteniusaceae, Monimiaceae, Moraceae, muerto, Myristicacea, Myristicaceae, Myrtaceae, Mytaceae, ND, No determinado, Not in DB, Nyctaginaceae, Nyssaceae, Ocalaceae, Ochnaceae, Olacaceae, Oleaceae, Opiliaceae, Oxalidaceae, Oxalidales, Pandaceae, Pentaphylacaceae, Peraceae, Peridiscaceae, Phyllanthaceae, Phytolaccaceae, Picrodendraceae, Podocarpaceae, Polygalaceae, Polygonaceae, Primulaceae, Proteaceae, Putranjavaceae, Putranjivaceae, Quiinaceae, Rhabdodendraceae, Rhamnaceae, Rhizophoracea, Rhizophoraceae, Rosaceae, Rubiacea, Rubiaceae, Rutacea, Rutaceae, Sabiaceae, Salicaceae, Santalaceae, Saoindaceae, Sapindaceae, Sapotaceae, Saxipragaceae, Simaroubaceae, Simarubaceae, Siparunaceae, Solanaceae, Staphyleaceae, Stemonuraceae, Sterculiaceae, Styracaceae, Symplocaceae, Tetrameristaceae, Theacea, Theaceae, Thymelaceae, Thymelaeaceae, Thymelaeceae, Tiliaceae, Ulmaceae, unid., unidentified, Urticaceae, Verbenaceae, Violaceae, Vitaceae, Vochysiaceae"</code></pre>
+<pre><code>[1] "Acanthaceae, Achariaceae, Achatocarpaceae, Alangiaceae, Anacardiaceae, Anarcadiaceae, Anarcardiaceae, Annonaceae, Apocynaceae, Aponyceae, Aquifoliaceae, Araliaceae, Araucariaceae, Arecaceae, Asparagaceae, Bignoniaceae, Bixaceae, Bombacaceae, Boraginaceae, Burseraceae, Calophyllaceae, Cannabaceae, Capparaceae, Cardiopteridaceae, Caricaceae, Caryocaraceae, Celastraceae, Centroplacaceae, Chrysobalanaceae, Clusiaceae, Combretaceae, Compositae, Convolvulaceae, Cordiaceae, Crypteroniaceae, Dichapetalaceae, Dilleniaceae, Dipterocarpaceae, Ebenaceae, Elaeocarpaceae, Erythroxylaceae, Euphorbiaceae, Fabaceae, Fagaceae, Flacourtiaceae, Gentianaceae, Gnetaceae, Goupiaceae, Greyiaceae, Hernandiaceae, Humiriaceae, Hypericaceae, Icacinaceae, Irvingiaceae, Ixonanthaceae, Juglandaceae, Lacistemataceae, Lamiaceae, Lauracea, Lauraceae, Lecythidaceae, Leguminosae, Linaceae, Lissorcarpaceae, Loganiaceae, Lythraceae, Magnoliaceae, Malpighiaceae, Malvacea, Malvaceae, Melastomaceae, Melastomataceae, Meliaceae, Memecyclaceae, Menispermaceae, Metteniusaceae, Monimiaceae, Moraceae, Myristicacea, Myristicaceae, Myrsinaceae, Myrtaceae, Nyctaginaceae, Nyssaceae, Ochnaceae, Olacaceae, Oleaceae, Opiliaceae, Oxalidaceae, Oxalidales, Pandaceae, Pentaphylacaceae, Peraceae, Peridiscaceae, Petiveriaceae, Phyllanthaceae, Phytolaccaceae, Picrodendraceae, Podocarpaceae, Polygalaceae, Polygonaceae, Primulaceae, Proteaceae, Putranjavaceae, Putranjivaceae, Quiinaceae, Rhabdodendraceae, Rhamnaceae, Rhizophoracea, Rhizophoraceae, Rosaceae, Rubiacea, Rubiaceae, Rutacea, Rutaceae, Sabiaceae, Salicaceae, Santalaceae, Sapindaceae, Sapotaceae, Saxifragaceae, Simaroubaceae, Siparunaceae, Solanaceae, Staphyleaceae, Stemonuraceae, Sterculiaceae, Styracaceae, Symplocaceae, Tetrameristaceae, Theacea, Theaceae, TheaCEAE, Thymelaceae, Thymelaeaceae, Thymelaeceae, Tiliaceae, Ulmaceae, Urticaceae, Verbenaceae, Violaceae, Vitaceae, Vochysiaceae"</code></pre>
 </div>
 </div>
 <p>With the following counts:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>unid <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Indet."</span>, <span class="st">"Not in DB"</span>, <span class="st">"unid."</span>,</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"unidentified"</span>, <span class="st">"ND"</span>, <span class="st">"No determinado"</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>missing <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"#N/A"</span>, <span class="st">"+"</span>, <span class="st">"muerto"</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>taxo <span class="sc">%&gt;%</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(family) <span class="sc">%&gt;%</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unidentified"</span> <span class="ot">=</span> <span class="fu">sum</span>(family <span class="sc">%in%</span> unid,</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">na.omit =</span> <span class="cn">TRUE</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Missing"</span> <span class="ot">=</span> <span class="fu">sum</span>(family <span class="sc">%in%</span> missing,</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">na.omit =</span> <span class="cn">TRUE</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="st">"type"</span>, <span class="st">"number"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Number of family by issue type."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>taxo <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(family, genus, species) <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(family <span class="sc">%in%</span> fam_wrong) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">N =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Number of family issues"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
-<caption>Number of family by issue type.</caption>
+<caption>Number of family issues</caption>
 <thead>
 <tr class="header">
-<th style="text-align: left;">type</th>
-<th style="text-align: right;">number</th>
+<th style="text-align: right;">N</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Unidentified</td>
-<td style="text-align: right;">7</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Missing</td>
-<td style="text-align: right;">4</td>
+<td style="text-align: right;">11</td>
 </tr>
 </tbody>
 </table>
@@ -639,69 +667,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="genus" class="level2">
 <h2 class="anchored" data-anchor-id="genus">Genus</h2>
-<p>Genera includes the following dubious names:</p>
-<ul>
-<li><strong>Missing</strong>: #N/A, A</li>
-<li><strong>Unidentified</strong>: Indet., nd, sp, sp1, sp5, Indetermined, KERUING, MERANTI, MERSAWA, BALAU, muerto</li>
-<li><strong>Family-only</strong>: Indet.Apocynaceae, Indet.Arecaceae, Indet.Bignoniaceae, Indet.Burseraceae, Indet.Capparaceae, Indet.Chrysobalanaceae, Indet.Clusiaceae, Indet.Combretaceae, Indet.Dichapetalaceae, Indet.Euphorbiaceae, Indet.Fabaceae, Indet.FabaceaeCaesalpinioideae(mimosoid_clade), Indet.FabaceaePapilionoideae, Indet.Humiriaceae, Indet.Indet., Indet.Lamiaceae, Indet.Lauraceae, Indet.Lecythidaceae, Indet.Malvaceae, Indet.MalvaceaeBombacoideae, Indet.Melastomataceae, Indet.Moraceae, Indet.Myrtaceae, Indet.Nyctaginaceae, Indet.Olacaceae, Indet.Rubiaceae, Indet.Salicaceae, Indet.Sapindaceae, Indet.Sapotaceae, Indet.Urticaceae, Indet.Violaceae, Indet.Vochysiaceae, Indet.Anacardiaceae, Indet.Annonaceae</li>
-</ul>
-<p>See the list below:</p>
+<p>Genus list:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(taxo<span class="sc">$</span>genus) <span class="sc">%&gt;%</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sort</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="at">collapse =</span> <span class="st">", "</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>gen_wrong <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"#N/A"</span>, <span class="st">"A"</span>, <span class="st">"Indet"</span>, <span class="st">"nd"</span>, <span class="st">"sp"</span>, <span class="st">"sp1"</span>, <span class="st">"sp5"</span>, <span class="st">"Indetermined"</span>,</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>               <span class="st">"KERUING"</span>, <span class="st">"MERANTI"</span>, <span class="st">"MERSAWA"</span>, <span class="st">"BALAU"</span>, <span class="st">"muerto"</span>, <span class="st">"Unidentified"</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Nd"</span>, <span class="st">"nd10"</span>, <span class="st">"nd11"</span>, <span class="st">"nd14"</span>, <span class="st">"nd15"</span>, <span class="st">"nd16"</span>, <span class="st">"nd17"</span>, <span class="st">"nd2"</span>, <span class="st">"nd22"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>               <span class="st">"nd23"</span>, <span class="st">"nd25"</span>, <span class="st">"nd26"</span>, <span class="st">"nd27"</span>, <span class="st">"nd28"</span>, <span class="st">"nd29"</span>, <span class="st">"nd33"</span>, <span class="st">"nd34"</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>               <span class="st">"nd4"</span>, <span class="st">"nd6"</span>, <span class="st">"nd7"</span>, <span class="st">"nd9"</span>, <span class="st">"N"</span>, <span class="st">"F"</span>, <span class="st">"cf"</span>, <span class="st">"No"</span>, <span class="st">"UN"</span>, <span class="st">"Un"</span>, <span class="st">"Spt"</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Unident"</span>, <span class="st">"Unknow"</span>, <span class="st">"unknown"</span>, <span class="st">"Unknown"</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> taxo <span class="sc">%&gt;%</span> </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>(genus <span class="sc">%in%</span> gen_wrong)) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(genus) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_length</span>(genus) <span class="sc">&lt;=</span> <span class="dv">3</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(<span class="fu">filter</span>(taxo, <span class="sc">!</span>(genus <span class="sc">%in%</span> gen_wrong))<span class="sc">$</span>genus) <span class="sc">%&gt;%</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sort</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="at">collapse =</span> <span class="st">", "</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] ", #N/A, Abarema, Acacia, Achatocarpus, Acrocarpus, Actinodaphne, Actinostemon, Adenathera, Adinandra, Afrostyrax, Afzelia, Agathis, Aglaia, Agonandra, Agrostachys, Agrostistachys, Aidia, Aiouea, Alangium, Albizia, Albizzia, Alchornea, Alchorneopsis, Alexa, Allanblackia, Allophylus, Alseodaphne, Alstonia, Amaioua, Amanoa, Ambelania, Amoora, Ampelocera, Amphimas, Amphiodon, Amphirrhox, Anacardium, Anaxagorea, Andira, Angylocalyx, Aniba, Aningeria, Anisoptera, Annickia, Annona, Annonaceae, Anogeissus, Anonidium, Anopyxis, Anthocleista, Anthonotha, Antiaris, Antidesma, Antonia, Antrocaryon, Aoranthe, Aparasthmium, Aparisthmium, Apeiba, Aphanamixis, Aphania, Apodites, Aporosa, Aporrhiza, Aporusa, Aptandra, Apuleia, Aquilaria, Aralia, Archidendron, Arthocarpus, Articarpus, Artocarpus, Aspidosperma, Astrocaryum, Astronia, Astronium, Ateleia, Attalea, Atuna, Aubrevillea, Autranella, Avicennia, Azadirachta, Baccaurea, Bactris, Bagassa, Balanites, BALAU, Balfourodendron, Balizia, Banara, Baphia, Baringtonia, Barringtonia, Barteria, Bastardiopsis, Batesia, Bauhinia, Beilschmeidia, Beilschmiedia, Beilshmedia, Beishmeidia, Bellucia, Belonophora, Berlinia, Bersama, Bersame, Bhesa, Bixa, Blepharistemma, Blighia, Bobgunnia, Bocageopsis, Bocoa, Bombacopsis, Bombax, Bosqueia, Bouea, Bowdichia, Brachystegia, Breviea, Breynia, Bridelia, Brosimum, Brownlowia, Buchanania, Buchenavia, Buchholzia, Bunchosia, Burceracea, Burseraceae, Bussea, Byrsonima, Cabralea, Caesalpinia, Callerya, Calliandra, Callicarpa, Caloncoba, Calophyllum, Calpocalyx, Calycolpus, Calyptranthes, Campnosperma, Campomanesia, Campsiandra, Canarium, Capirona, Capparidastrum, Caraipa, Carallia, Carapa, Carica, Caryocar, Caryota, Casearea, Casearia, Cassia, Cassipourea, Cassorea, Castanopsis, Cathedra, Catostemma, Cecropia, Cedrela, Cedrelinga, Ceiba, Celtis, Cephallomappa, Cephalomappa, Cestrum, Chaetachme, Chaetacme, Chaetocarpus, Chamaecrista, Chaumochytum, Chaunochiton, Cheatacme, Cheatchme, Cheiloclinium, Chimarrhis, Chionanthes, Chionanthus, Chisecheton, Chisocheton, Chlamydocola, Christiana, Chrysophyllum, Chukrasia, Chytranthus, Cinnamomum, Citharexylum, Citronella, Clarisia, Clathrotropis, Clausena, Clavija, Cleistanthes, Cleistanthus, Cleisthanthus, Cleisthantus, Cleistopholis, Coccoloba, Cococeras, Cocoseras, Coelocaryon, Coelostegia, Coffea, Cola, Conceveiba, Conchocarpus, Connarus, Conopharyngia, Coona, Copaifera, Cordia, Corynanthe, Corythophora, Couepia, Couma, Couratari, Coussarea, Coutarea, Cratersperumum, Cratoxylum, Crepidospermum, Croton, Crudia, Crypteronia, Cryptocarya, Ctenolophon, Cupania, Cussonia, Cuviera, Cyathocalyx, Cybianthus, Cynometra, Cyrillopsis, Dacryodes, Dahlstedtia, Dalbergia, Daniellia, Dasylepis, Dehaasia, Dendrobangia, Dendropanax, Desplatsia, Detarium, Dialium, Diatenopteryx, Dichapetalum, Dichostemma, Dichrostachys, Dicorynia, Dictyandra, Didymopanax, Dillenia, Dimocarpus, Dimorphandra, Dinizia, Diopyros, Diospyros, Diploon, Diplotropis, Dipterocapus, Dipterocarpus, Dipteryx, Discoclaoxylon, Discoglypremna, Discophora, Disoxylum, Distemonanthus, Dodecastignma, Dombeya, Dovyalis, Dracaena, Drypetes, Duabanga, Duabunga, Duboscia, Duguetia, Dulacia, Durio, Duriocarinatus, Duroia, Dyera, Dysoxylum, Ecclinusa, Ehretia, Ekebergia, Elaeis, Elaeocarpus, Elaeoluma, Elaeophorbia, Elaiocarpus, Elateriospermum, Elizabetha, Elvasia, Emmotum, Empogona, Enademia, Endiandra, Endlicheria, Endodesmia, Endopleura, Endospermum, Entandrophragma, Enterolobium, Eperua, Ephedranthus, Eribroma, Eriocoelum, Eriotheca, Erisma, Erycibe, Erythrina, Erythrophleum, Erythroxylum, Eschweilera, Euadenia, Eugeinsonia, Eugeisonia, Eugeissonia, Eugenia, Euodia, Euonymus, Euphorbia, Euplassa, Euterpe, Euxylophora, Exellodendron, F, Fagaceae, Fagara, Fagaropsis, Fagraea, Faramea, Ferdinandusa, Fernandoa, Ficus, Flacourtia, Funtumia, Fusaea, Gaertnera, Ganophyllum, Garcinia, Gardenia, Gaulettia, Geissospermum, Geonoma, Gironiera, Gironniera, Girroniera, Gleditsia, Glochidion, Gluta, Glycosmis, Glycydendron, Glyphaea, Gmelina, Gnetum, Gonystylus, Gordonia, Goupia, Greenwayodendron, Grewia, Guapira, Guarea, Guatteria, Guazuma, Guibourtia, Gustavia, Gymnacranthera, Gymnostemon, Gynotroches, Handroanthus, Harpullia, Harungana, Hasseltia, Hebepetalum, Heisteria, Helicia, Helicostylis, Helietta, Hemandradenia, Hennecartia, Henriettea, Heritiera, Herritiera, Hevea, Hexalobus, Heynea, Hidnocarpus, Hieronima, Hieronyma, Hildegardia, Himatanthus, Hirtella, Holarrhena, Holigarna, Holocalyx, Holoptelea, Homalium, Homalolepis, Homalolepsis, Hopea, Horsfieldia, Hortia, Humboldtia, Humiria, Humiriastrum, Hydnocarpus, Hydocarpus, Hydrochorea, Hymenaea, Hymenocardia, Hymenolobium, Hymenopus, Hymenostegia, Ilex, Indet., Indet.Anacardiaceae, Indet.Annonaceae, Indet.Apocynaceae, Indet.Arecaceae, Indet.Bignoniaceae, Indet.Burseraceae, Indet.Capparaceae, Indet.Chrysobalanaceae, Indet.Clusiaceae, Indet.Combretaceae, Indet.Dichapetalaceae, Indet.Euphorbiaceae, Indet.Fabaceae, Indet.FabaceaeCaesalpinioideae(mimosoid_clade), Indet.FabaceaePapilionoideae, Indet.Humiriaceae, Indet.Indet., Indet.Lamiaceae, Indet.Lauraceae, Indet.Lecythidaceae, Indet.Malvaceae, Indet.MalvaceaeBombacoideae, Indet.Melastomataceae, Indet.Moraceae, Indet.Myrtaceae, Indet.Nyctaginaceae, Indet.Olacaceae, Indet.Rubiaceae, Indet.Salicaceae, Indet.Sapindaceae, Indet.Sapotaceae, Indet.Urticaceae, Indet.Violaceae, Indet.Vochysiaceae, Indetermined, Inga, Inhambanella, Intsia, Irvingia, Iryanthera, Isertia, Isolona, Isonandra, Ixonanthes, Ixora, Jacaranda, Jacaratia, Jackia, Keayodendron, KERUING, Khaya, Kigalia, Kigelia, Klainedoxa, Knema, Kokoona, Koodersiodendron, Koompasia, Koompassia, Koona, Koordersiodendron, Kubitzkia, Kutchubaea, Laccodiscus, Lacistema, Lacmellea, Lacunaria, Laetia, Lagerstroemia, Lannea, Lansium, Lasiodiscus, Lauraceae, Lecaniodiscus, Lecythis, Leea, Leonia, Lepidobotrys, Lepidocaryum, Lepisanthes, Leplaea, Leptactina, Leptaulus, Leptobalanus, Leptonychia, Liana, Licania, Licaria, Licuala, Limadendron, Lindackeria, Linderkeria, Linociera, Lithocarpus, Litsea, Livistona, llex, Lonchocarpus, Lophira, Lophopetalum, Loreya, Lovoa, Loxopterygium, Luehea, Lueheopsis, Lychnodiscus, Lychodiscus, Lynchodiscus, Lythocarpus, Mabea, Macaranga, Maccaranga, Machaerium, Machilus, Maclura, Macoubea, Macrolobium, Madhuca, Maerua, Maesobotrya, Maesopsis, Magnistipula, Magreteria, Mahurea, Majidea, Mallotus, Malouetia, Malpighia, Mammea, Mangifera, Manihot, Manilkara, Mansonia, Maprounea, Maquira, Maranthes, Mareya, Margaretia, Margaritaria, Markhamia, Martiodendron, Massularia, Mastixia, Matayba, Matisia, Maytenus, Measopsis, Melanochyla, Melicoccus, Melicope, Meliosma, Memecylon, MERANTI, MERSAWA, Mesua, Metrodoria, Mezilaurus, Mezzetia, Miconia, Micrandra, Microcos, Microdesmis, Micropholis, Microtropis, Mildbraediodendron, Milicia, Milletia, Millettia, Mimusops, Minquartia, Mitragyna, Mollatus, Monodora, Monoon, Monteverdia, Morelia, Moronobea, Morous, Morus, Moultonianthus, Mouriri, Mouriria, Moutabea, Muellera, muerto, Musanga, Myrcia, Myrcianthes, Myrciaria, Myrianthus, Myristica, Myristicacea, Myristicaceae, Myrocarpus, Myrsine, Myrtaceae, Mystrozylen, Mystrozylon, Napoleona, Napoleonaea, Naringi, Nauclea, Naucleopsis, Nectandra, Neea, Neesia, Neobalanocarpus, Neoboutania, Neocalyptrocalyx, Neolamarckia, Neonauclea, Neoptychocarpus, Neoraputia, Neoscortechinia, Nepheium, Nephelium, Nesogordonia, Newbouldia, Newtomia, Newtonia, No, Nothopegia, Ochanostachys, Ochna, Ochthocosmus, Ocotea, Oenocarpus, Okoubaka, Olax, Oldfieldia, Olea, Omphalocarpum, Oncoba, Ongokea, Ophiobotrys, Ormosia, Orophea, Osteophloeum, Ostodes, Otonephelium, Oubanguia, Ouratea, Oxandra, Oxyanthus, Oxynthus, Oxyrithus, Ozoroa, Pachira, Pachyelasma, Pachystela, Pajanelia, Palaqium, Palaquium, Palicourea, Pancovia, Panda, Paracroton, Parahancornia, Paramachaerium, Parapiptadenia, Parartocarpus, Parashorea, Parastemon, Parinari, Parinariopsis, Parishia, Parkia, Paropsia, Pausandra, Pausinystalia, Payena, Paypayrola, Pellacalyx, Peltogyne, Peltophorum, Pentace, Pentaclethra, Pentadesma, Pentaspadon, Pera, Perebea, Pertusadina, Petersianthus, Phyllanthus, Phytolacca, Picralima, Picrasma, Pilocarpus, Pimeleodendron, Piptadenia, Piptadeniastrum, Pisonia, Pithecellobium, Placodiscus, Planchonia, Platonia, Platymiscium, Plectronia, Pleiocarpa, Plinia, Podocarpus, Pogonophora, Polyalthia, Polyalthiya, Polyanthia, Polyosma, Polyscais, Polyscias, Pometia, Popowia, Poraqueiba, Porterandia, Posoqueria, Pourouma, Pouteria, Pradosia, Premna, Prioria, Protium, Prunas, Prunus, Pseudolmedia, Pseudopiptadenia, Pseudospondias, Pseudoxandra, Psidium, Psychotria, Psydrax, Pteleopsis, Pternandra, Pterocarpus, Pterocymbium, Pterospermum, Pterygota, Ptychopetalum, Ptychophyxys, Pycnanthus, Qualea, Quararibea, Quassia, Quercus, Quiina, Radlkofera, Radlkoferella, Randia, Rauvolfia, Recordoxylon, Reinwardtiodendron, Rhabdodendron, Rhabdodenrdon, Rhabdophyllum, Rheedia, Rhodamnia, Rhodostemonodaphne, Richeria, Ricinodendron, Rinorea, Rothmannia, Roucheria, Roupala, Rovoulfia, Ruizterania, Ruprechtia, Ryparosa, Rytigynia, Sacoglottis, Sageraea, Sagotia, Sandoricum, Sandwithia, Santiria, Sapindus, Sapium, Sapotaceae, Saraca, Sarcotheca, Scaphium, Schefflera, Schleichera, Schoutenia, Sclerocroton, Sclerolobium, Scolopia, Scorodocarpus, Scottellia, Sculopia, Scutinanthe, Sebastiania, Seguieria, Semecarpus, Sextonia, Shirakiopsis, Shorea, Shoreasp, Sideroxylon, Simaba, Simarouba, Sindora, Siparuna, Sizygium, Sloanea, Socratea, Solanum, Sorocea, Soyauxia, Spathodea, Spatholobus, Spondias, Stachyarrhena, Staudtia, Stemonocoleus, Stemonurus, Sterculia, Stereospermum, Streblus, Strichnosmitis, Strombosia, Strombosiopsis, Strychnos, Stryphnodendron, Styrax, Swartzia, Swintonia, Syagrus, Symphonia, Symplocos, Synsepalum, Syzigium, Syzygium, Tabebuia, Tabernaemontana, Tabernamontana, Tachigali, Talisia, Tapirira, Tapura, Tarenna, Teclea, Teijmaniodendron, Teijsmaniodendron, Terminalia, Ternstroemia, Tessmannia, Tetragastris, Tetrameles, Tetrameranthus, Tetramerista, Tetrapilus, Tetrapleura, Tetrorchidium, Teysmaniodendron, Theobroma, Thomandersia, Thyrsodium, Timonius, Toona, Toulicia, Touroulia, Tovomita, Trattinnickia, Treculia, Trema, Tricalysia, Trichilia, Trichoscypha, Tridesmostemon, Trilepisium, Triplochiton, Tristania, Tritaxis, Trymatococcus, Turpinia, Turraeanthus, Uapaca, Unonopsis, Urera, Uvariopsis, Vangueria, Vantanea, Vasconcellea, Vatairea, Vataireopsis, Vateria, Vatica, Vepris, Vernonia, Virola, Vismia, Vitex, Voacanga, Vochysia, Votomita, Vouacapoua, Vouarana, Xanthophyllum, Xerospermum, Xylopia, Xylosma, Zanha, Zanthoxylum, Ziziphus, Zollernia, Zygia"</code></pre>
+<pre><code>[1] "Abarema, Acacia, Acalypha, Achatocarpus, Achrouteria, Acosmium, Acrocarpus, Actinodaphne, Actinostemon, Adenanthera, Adenathera, Adinandra, Aegiphila, Afrostyrax, Afzelia, Agathis, aglaia, Aglaia, Agonandra, Agouticarpa, Agrostachys, Agrostistachys, Aidia, Aiouea, Alangium, Albizia, Albizzia, Alchornea, Alchorneopsis, Alexa, Alibertia, Allanblackia, Allantoma, Alliaceum, Allophylus, Alseodaphne, Alstonia, Amaioua, Amanoa, Ambelania, Amoora, Ampelocera, Amphimas, Amphiodon, Amphirrhox, Anacardiaceae, Anacardium, Anadenanthera, Anaxagorea, Andira, Angylocalyx, Aniba, Aningeria, Anishoptera, Anisophylla, Anisophyllea, Anisoptera, Annickia, Annona, Annonaceae, Anogeissus, Anomospermum, Anonidium, Anopyxis, Anthocephalus, Anthocleista, Anthonotha, Antiaris, Antidesma, Antonia, Antrocaryon, Aoranthe, Aparasthmium, Aparisthmium, Apeiba, Aphanamixis, Aphania, Apidosperma, Apocynaceae, Apodites, Aporosa, Aporrhiza, Aporusa, Aptandra, Apuleia, aquilaria, Aquilaria, Aralia, Archidendron, Ardisia, Arsidendron, Artocarpus, Aspidosperma, Astrocaryum, Astronia, Astronium, Ateleia, Attalea, Atuna, Aubrevillea, Autranella, Avicennia, Azadirachta, Baccauera, Baccaurea, Bactris, Bagassa, Balanites, Balfourodendron, Balizia, Banara, Baphia, Baringtonia, Barringtonia, Barteria, Barylucuma, Bastardiopsis, Batesia, Batocarpus, Bauhinia, Beilschmeidia, Beilschmiedia, Beilshmedia, Beishmeidia, Bellucia, Belonophora, Berhadapa, Berlinia, Bersama, Bersame, Bertholletia, Bhesa, Bischofia, Bixa, Blepharistemma, Blighia, Blumeodendron, Bobgunnia, Bocageopsis, Bocoa, Bombacopsis, Bombax, Borojoa, Bosqueia, Bouea, Bowdichia, Brachystegia, Brackenridgea, Breviea, Breynia, Bridelia, Brosimum, Brownlowia, Buchanania, Buchenavia, Buchholzia, Bunchosia, Burceracea, Burdachia, Burseaceae, Bursecaceae, Burseraceae, Bussea, Byrsonima, Cabralea, Caesalpinia, Calatola, Callerya, Calliandra, Callicarpa, Caloncoba, Calophyllum, Calpocalyx, Calycolpus, Calycophyllum, Calyptranthes, Camanger, Camnosperma, Campnosperma, Campomanesia, Campsiandra, Campsoneura, canarium, Canarium, Candolleodendro, Canthium, Capirona, Capparidastrum, Capparis, Caraipa, Carallia, Carapa, Carica, Cariniana, Carrata, Caryocar, Caryota, Casearea, Casearia, Cassia, Cassine, Cassipourea, Cassorea, Castanopsis, Castilla, Cathedra, Catostemma, Cecropia, Cedrela, Cedrelinga, Ceiba, Celastraceae, Celtis, Cephalomappa, Cestrum, Chaetachme, Chaetacme, Chaetocarpus, Chamaecrista, Chaumochytum, Chaunochiton, Cheatacme, Cheatchme, Cheiloclinidium, Cheiloclinium, Chimarrhis, Chionanthus, Chisocheton, Chlamydocola, Chlorocardium, Chomelia, Christiana, Chrsophylum, Chrysobalanaceae, Chrysophyllum, Chukrasia, Chytranthus, Cinnammon, Cinnamomum, Citharexylum, Citronella, Clarisia, Clathrotropis, Clausena, Clavija, Cleistanthus, Cleistopholis, Clophyllum, Coccoloba, Cocoona, Coelocaryon, Coelodepas, Coelostegia, Coelostiga, Coffea, Cola, Combretum, Conceveiba, Conchocarpus, Connarus, Conopharyngia, Coona, Coordercinodendron, Copaifera, Cordia, Corynanthe, Corythophora, Cotylelobium, Couepia, Couma, Couratari, Couroupita, Coussapoa, Coussarea, Coutarea, Cratersperumum, Crateva, Cratoxyllon, Cratoxyllum, Cratoxylum, Cremastosperma, Crepidospermum, Croton, Crudia, Crypteronia, Cryptocarya, Ctenolophon, Cullenia, Cupania, Cussonia, Cuviera, Cyathocalyx, Cybianthus, Cynometra, Cyrillopsis, Dacryodes, Dahlstedtia, Dalbergia, Daniellia, Dasylepis, Dead, Dehaasia, Dehaassia, Dendobrangia, Dendrobangia, Dendropanax, Derris, Desplatsia, Detarium, Dialium, Diatenopteryx, Dichapetalum, Dichostemma, Dichrostachys, Dicoryinia, Dicorynia, Dictyandra, Didymopanax, Dillenia, Dimocarpus, Dimorphandra, Dinizia, Diospyros, Diploon, Diplotropis, Dipterocarpaceae, Dipterocarpus, Dipteryx, Discocarpus, Discoclaoxylon, Discoglypremna, Discophora, Disoxylum, Distemonanthus, Dodecastigma, Dodecastignma, Doliocarpus, Dombeya, Dourodoa, Dovyalis, Dracaena, Dracontomelon, Dralum, Drymicarpus, Dryobalanops, Drypetes, Duabanga, Duabunga, Duboscia, Duguetia, Dulacia, Durio, Duroia, Dussia, Dyera, Dypetes, Dysoxylum, Ebenaceae, Ecclinusa, Ehretia, Ekebergia, Elaeis, Elaeocarpaceae, Elaeocarpus, Elaeoluma, Elaeophorbia, Elateriospermum, Elizabetha, Elvasia, Emmotum, Empogona, Enademia, Endiandra, endiantra, Endlicheria, Endodesmia, Endopleura, Endospermum, Engelhardia, Engelhardtia, Enicoshantum, Entandrophragma, Enterolobium, Eperua, Ephedranthus, Eribroma, Eriocoelum, Eriotheca, Erisma, Erycibe, Erythrina, Erythrophleum, Erythroxylon, Erythroxylum, Eschweilera, Esenbeckia, Euadenia, Eugeissona, Eugeissonia, Eugenia, Euodia, Euonymus, Euphorbia, Euphorbiaceae, Euplassa, Eusideroxylon, Euterpe, Euxylophora, Evodia, Exellodendron, Exostyles, Fagaceae, Fagara, Fagaropsis, Fagraea, Fahrenheitia, Faramea, Ferdinandusa, Fernandoa, Ficus, Flacourtia, Flacourtiaceae, Fordia, Forterandia, Fragrea, Funtumia, Fusaea, Gaertnera, Galearia, Ganophyllum, Ganua, Garcinia, Gardenia, Gargium, Gaulettia, Geissospermum, Genipa, Geonoma, Gironniera, Gleditsia, Glochidion, Gloeospermum, Gluta, Glycidendron, Glycosmis, Glycydendron, Glyphaea, Gmelina, Gnetum, Gomphia, Goniothalamus, Gonocaryum, Gonystylus, Gordonia, Goupia, Greenwayodendron, Grewia, Guapira, Guarea, Guatteria, Guatteriopsis, Guazuma, Guibourtia, Guioa, Gustavia, Guttiferae, Gymnacranthera, Gymnostemon, Gynotroches, Gyronera, Handroanthus, Harmandia, Harpullia, Harungana, Hasseltia, Hebepetalum, Heisteria, Helicia, Helicostylis, Helietta, Hemandradenia, Hennecartia, Henriettea, Heritiera, Hernandia, Herrania, Hevea, Hexalobus, Heynea, Hidnocarpus, Hieronima, Hieronyma, Hildegardia, Himatanthus, Hirtella, Holarrhena, Holigarna, Holocalyx, Holoptelea, Homalium, Homalolepis, Homalolepsis, hopea, Hopea, Horsfieldia, Hortia, Humboldtia, Humiria, Humiriastrum, Hura, Hydnocarpus, Hydrocarpus, Hydrochorea, Hyeronima, Hyeronyma, Hymenaea, Hymenocardia, Hymenolobium, Hymenopus, Hymenostegia, Hypobathrium, Icacinaceae, Ichthyophora, Ilex, Indora, Inga, Inhambanella, Intsia, Irvingia, Iryanthera, Isertia, Isolona, Isonandra, Ixonanthes, Ixonanthus, Ixora, Jacaranda, Jacaratia, Jackia, Jessenia, Joannesia, Keayodendron, Kerangi, Khaya, Kibatalia, Kigalia, Kigelia, Klainedoxa, Klarobelia, knema, Knema, Koilodepas, Kokoona, Koompasia, Koompassia, Koona, Koordersiodendron, Kubitzkia, Kutchubaea, Laccodiscus, Lacistema, Lacmellea, Lacunaria, Laetia, Lagerstroemia, Lancium, Lannea, Lansium, Lasianthus, Lasiodiscus, Lauraceae, Lecaniodiscus, Lechytidaceae, Lecointea, Lecythidaceae, Lecythis, Leea, Leguminaceae, Leguminosae, Leonia, Lepidobotrys, Lepidocaryum, Lepisanthes, Lepisantus, Leplaea, Leptactina, Leptaulus, Leptobalanus, Leptonychia, Leretia, Liana, Licania, Licaria, Licuala, Limadendron, Lindackeria, Linderkeria, Linociera, Liriosma, Lissocarpa, Lissorcarpa, Litherocarpus, Lithocarpus, Litocarpus, litsea, Litsea, Litsia, Livistona, llex, Lonchocarpus, Lophira, Lophopetalum, Loreya, Lovoa, Loxopterygium, Luehea, Lueheopsis, Lycania, Lychnodiscus, Lychodiscus, Lynchodiscus, Mabea, Mabia, Macaranga, Maccaranga, Machaerium, Machilus, Maclura, Macoubea, Macrolobium, Madhuca, Maduca, Maerua, Maesobotrya, Maesopsis, Magnistipula, Magnolia, Magreteria, Mahurea, Majidea, Mallotus, Malmea, Malouetia, Malpighia, Maltanranthos, Mammea, Mangifera, Manihot, Manilkara, Mansonia, Maprounea, Maquira, Maranthes, Mareya, Margaretia, Margaritaria, Markhamia, Marlierea, Marmaroxylon, Martiodendron, Massularia, Mastixia, Matayba, Matisia, Maytenus, Measopsis, Meiogyne, Melanochyla, Melanochylla, Melastomataceae, Meliaceae, Melicoccus, Melicope, Meliosma, Memecylon, Meranti, Mesua, Metrodorea, Metrodoria, Mezilaurus, Mezzetia, Mezzettia, Miconia, Micrandra, Microcos, Microdesmis, Micropholis, Microtropis, Mildbraediodendron, Milicia, Milletia, Millettia, Mimusops, Minquartia, Mitragyna, Mollatus, Mollia, Monocarpia, Monodora, Monoon, Monteverdia, Moquilea, Mora, Moraceae, Morelia, Moronobea, Morous, Morus, Moulthonianthus, Moultonianthus, Mouriri, Mouriria, Moutabea, Muellera, Musanga, Myrcia, Myrcianthes, Myrciaria, Myrianthus, Myristica, Myristicacea, Myristicaceae, Myrisytica, Myrocarpus, Myrsine, Myrtaceae, Mystrozylen, Mystrozylon, Napoleona, Napoleonaea, Naringi, Nauclea, Naucleopsis, Nectandra, Neea, Neesia, Nemaluma, Neobalanocarpus, Neoboutania, Neocalyptrocalyx, Neolamarckia, Neolitsea, Neonauclea, Neoptychocarpus, Neoraputia, Neoschortechinia, Neoscortechinia, Nephelium, Nesogordonia, Newbouldia, Newtomia, Newtonia, Nothopegia, Ochanostachys, Ochna, Ochnaceae, Ochthocosmus, Ocotea, Octomeles, Oenocarpus, Okoubaka, Olax, Oldfieldia, Olea, Oleaceae, Omphalocarpum, Oncoba, Oncosperma, Ongokea, Onychopetalum, Ophiobotrys, Ormosia, Orophea, Osteophloeum, Ostodes, Otonephelium, Oubanguia, Ouratea, Oxandra, Oxyanthus, Oxynthus, Oxyrithus, Ozoroa, Pachira, Pachyelasma, Pachystela, Paena, Pajanelia, palaquium, Palaquium, Palicourea, Pancovia, Panda, Pantacea, Paracroton, Parahancornia, Paramachaerium, Parapiptadenia, Paraprotium, Parartocarpus, Parashorea, Parastemon, Paratocarpus, Parinari, Parinariopsis, Parinarium, Parishia, Parkia, Paropsia, Pausandra, Pausinystalia, Payena, Paypayrola, Pelawan, Pellacalyx, Peltogyne, Peltophorum, Pentace, Pentaclethra, Pentadesma, Pentaspadon, Peponidium, Pera, Perebea, Perospermum, Persea, Pertusadina, Petersianthus, Petrenandra, Phanera, Phoebe, Pholidocarpus, Phyllanthus, Phytolacca, Picralima, Picramnia, Picrasma, Pilocarpus, Pimelodendron, Piptadenia, Piptadeniastrum, Pisonia, Pithecellobium, Pithecelobium, Placodiscus, Planchonia, Platea, Platonia, Platymiscium, Platysmicium, Plectronia, Pleiocarpa, Pleiocarpidia, Pleuranthodendron, Pleurothyrium, Plinia, Podocalyx, Podocarpus, Poecilanthe, Pogonophora, Polyalthia, Polyanlthia, Polyanthia, Polygalaceae, Polygonanthus, Polyosma, Polyscais, Polyscias, Pomeleodendron, Pometia, Popowia, Poraqueiba, Porterandia, Posoqueria, Pourouma, Pouteria, Pradosia, Prainea, Premna, Prieurella, Prioria, Prisma, Proteaceae, Protium, Prunas, Prunus, Pseudalbizzia, Pseudima, Pseudobombax, Pseudolmedia, Pseudomalmea, Pseudopiptadenia, Pseudospondias, Pseudoxandra, Psidium, Psychotria, Psydrax, Pteleopsis, Ptenandra, Pternandra, Pterocarpus, Pterocymbium, Pterospermum, Pterygota, Ptychopetalum, Ptychopyxis, Pycnanthus, Qualea, Quararibea, Quassia, Quercus, Quiina, Radlkofera, Radlkoferella, Ragala, Randia, Rauvolfia, Recordoxylon, Reinwardtiodendron, Rhabdodendron, Rhabdodenrdon, Rhabdophyllum, Rhamnaceae, Rheedia, Rhodamnia, Rhodostemonodaphne, Richeria, Ricinodendron, Rinorea, Rinoreocarpus, Rollinia, Rosaceae, Rothmannia, Roucheria, Roupala, Rovoulfia, Rubiaceae, Rudgea, Ruizterania, Ruprechtia, Ryparosa, Rytigynia, Sacoglottis, Sageraea, Sagotia, Sagrea, Sahagunia, Samanea, Sandoricum, Sandwithia, Santiria, Sapindaceae, Sapindus, Sapium, Sapotaceae, Saraca, Sarcaulus, Sarcotheca, Scaphium, Scheelea, Schefflera, Schima, Schizolobium, Schleichera, Schoutenia, Sclerocroton, Sclerolobium, Scolopia, Scorodocarpus, Scottellia, Sculopia, Scutinanthe, Sebastiania, Seguieria, Semecarpus, Senegalia, Senna, Sextonia, Shirakiopsis, shorea, Shorea, Shoreasp, Sideroxylon, Simaba, Simarouba, Simira, Sindora, Siparuna, Sloanea, Socratea, Solanum, Sorocea, Soyauxia, Spathodea, Spatholobus, Spoctubilis, Spondias, Stachyarrhena, Staudtia, Stemonocoleus, Stemonorus, Stemonurus, Sterculia, Sterculiaceae, Stereospermum, Streblus, Strichnosmitis, Strombosia, Strombosiopsis, Strychnos, Stryphnodendron, Stylogyne, Styrax, Swartzia, Swietenia, Swintonia, Syagrus, Symmeria, Symphonia, Symplocos, Synsepalum, Syzygiopsis, syzygium, Syzygium, Tabebuia, Tabernaemontana, Tabernamontana, Tachigali, Talisia, Tanaecium, Tapirira, Tapura, Taralea, Tarena, Tarenna, Teclea, Teijsmanniodendron, Terminalia, Ternstroemia, Tessmannia, Tetractomia, Tetragastris, Tetrameles, Tetrameranthus, Tetramerista, Tetrapilus, Tetrapleura, Tetrorchidium, Theaceae, Theobroma, Thomandersia, Thymeleaceae, Thymeliaceae, Thyrsodium, Tibouchina, Tiliaceae, Timonius, Tocoyena, Toona, Toulicia, Touroulia, Tovomita, Trattinickia, Trattinnickia, Treculia, Trema, Tricalysia, Trichilia, Trichoscypha, Tridesmostemon, Trigonopleura, Trigonostemon, Trilepisium, Triplaris, Triplochiton, Tristania, Tristaniopsis, Tritaxis, Trophis, Trymatococcus, Tubernaemontana, Turpinia, Turraeanthus, Uapaca, Ulin, Ulmaceae, Unonopsis, Urera, Uvaria, Uvariopsis, Vangueria, Vantanea, Vasconcellea, Vasivaea, Vatairea, Vataireopsis, Vateria, Vatica, Ventilago, Vepris, Verbenaceae, Vernonia, Virola, Vismia, Vitex, Voacanga, Vochysia, Votomita, Vouacapoua, Vouarana, Warszewiczia, Xanoquito, Xanthophyllum, Xerospermum, Xylopia, Xylosma, Xylosterculia, Zanha, Zanthoxylum, Zeylanica, Ziziphus, Zizyphus, Zollernia, Zygia"</code></pre>
 </div>
 </div>
+<p>Genera includes the following dubious names: <code>{r} paste(gen_wrong, collapse = ",")</code>.</p>
 <p>With the following counts:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>taxo <span class="sc">%&gt;%</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(genus) <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(family, genus, species) <span class="sc">%&gt;%</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Missing"</span> <span class="ot">=</span> <span class="fu">sum</span>((genus <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"#N/A"</span>, <span class="st">"A"</span>)),</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">na.omit =</span> <span class="cn">TRUE</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Indet"</span> <span class="ot">=</span> <span class="fu">sum</span>(</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>      (genus <span class="sc">%in%</span> <span class="fu">c</span>(</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Indet."</span>, <span class="st">"nd"</span>, <span class="st">"sp"</span>, <span class="st">"sp1"</span>, <span class="st">"sp5"</span>, <span class="st">"Indetermined"</span>,</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"No"</span>, <span class="st">"KERUING"</span>, <span class="st">"MERANTI"</span>, <span class="st">"MERSAWA"</span>,</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"BALAU"</span>, <span class="st">"muerto"</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>      )),</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">na.omit =</span> <span class="cn">TRUE</span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Family-only"</span> <span class="ot">=</span> <span class="fu">sum</span>(<span class="fu">grepl</span>(<span class="st">"Indet."</span>, genus), <span class="at">na.omit =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="st">"type"</span>, <span class="st">"number"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Number of genus by issue type."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(genus <span class="sc">%in%</span> gen_wrong) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">N =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Number of genus issues"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
-<caption>Number of genus by issue type.</caption>
+<caption>Number of genus issues</caption>
 <thead>
 <tr class="header">
-<th style="text-align: left;">type</th>
-<th style="text-align: right;">number</th>
+<th style="text-align: right;">N</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Missing</td>
-<td style="text-align: right;">2</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Indet</td>
-<td style="text-align: right;">9</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Family-only</td>
-<td style="text-align: right;">37</td>
+<td style="text-align: right;">123</td>
 </tr>
 </tbody>
 </table>
@@ -710,98 +721,65 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="species" class="level2">
 <h2 class="anchored" data-anchor-id="species">Species</h2>
-<p>Species includes the following dubious names:</p>
-<ul>
-<li><strong>Unidentified</strong> (“det”, “^sp”). Indet., sp, sp., Schaeff., Mast, Welw, Stapf, Hook, Gilg, Benth, flacouirtiaceae, Determinado, BERMINYAK, TIDAK,KUNING, spp,</li>
-<li>sp1, sp5, L, muerto</li>
-<li><strong>Sub-taxonomic</strong> (“[[:punct:]]”): guyanensis subsp. Guyanensis, acuminatum_subsp.juniperinum, cuspidata_subsp.dura, guyanensis subsp. Guyanensis, guyanensis_subsp.duckeana, opacum_subsp.rabelianum, panacoco_var.panacoco, persistens_subsp.aurantiaca, tomentosa_subsp.maroniensis, venosa_subsp.amazonica, vera_subsp.affinis</li>
-<li><strong>Undescribed</strong> (“^sp”). sp.1, sp.1-CAY, sp.10-CAY, sp.11-CAY, sp.12-CAY, sp.13-CAY, sp.14-CAY, sp.15-CAY, sp.16-CAY, sp.17-CAY, sp.18-CAY, sp.1Guyafor, sp.2, sp.2-CAY, sp.21_DS, sp.22-CAY, sp.23-CAY, sp.24-CAY, sp.2BAF, sp.2Guyafor, sp.3, sp.3-CAY, sp.30-CAY, sp.33-CAY, sp.34-CAY, sp.35-CAY, sp.35Guyafor, sp.36-CAY, sp.38Guyafor, sp.3BAF, sp.3Guyafor, sp.4-CAY, sp.42-CAY, sp.5-CAY, sp.5Guyafor, sp.6-CAY, sp.6Guyafor, sp.7-CAY, sp.70-CAY, sp.71-CAY, sp.7Guyafor, sp.8-CAY, sp.9-CAY, sp.B1, sp.B10, sp.B2, sp.B35, sp.B5, sp.B8, sp.B9, sp.C, sp.D, sp.FG13-Holst, sp.FG14-Holst, sp.FG2-Holst, sp.FG21-Holst, sp.FG9-Holst, sp.P1, sp.P11, sp.P22, sp.P3, sp.P33, sp.P4, sp.P6, sp.P9</li>
-</ul>
-<p>See the list below:</p>
+<p>Species list:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">select</span>(taxo, species) <span class="sc">%&gt;%</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"^sp"</span>, species))</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(taxo<span class="sc">$</span>species) <span class="sc">%&gt;%</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sort</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="at">collapse =</span> <span class="st">", "</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sp_wrong <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Indet"</span>, <span class="st">"Indet."</span>, <span class="st">"sp"</span>, <span class="st">"sp."</span>, <span class="st">"Schaeff"</span>, <span class="st">"Schaeff."</span>, <span class="st">"Mast"</span>, <span class="st">"Welw"</span>,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">"Stapf"</span>, <span class="st">"Hook"</span>, <span class="st">"Gilg"</span>, <span class="st">"Benth"</span>, <span class="st">"flacouirtiaceae"</span>, <span class="st">"Determinado"</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>              <span class="st">"BERMINYAK"</span>, <span class="st">"TIDAK"</span>, <span class="st">"KUNING"</span>, <span class="st">"spp"</span>, <span class="st">""</span>, <span class="st">"1"</span>, <span class="st">"10"</span>, <span class="st">"11"</span>, <span class="st">"12"</span>, <span class="st">"13"</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>              <span class="st">"14"</span>, <span class="st">"15"</span>, <span class="st">"16"</span>, <span class="st">"17"</span>, <span class="st">"18"</span>, <span class="st">"19"</span>, <span class="st">"2"</span>, <span class="st">"20"</span>, <span class="st">"21"</span>, <span class="st">"22"</span>, <span class="st">"23"</span>, <span class="st">"25"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>              <span class="st">"27"</span>, <span class="st">"28"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>, <span class="st">"5"</span>, <span class="st">"6"</span>, <span class="st">"7"</span>, <span class="st">"8"</span>, <span class="st">"9"</span>, <span class="st">"a"</span>, <span class="st">"A"</span>, <span class="st">"sp1"</span>, <span class="st">"sp5"</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>              <span class="st">"L"</span>, <span class="st">"muerto"</span>, <span class="st">"JAP1001"</span>, <span class="st">"JAP1028"</span>, <span class="st">"JAP1036"</span>, <span class="st">"JAP1291"</span>, <span class="st">"JAP1398"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>              <span class="st">"JAP1457"</span>, <span class="st">"JAP1627"</span>, <span class="st">"JAP1725"</span>, <span class="st">"JAP1799"</span>, <span class="st">"JAP1856"</span>, <span class="st">"JAP1873"</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>              <span class="st">"JAP1882"</span>, <span class="st">"JAP1891"</span>, <span class="st">"jariensis"</span>, <span class="st">"jauari"</span>, <span class="st">"javanica"</span>, <span class="st">"javanicum"</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>              <span class="st">"JCO355"</span>, <span class="st">"JCO407"</span>, <span class="st">"JCO416"</span>, <span class="st">"JCO578"</span>, <span class="st">"JCO597"</span>, <span class="st">"JCO670"</span>, <span class="st">"JCO696"</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>              <span class="st">"JCO710"</span>, <span class="st">"JCO736"</span>, <span class="st">"GFL1876"</span>, <span class="st">"GFL1997"</span>, <span class="st">"GFL2022"</span>, <span class="st">"GFL2211"</span>, </span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>              <span class="st">"GFL2386"</span>, <span class="st">"GFL2411"</span>, <span class="st">"GFL2488"</span>, <span class="st">"GFL2606"</span>, <span class="st">"GFL2703"</span>, <span class="st">"GFL2772"</span>,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>              <span class="st">"GFL2941"</span>, <span class="st">"GFL3093"</span>, <span class="st">"GFL3170"</span>, <span class="st">"GFL3182"</span>, <span class="st">"GFL3224"</span>, <span class="st">"GFL3284"</span>,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>              <span class="st">"GFL3295"</span>, <span class="st">"GFL3481"</span>, <span class="st">"GFL3661"</span>, <span class="st">"GFL3686"</span>, <span class="st">"GFL6037"</span>, <span class="st">"GHP102"</span>,</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>              <span class="st">"JAP1000"</span>, <span class="st">"id"</span>, <span class="st">"indet"</span>, <span class="st">"Ridl"</span>, <span class="st">"sp13"</span>, <span class="st">"sp2"</span>, <span class="st">"sp3"</span>, <span class="st">"sp53"</span>,</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>              <span class="st">"species"</span>, <span class="st">"X"</span>, <span class="st">"XIV"</span>, <span class="st">"XVI"</span>, <span class="st">"spp"</span>, <span class="st">"n"</span>, <span class="st">"sp2"</span>, <span class="st">"a"</span>, <span class="st">"int"</span>,</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>              <span class="st">"L"</span>, <span class="st">"sur"</span>, <span class="st">"P"</span>, <span class="st">"4"</span>, <span class="st">"sp3"</span>, <span class="st">"id"</span>, <span class="st">"X"</span>, <span class="st">"2"</span>, <span class="st">"23"</span>, <span class="st">"1"</span>, <span class="st">"XVI"</span>,</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>              <span class="st">"19"</span>, <span class="st">"17"</span>, <span class="st">"5"</span>, <span class="st">"7"</span>, <span class="st">"22"</span>, <span class="st">"21"</span>, <span class="st">"3"</span>, <span class="st">"10"</span>, <span class="st">"11"</span>, <span class="st">"18"</span>, <span class="st">"16"</span>, <span class="st">"8"</span>,</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>              <span class="st">"XIV"</span>, <span class="st">"20"</span>, <span class="st">"14"</span>, <span class="st">"dao"</span>, <span class="st">"13"</span>, <span class="st">"6"</span>, <span class="st">"9"</span>, <span class="st">"25"</span>, <span class="st">"12"</span>, <span class="st">"28"</span>, <span class="st">"15"</span>,</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>              <span class="st">"27"</span>, <span class="st">"pin"</span>, <span class="st">"cf"</span>, <span class="st">"nd"</span>)</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> taxo <span class="sc">%&gt;%</span> </span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>(species <span class="sc">%in%</span> sp_wrong)) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(species) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_length</span>(species) <span class="sc">&lt;=</span> <span class="dv">3</span>)</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(<span class="fu">filter</span>(taxo, <span class="sc">!</span>(species <span class="sc">%in%</span> sp_wrong))<span class="sc">$</span>species) <span class="sc">%&gt;%</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sort</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="at">collapse =</span> <span class="st">", "</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] ", A, abbreviata, abyssinica, acida, acreana, acrocephala, aculeata, acuminata, acuminatissima, acuminatissimum, acuminatum_subsp.juniperinum, acuminta, acuta, acutangula, acutiflora, acutifolium, adianthifolia, adolfi, adolphi-fridericii, adstringens, aerugo, aethiopica, affine, africana, africanum, africanus, afzelii, agami, agamii, aggregatum, alata, alba, albescens, albicans, albicoria, albiflora, albiflorum, album, alchorneoides, alicastrum, alliodora, alpinus, alternifolia, altisima, altissima, altissimum, altsonii, amara, amazonia, amazonica, amazonicum, amazonicus, ambelaniifolia, ambotay, amentacea, americana, amoenum, amorphoides, amshoffiana, amythiesii, anamalaiense, anastomosans, andongensis, aneura, angolense, angolensis, angulata, angustifolia, angustifolium, angustifolius, angustiloba, aningeri, anisata, anisophylla, anisophyllus, anomala, antennifera, anteridifera, anthelminthica, anthotheca, anysophyllus, apeibophylla, apetala, apiculata, apiculatum, apodanthus, aptera, aquatica, aracouchini, arborea, arborescens, arboreus, argenteum, arguta, argyrophylla, aristata, aritu, armata, arnoldiana, arnoldianum, arnottiana, aromatica, articulatus, asbeckii, aspera, assamicus, atropurpurea, atroviolaceus, atroviridis, attenuata, Aubl, aubletii, aubrevillei, augouardii, augusta, auratum, auriculata, auristellae, australe, aviformis, axillaris, aylmeri, bacaba, baccata, baccifera, bacciformis, baculifera, bagshawei, bakembei, balansae, ballayi, balsamifera, bancoensis, bangii, bankae, bankense, barbata, barbatum, barteri, bataua, battiscombei, baudii, bauhiniaefolia, becarii, beccariana, beccarii, beccarina, beddomei, beguei, beillei, bella, bellirica, benetii, bengalensis, bennetii, Benth, benthamiana, benthamianus, benthamii, bequaertii, BERMINYAK, bethanniana, bicolor, bicornis, bidentata, bifolium, bigeminum, bijuga, bilocularis, bipindensis, blumeanus, bolivarensis, boliviana, bonplandii, boonei, borneensis, Borneensis, botryoides, boukokoense, bourdillonii, bourgoni, boya, brachiata, brachyandra, brachyanthera, brachyata, brachybotrys, brachylepis, brachypetala, brachypoda, brachyrachis, brachystachys, brachytepala, bracteata, bracteatus, bracteolata, bracteosa, brasiliense, brasiliensis, brevibracteatus, brevicuspis, brevipes, brevis, brevistaminea, bridelioides, brunnea, brunnescens, brunonis, bubalinum, bucchanani, buettneri, buonopozense, burchellii, burkartiana, Burm, burseraefolia, burserifolia, butayei, butyracea, buxifolia, cacao, cadamba, caerulescens, caffra, caimito, cainito, calodendron, caloneura, calophylla, calophylloides, calophyllum, calycina, campanulata, campestre, campestris, canaliculata, canarica, candollei, canelilla, canephora, canescens, canjerana, cannella, cantleyanus, capensis, capillipes, capitata, capitatus, capitulifera, capreifolia, carapanauba, carbonaria, cardiosperma, caricifolia, carinata, carinatus, carrinatus, carthagenensis, caryophylloides, casiquiarensis, castanea, castaneifolia, cateniformis, catharinensis, catigua, caudata, caudatum, cauliflora, cavalcantei, cayennensis, ceanothifolia, cecropioides, cedrata, cedron, centrale, cephalostigma, cerasiferum, ceratoxylon, cernua, cerospermus, ceylanica, chartacea, chartaceifolia, chartaceus, chevalieri, chlamydantha, chloranthum, chlorantum, chrysochlamys, chrysophylla, chrysophyllum, cicatricata, ciliata, cinerea, cinnabarina, cinnamomea, cinnamomum, cissiflora, citrifolia, citrifolium, cladantha, clathrata, claussenii, claviflora, coarctata, coccinea, cochinchinense, cochinchinensis, cochlariflorum, cochlearia, cochleata, coerulea, coffeifolia, coffeoides, cognatum, collina, collocarpa, commersoniana, comosa, compressa, concolor, conferta, confertiflora, confertus, confusa, confusus, congensis, congesta, congestiflora, congoensis, congolana, congolensis, conocarpus, constricta, contortisiliquum, contracta, copaia, cordata, cordatum, cordifolia, coriacea, cornutus, corrugata, corymbosa, costata, costulata, costulatus, courbaril, courtallensis, coutinhoi, cowanii, crassa, crassiflora, crassifolia, crassipetalum, crenata, crenulata, crinita, crispa, crispiflorus, cristata, cruentum, cumini, cuneata, cuneatum, cuneatus, cuneifolium, cupanioides, cupulata, curtisii, cuspidata, cuspidata_subsp.dura, cuspidatum, cydonioides, cylindrica, cylindricum, cymosa, dananensis, daphnoides, dasyphyllum, dawei, debilis, decagyna, decandra, decandrum, decaphylla, decaphyllus, deciduum, decipiens, decolorans, decorticans, decussata, deflexa, demerarae, demerarense, densa, densicoma, densiflora, densifolia, densifrons, dentata, dentatus, denticulatum, desmanthum, Determinado, dewevrei, diadenum, dichotoma, dichroa, diderrichii, didymostemon, dinizii, dinklagei, dioica, dioicus, diospyrifolia, discoidea, discolor, discreta, distachya, divaricata, divaricatum, divergen, divergens, diversifolia, diversifolium, dolichocalyx, dolichocarpa, doniana, dryobalanoides, dubium, duchesnei, duckeana, duckei, dulcis, dumetosa, Dunal, dura, durandii, durifructum, durlandii, ebenum, ecalyculata, echinata, echinocarpa, echinophora, edentula, edertii, edule, edulis, eetveldeana, effusus, egensis, eggelingi, eggersiana, egleri, egregia, ehie, ehrenbergiana, eichleri, ekmanii, elaeagnoides, elaeosperma, elastica, elasticus, elata, elatum, elegans, elliotii, elliptica, ellipticifolia, ellipticum, elongatus, elvasioides, emarginata, eminens, eminii, engleri, erectinervia, erianthus, eriobetalum, eriopetalum, eriopila, erythrocarpa, esculenta, eugeniifolia, euneura, ewickii, ewyckii, exaltata, exasparta, exasperata, excelliptica, excelsa, excelsum, excessim, excimia, exelliptica, exelsa, exorrhiza, exsucca, eyma, fagara, fagifolium, falcata, falcifera, fallax, fallx, fanchoniana, fanshawei, fasciculata, fastigiata, fauciflora, ferok, ferox, ferrea, ferruginea, ficigemma, filicoidea, filipes, fimbriata, firma, fissilis, fistuloides, fistulosa, flacouirtiaceae, flaemingii, flagellaris, flava, flavescens, flavicans, flavida, flavilatex, flavum, flexuosa, floribunda, foetida, foliolosa, forbesii, forficata, formosum, forstenii, fosteri, fouilloyana, fragans, fragrans, fraxinifolius, froesii, frondosa, frondosum, frondosus, frutescens, fruticosa, fulva, furfuracea, gabonensis, galeata, gallicum, gambecola, gamofetala, gamopetala, ganggo, garckeana, gardneri, gazelii, genipiflora, ghatensis, gigantae, gigantea, gigantecarpa, giganteum, gigantocarpa, gigantofolia, Gilg, gilgiana, gilletii, glaberrima, glabra, glabrata, glabriflorus, glabrum, glandistipula, glandulifera, glandulosa, glandulosum, glauca, glaucescens, glaucus, glazioveana, globosa, globosum, globulifera, glomerata, gloriosa, glycycarpa, goeldiana, goetheanus, goliath, golungensis, gomma, gomphophylla, gonggrijpii, gongrijpii, gonocarpum, gore, gossweileri, graciliflora, gracilifolia, gracilis, grahamii, grandbracteata, grandiflora, grandiflorus, grandifolia, grandifoliola, grandifolium, grandifolius, grandis, granulosa, granulosum, granvillei, graveolens, griffithi, griffithii, grifithii, grossularioides, guajar, guatterioides, guaviroba, guazumifolia, guereensis, guianense, guianensis, guidonia, guineense, guineensis, guiso, gummi-gutta, gummifera, gutta, guyanensis, guyanensis subsp. Guyanensis, guyanensis_subsp.duckeana, habrantha, haematospermum, harmsiana, hasseltii, haumanianus, havilandii, heimii, helstonei, hemidasya, hemisphericum, heptaphyllum, heptaphyllus, heteromorpha, heteromorphus, heterophylla, heterophyllus, heudelotii, hexaloba, hexandra, hexandrum, hexapetala, hexaphylla, hirsuta, hirsutus, hispida, hispidula, holcogyne, holstii, Hook, hosei, hostilis, hostmanniana, hostmannii, huberi, huberiana, hulletii, hullettii, humeratus, humiriifolium, hurifolia, hylodendron, hypoglauca, hypolampra, hypoleuca, hypophoenica, hypophoenicea, idatimon, ilicicifolia, ilicifolia, impetiginosa, inconspicua, incurvata, Indet., indica, indicus, indum, inelegans, inermis, iners, inpressa, insignis, int, integer, integra, integrifolia, intermedia, inundata, involucrata, itauba, iturensis, ituriensis, ivorense, ivorensis, Jambolides, jamboloides, japurensis, jariensis, javanica, javanicum, javitensis, jenmani, jenmanii, johimbe, johnsonii, johorensis, joveri, jupunba, juruensis, kabingaensis, kamerunensis, kappleri, keayana, keithii, kemando, kerstingii, kikir, kingii, klaineana, klaineanum, klainei, koetjapi, kola, KUNING, kunstleri, kunstlerii, kunthiana, kuteyensis, kwatae, L, laciniatum, lacourtianum, lactescens, laetum, laeve, laevifolim, laevifrons, laevigata, laevigatum, laevigatus, laevis, lagenifera, lambertiana, lanceaefolia, lanceaefoliia, lanceifolius, lanceolata, lanceolatum, lanceolatus, lanciferum, lancifolia, lapaceum, lappaceum, lastoursvillense, latericia, lateriflora, lateritia, latifolia, latistipulus, laurentii, laurifolia, laurina, laxiflora, lecointei, leembruggianus, leiocalycina, leiocarpa, lemairei, lentiscifolia, leonensis, lepidophyllus, lepidota, lepidotula, leprieurii, leprosula, leprosus, lescrauwaetii, letestui, leucocoma, licaniiflora, ligustrinum, lindaviana, lindeniana, linearicarpum, lisae, litorale, litt, littorale, lomatophylla, longan, Longflora, longiflora, longifolia, longifolium, longipedicellata, longipedunculata, longipendula, longipes, longipetiolata, longisperma, longistylum, longistylus, longitubulosa, loubryana, louisii, lowiana, lowianus, lowii, lucentifolium, lucidus, lunata, lunu-ankenda, lurida, luschnathiana, lutea, mabokeensis, machadoana, macrantha, macrobotrys, macrocalyx, macrocarpa, macrocarpon, macrocarpum, macrocarpus, macroceras, macrophylla, macrophyllum, macrophyllus, macropodum, macroptera, macrosepala, madagascariense, madeirana, madruno, magnifica, magnoliifolia, maingayi, maingayii, majuscula, mala-elengi, malabarica, malabaricum, malabaricus, malabathrum, malaccense, malaccensis, malayana, malembaensis, mannii, marcgravianum, marginata, marginatum, maripa, marmieri, maroniensis, marowynensis, martiniana, martinicensis, Mast, mataybifolia, matourensis, maxima, maximum, maxweliana, maxwelliama, maxwelliana, maxwilliana, mayumbensis, megalantha, megalocarpum, megalophylla, megantha, megaphylla, megapotamica, melanocarpum, melanopoda, melinoniana, melinonii, membranacea, membranifolium, mengarawan, mensalis, mesozygia, mespiloides, mezii, michelii, michellii, micradenia, micrantha, micranthus, micraster, microbotrys, microcalyx, microcarpa, micropetalum, microphylla, mildbraedii, millenii, minor, minutiflora, mitiis, mitis, modestum, modustum, mollis, mollissima, mombin, monadelpha, monandra, monbuttensis, monopetalus, montana, moosa, morella, morettii, morii, morototoni, moschata, motleyana, mucuso, muehlbergiana, mukole, multicostata, multiflora, multijuga, multinervia, multiovula, muricata, myrianthes, myrianthus, Myrianthus, myristica, myrmecophyla, myrmecophylla, myrranthus, myrsinoides, myrtifolia, nacropodum, nana, nannanii, natalensis, nd, Nees, neglecta, neriifolia, neriifolius, nervosa, nieuwenhuisii, nigra, nigrecens, nigritana, niopoides, nitens, nitida, nitidissima, nitidum, nitidus, nobilis, nodosa, noronhianum, noronhoe, nouragensis, nux-vomica, nymphaeifolia, obanensis, oblanceolata, oblonga, oblongata, oblongifolia, oblongum, obovata, obovatum, obscura, obstetrix, obtusa, obtusifolia, obtusifolium, obtusifolius, occidentalis, ochneocarpa, ochracea, ochrocalyx, octandrus, odora, odorata, odoratisima, odoratissima, odoratissimus, officinalis, ohracea, okelensis, olacoides, oldemanii, oleosa, oleracea, oligandrus, oligoneura, oliveri, omphalandra, omphalocarpoides, opaca, opacum_subsp.rabelianum, operculata, opifera, opposita, oppositifolia, oppositifolius, orellana, orientalis, orinocensis, ormosioides, ornata, osun, ottolanderi, ovalifolia, ovalis, ovata, oviformis, oxleyanis, oxleyanus, oxyphylla, P, pachycarpa, pachyceras, pachyphyllum, pachysteloides, paivae, palembanica, paliidum, pallens, pallescens, pallidior, pallidum, pallidus, palmata, paludosa, palustris, panacoco, panacoco_var.panacoco, panamensis, paniculata, paniculatum, panurensis, papaverifera, papaveroides, papaya, papilio, papillosus, paraense, paraensis, paraguariense, paraguariensis, paramaca, parillo, parinarioides, parviflora, parviflorum, parvifolia, Parvifolia, parvifoliolum, parvifolius, parvifructa, parvula, parvum, patens, patrisii, pauciflora, pavettoides, pavonina, paxii, pectinosquamata, pedicelata, pedicellaris, pedicellata, pedunculata, pellegriniana, pellegrinii, peltata, penangiana, pendula, penduliflora, penduliflorus, pendulla, pendulus, pennatifolius, pentagyna, pentandra, pentandrum, pentandrus, percurrens, perpulchrum, perrottetii, persistens, persistens_subsp.aurantiaca, perviridis, pescotomentosa, petalanthera, petidaris, petiolare, petiolaris, petiolatus, petoumo, petraeum, pezizifera, phaeophylla, philippensis, philippinensis, phloiodora, phoberos, pilosa, pilosula, pilosum, pin, pinanga, pinnata, pinnatum, piresiana, piriri, pisocarpa, pisonis, pitumba, plagiocarpium, platycalyx, platycephala, platycephalum, platyclados, platyphylla, platyspermum, platythyrsa, plukenetii, poeppigiana, poeppigii, poiteaui, polita, polyantha, polyanthum, polybotryum, polycarpa, polygyna, polyphylla, polystachys, polystachyum, pomiferum, ponga, potabilis, praealta, praeclara, praecox, prasina, preussii, prieuriana, prieurii, principum, procera, procerum, prouacensis, pruinosa, pruniforme, pruriens, pseudolancium, pseudopsidium, pseudostipularis, pseudosumatranum, psilostachya, pterocarpoides, pteroclada, pteropus, ptychandra, puberula, puberulum, pubescens, pubiflora, pulchella, pulcher, pulcherianum, pulcherrianum, pulcherrima, pulcherrimum, pulcherrimus, pulcherrinum, pulvinata, pulvinervis, punctata, punctulata, pungens, purpurascens, purpurea, purusensis, pustulata, pycnantha, pynaertii, pyrifolium, pyriformis, quadrifaria, quadrifida, quadrijuga, quercifolia, quintasii, racemifera, racemosa, ramboi, ramiflora, ramuliflora, rasak, rassak, recurvata, remiger, reticulata, retinervis, revolutus, rhetsa, rhinopetala, rhoifolia, rhoifolium, richardiana, Ridl, riedelianum, rigida, rigidum, rigidus, rimosa, rivularis, robur, robusta, robustum, rodolphii, rodriguesiana, rodriguesii, rogosa, rohrii, romanzoffiana, rosea, rosodora, rossiana, rostrata, rostratum, rotundifolius, routledgei, rowlandii, roxburghii, rubescens, rubiginosa, rubiginosum, rubra, rubrivenium, rubrostipulata, rufescens, rufovirgata, rugosa, rugulosa, rumphii, rupicola, ruwensorens, ruwensorensis, sagotiana, sagotianum, sagotii, salikounda, sanctae, sandwithianum, sanguinolentum, santalinoides, sapida, saponaria, sarmentosa, scabra, Schaeff., scheffleri, scholaris, schomburgkiana, schomburgkianus, schomburgkii, schweinfurthii, schwenkii, sciadophylla, sciophilum, sclerophylla, scleroxylon, scrobiculata, sebifera, seminis, senegalense, senegalensis, septentrionalis, seretii, sericea, sericeum, serrata, serratifolia, serratifolius, serratus, sertulifera, sessilifolia, silvatica, silvestris, simaboides, simiorum, simplicifolia, simplicifolium, sinemariensis, singkawang, singularis, sissoides, smeathmannii, smithiesii, smyethiesi, smyetiesii, smythiesii, Smythiesii, sorbifolia, soulatri, soyauxii, sp, sp., sp.1, sp.1-CAY, sp.10-CAY, sp.11-CAY, sp.12-CAY, sp.13-CAY, sp.14-CAY, sp.15-CAY, sp.16-CAY, sp.17-CAY, sp.18-CAY, sp.1Guyafor, sp.2, sp.2-CAY, sp.21_DS, sp.22-CAY, sp.23-CAY, sp.24-CAY, sp.2BAF, sp.2Guyafor, sp.3, sp.3-CAY, sp.30-CAY, sp.33-CAY, sp.34-CAY, sp.35-CAY, sp.35Guyafor, sp.36-CAY, sp.38Guyafor, sp.3BAF, sp.3Guyafor, sp.4-CAY, sp.42-CAY, sp.5-CAY, sp.5Guyafor, sp.6-CAY, sp.6Guyafor, sp.7-CAY, sp.70-CAY, sp.71-CAY, sp.7Guyafor, sp.8-CAY, sp.9-CAY, sp.B1, sp.B10, sp.B2, sp.B35, sp.B5, sp.B8, sp.B9, sp.C, sp.D, sp.FG13-Holst, sp.FG14-Holst, sp.FG2-Holst, sp.FG21-Holst, sp.FG9-Holst, sp.P1, sp.P11, sp.P22, sp.P3, sp.P33, sp.P4, sp.P6, sp.P9, sp1, sp5, sparsiflorum, speciosa, speciosum, speciosus, spinosa, splendens, spp, spruceana, spruceanum, sprucei, squamata, squarrosa, Stapf, staudtii, stellata, stellatus, stenodictya, stevensonii, stipitatum, stipulacea, stipulaceum, stipularis, stipulatum, stipulifera, strictum, strumosum, suaveolens, subcordata, subcordatum, subcoriacea, subcrenatum, subdimidiata, subdita, subericarpa, subglandulosa, subglauca, subincanum, sublamellatus, subobovatum, subscorpioidea, subsericea, subserratum, subspathulata, subterminalis, subulatus, subviolacea, succosa, sucuuba, sumatrana, sumatranum, sundaicus, superba, sur, surinamense, surinamensis, surtifolia, surumuensis, swintoioides, swintonioides, swynnertonni, sylvatica, sylvaticus, sylvestre, sylvestris, synandra, tabularis, tadulingamii, talbotii, tamaquarina, tapos, taubertiana, tawahense, tenella, tenue, tenuifolia, tenuifolium, terminalis, tessmannii, testudinarum, tetragona, tetramera, tetrandra, tetraphylla, tetraptera, thibaudiana, thompsonii, Thouars, thurifera, TIDAK, tiliifolia, tinctoria, tinctorium, tisserantii, toka, tomentella, tomentosa, tomentosa_subsp.maroniensis, toqueve, torta, toxicaria, trachyphylla, tragacantha, travancorica, trichilioides, trichotoma, tricolor, triflora, trifoliata, trifoliatum, trifoliolatum, trijuga, trimera, trinervia, triplinervia, tristis, tschudyoides, tubifera, tubulatum, tungurut, turbinata, tweediana, uchi, ugandensis, ulceolaris, ulei, ulmifolia, ulmoides, umbellata, umbellifera, umbonata, umbonta, uncinatum, undulata, uniflora, unijugata, uraguensis, urcelliformis, urceolaris, urceolata, urens, urophylla, urophyllus, utile, Vahl, valida, variabilis, variifolia, velutina, velutinum, venezuelanense, venosa, venosa_subsp.amazonica, venulosa, venulosum, venusta, vera_subsp.affinis, verdoorniana, vernalis, vernicosa, verrucosus, versicolor, vignei, villifera, villosa, villosum, vilosa, vinosa, virescens, virgilioides, virgultosa, viridicans, viridiflora, vittelinum, vogeliana, vogelianum, vogelii, vomitaria, vomitoria, wachenheimii, walichii, wallichiana, wallichianum, wallichii, warmingiana, Welw, welwitschii, whiteana, wightiana, wightianum, wightii, Willd, williamsii, wilsoniana, woodi, woodii, wullschlaegeliana, xanthocarpa, zabucajo, zaizou, zanthoxyloides, zapallo, zechiana, zenkeri, zeylanicum, zeylanicus, zygia"</code></pre>
+<pre><code>[1] "abbreviata, abyssinica, acaciifolium, acanthocarpa, acida, aciphylla, acreana, acrocephala, aculeata, acuminata, acuminatissima, acuminatissimum, acuminatum, acuminatus, acuminta, acuta, acutangula, acutangulum, acutangulus, acutiflora, acutifolia, acutifolium, acutifolius, adaintifolia, adenophora, adianthifolia, adolfi, adolphi-fridericii, adstringens, aerugo, aethiopica, affine, affinis, africana, africanum, africanus, afzelii, agami, agamii, aggregatum, agregatum, airy, alata, alba, albescens, albicans, albicoria, albidiramea, albiflora, albiflorum, albiramis, alboromutum, album, alchorneoides, alicastrum, aliena, alliaceum, alliodora, almon, alpinus, alterna, alternifolia, altissima, altissimum, altsonii, altsonii (fragrans), amapaensis, amara, amazonia, amazonica, amazonicum, amazonicus, amazonum, ambelaniifolia, ambotay, amentacea, americana, amingayi, amoena, amoenum, amooroides, amorphoides, ampla, amplexicaulis, amplifolia, amshoffiana, anamalaiense, anastomosans, andongensis, aneura, angolense, angolensis, angulata, angusta, angustifolia, angustifolium, angustifolius, angustiloba, aningeri, anisata, anisocalyx, anisophylla, anisophyllus, annatum, anomala, anomalum, anonaceae1, antennifera, anteridifera, anthelminthica, anthotheca, anysophyllus, apeibophylla, apetala, apicalis, apiculata, apiculatum, apiculatummm, apodanthus, aptera, apterum, aquatica, aquifolium, arabica, arachnocome, aracouchini, arataciu, arborea, arborescens, arboreus, areolata, argentea, argenteum, argiratus, arguta, argyratus, argyrophylla, aristata, aritu, armata, armeniaca, arnoldiana, arnoldianum, arnottiana, arnottianum, aromatica, artanthifolia, arthropoda, articulatus, asbeckii, aspera, asperifolia, asperula, assamicus, assimilis, atanum, atra, atrinervosa, atropurpurea, atroviolaceus, atrovirens, atroviridis, attenuata, attenuatum, Aubl, aubletii, aubrevillei, augouardii, augusta, auratum, auriculata, auriculatum, auricululatum, auristellae, australe, austrocoriaceum, autissimum, aviformis, axillaris, aylmeri, bacaba, baccata, baccifera, bacciformis, bacillaris, baculifera, bagshawei, bahiae, bailloni, baillonii, bakembei, bakonensis, balansae, balata, ballayi, balsamifera, bancana, bancanus, bancoensis, bangii, bankae, bankense, banksii, bantamensis, barbata, barbatimao, barbatum, barbellata, barteri, bataua, battiscombei, baudii, bauhiniaefolia, bauhiniifolia, beccarian, beccariana, beccarianum, beccarii, beccoriana, beddomei, beguei, beillei, belemitana, bella, bellirica, bengalensis, bennettii, benthamiana, benthamianus, benthamii, bequaertii, bescotomentosa, bethanniana, bicolor, bicornis, bidentata, biflora, biflorum, bifolium, bigeminum, bijuga, bilocularis, bipindensis, blackii, blepharophylla, blommesteinii, blumeanus, blumei, bofo, bolivarensis, boliviana, bonplandii, boonei, boorneensis, boornensis, borneense, borneensis, Borneensis, botryoides, boukokoense, bourdillonii, bourgoni, bourgonii, boya, boyanii, brachiata, brachyandra, brachyanthera, brachybotrys, brachyclada, brachylepis, brachypetala, brachypoda, brachyrachis, brachystachys, brachystachyum, brachytepala, bracteata, bracteatus, bracteolata, bracteolosa, bracteosa, brasiliense, brasiliensis, brevibracteatus, brevicaulis, brevicuspis, brevipes, brevis, brevistaminea, brevives, bridelioides, brittoniana, brunnea, brunnescens, brunonis, bubalinum, bucchanani, buettneri, bulbalinum, bullata, buonopozense, burchellii, burkartiana, Burm, burseraefolia, burserifolia, butayei, butyracea, buxifolia, caballina, cacao, cadamba, caducifolia, caerulescens, caffra, caimito, cainito, calleryanum, calodendron, caloneura, calophylla, calophylloides, calophyllum, calycina, calysina, campanulata, campestre, campestris, canaliculata, canarica, canariodes, candolleana, candollei, candollii, canelilla, canella, canephora, canescens, canjerana, cannella, cantleyanus, capensis, capillipes, capitata, capitatus, capitulifera, capreifolia, caracasana, carapanauba, carbonaria, cardiosperma, caricifolia, carinata, carinatus, carthagenensis, caryophylloides, casiquiarensis, cassia, cassiaefolia, castanea, castaneifolia, castanocarpus, cateniformis, catharinensis, catigua, caucana, caudata, caudatilimbum, caudatum, caudatus, caudiferus, cauliflora, cauliflorum, cavalcantei, cayennensis, ceanothifolia, cecropiifolia, cecropioides, cedrata, cedron, celebica, centrale, centrodesma, cephalostigma, cerasiferum, cerasina, ceratoxylon, cernua, cerospermus, ceylanica, chambira, chartacea, chartaceifolia, chartaceus, chevalieri, chinensis, chlamydantha, chloranthum, chlorantum, chonta, chrysocalyx, chrysochlamys, chrysopetala, chrysophylla, chrysophyllum, cicatricata, ciliata, cinerea, cinnabarina, cinnamomea, cinnamomifolia, cinnamomum, cinnamonea, cissiflora, citrifolia, citrifolium, cladantha, clathrata, claussenii, claviflora, clavigia, clavimyrtus, clusiifolia, coarctata, coccinea, cochinchinense, cochinchinensis, cochlearia, cochleariifolium, cochleata, cochleatum, cocleata, coerulea, coffeifolia, coffeoides, cognatum, collina, collocarpa, coloneura, colorata, commersoniana, commune, comosa, compactum, compressa, concolor, conferta, confertiflora, confertum, confertus, confusa, confusus, congensis, congesta, congestiflora, congoensis, congolana, congolensis, conifera, conjugata, conocarpus, consimilis, constricta, contortisiliquum, contracta, convertus, copaia, coracea, cordata, cordatum, cordifolia, coriacea, cornata, corneri, cornutus, corrugata, corthalsii, corymbosa, corymbulosa, costata, costatum, costulata, costulatus, courbaril, courtallensis, coutinhoi, cowanii, crassa, crassiflora, crassifolia, crassinervia, crassipetalum, crenata, crenulata, crepitans, crinita, crispa, crispiflorus, cristata, cruentum, cumini, cuneata, cuneatocordata, cuneatum, cuneatus, cuneifolium, cupanioides, cuprea, cupulata, curranii, curtisii, cuspidata, cuspidatum, cuspitada, cyclocarpum, cydonioides, cylindrica, cylindricum, cylindrocarpon, cymosa, cymulosa, cyrtobotryum, dactyloides, dactyloids, dadah, dananensis, daphnoides, dasyphyllum, dawei, dayakensis, debilis, decagyna, decandra, decandrum, decaphylla, decaphyllus, deciduum, decipiens, decolorans, decorticans, decusata, decussata, deflexa, demerarae, demerarense, densa, densicoma, densiflora, densifolia, densifrons, dentata, dentatus, denticulatum, dentriculatum, depresinervosa, depressinervosum, desmanthum, dewevrei, dewildei, diadenum, dichasialis, dichotoma, dichroa, diclina, diderrichii, didyma, didymostemon, dinizii, dinklagei, dioica, dioicus, diospyrifolia, dipearia, diplopetala, discoidea, discolor, discreta, dissimilis, distachya, dittocrepis, divaricata, divaricatum, divergens, diversifolia, diversifolium, dolichocalyx, dolichocarpa, doniana, douradensis, driffithii, dryobalanoides, dubardii, dubium, duchesnei, Ducke, duckeana, duckei, dulcis, dumetosa, dumosa, Dunal, dura, durandii, durifructum, durlandii, dyctoneura, ebenum, ecalyculata, echinata, echinatum, echinatus, echinocarpa, echinophora, edentula, edule, edulis, eetveldeana, effusa, effusus, egensis, eggelingi, eggersiana, egleri, egregia, ehie, ehrenbergiana, eichleri, ekmanii, elaeagnoides, elaeosperma, elastica, elasticus, elata, elatum, elegans, elliotii, elliptica, ellipticifolia, ellipticum, ellipticus, elmeri, elonga, elongata, elongatus, elvasioides, emarginata, emarginatum, eminens, eminii, endertii, engleri, equatoriense, erecta, erectinervia, erianthus, eriobetalum, eriocalyx, eriopetalum, eriopila, erythrocarpa, erythrophylla, esculenta, essequeboensis, eugenifolia, eugeniifolia, euneura, evena, everetii, ewyckii, exaltata, exarillata, exasparta, exasperata, excellens, excelsa, excelsia, excelsum, excessim, exelliptica, eximia, exorrhiza, exsucca, eyma, fagara, fagifolium, faguetiana, falcata, falcifera, fallax, fanchoniana, fanshawei, fascicarpa, fasciculata, fastigiata, fastuosa, fauciflora, felipes, fendleri, ferox, ferrea, ferrox, ferruginea, ferruginescens, ferrugineus, fibocarpa, fibrocarpa, ficifolia, ficigemma, filicoidea, filipes, fimbriata, firma, fissilis, fistuloides, fistulosa, flaemingii, flagellaris, flava, flavescens, flavicans, flavida, flavilatex, flavum, flexuosa, floribunda, florida, foetida, folha, foliolosa, forbesii, forficata, formosa, formosum, forstenii, fosteri, fouilloyana, fracta, fragans, fragrans, fraxinifolius, froesii, frondosa, frondosum, frondosus, fructipendula, fruinosa, frutescens, fruticosa, fulva, fulvinervis, functiculosa, furfuracea, furfurucea, fusca, fuscotomentosa, gabonensis, galeata, gallicum, gambecola, gamopetala, ganggoo, garckeana, gardneri, gardneriana, gaudichaudii, gazelii, gemelliflora, gemmiflora, genipiflora, ghatensis, gigantae, gigantea, gigantecarpa, giganteum, gigantifolia, gigantocarpa, gigantofolia, gilgiana, gilletii, glaberrima, glabra, glabrata, glabrescens, glabriflorus, glabrigemmatus, glabrum, glandistipula, glandulifera, glandulosa, glandulosum, glauca, glaucescens, glaucus, glazioveana, globosa, globosum, globulifera, glomerata, glomeruliflora, gloriosa, glycycarpa, goeldiana, goetheanus, goiabinha, goliath, golungensis, gomma, gomphiifolia, gomphophylla, gonggrijpii, gongrijpii, gonocarpum, gore, gossweileri, gracile, graciliflora, gracilifolia, gracilior, gracilis, grahamii, grandbracteata, grandiflora, grandiflorus, grandifolia, grandifoliola, grandifolium, grandifolius, grandis, grandistipulata, granulata, granulosa, granulosum, granvillei, grata, graveolens, griffithii, grifithii, grossularioides, guajar, guajava, guatterioides, guaviroba, guazumifolia, guereensis, guianense, guianensis, guidonia, guineense, guineensis, guiso, gummi-gutta, gummifera, gutta, guyanensis, guyanensis subsp, habrantha, haematospermum, harmsiana, hasseltii, haumanianus, havilandii, hayesii, heimii, helstonei, hemidasya, hemisphericum, heptaphyllum, heptaphyllus, heterochroma, heteromorpha, heteromorphus, heterophylla, heterophyllus, heudelotii, heveoides, hexaloba, hexandra, hexandrum, hexapetala, hexaphylla, hirsuta, hirsutus, hirta, hirticalyx, hispda, hispida, hispidula, holcogyne, holstii, hookeriana, hopeifolia, horridum, hosei, hostilis, hostmanniana, hostmannii, huberi, huberiana, hulletii, hullettii, humeratus, humiriifolium, hurifolia, hylodendron, hypochloro, hypoglauca, hypolampra, hypoleuca, hypophoenicea, idatimon, identified, iguanaea, ilicicifolia, ilicifolia, impetiginosa, impetiginosus, impressa, impressinervium, inaequalis, inaequilatera, inappendiculata, incarnatum, incerta, inconspicua, incrassata, incurvata, indica, indicus, indum, inelegans, inermis, iners, ingoides, inophyllum, insignis, insignis v, insipida, integer, integrifolia, integrifolium, intermedia, inundata, involucrata, itauba, iturensis, ituriensis, ivorense, ivorensis, jackianus, jambosoides, japurensis, javitensis, JCO788, jenmani, jenmanii, johimbe, johnsonii, johorensis, joveri, juniniana, jupunba, juruana, juruensis, kabingaensis, kamerunensis, kappleri, keayana, keithii, kemando, kerstingii, kikir, killipii, kingiana, kingii, klaineana, klaineanum, klainei, klugii, koetjapi, kola, krukoffii, krukovii, kuhlmannii, kunstleri, kunthiana, Kunthiana, kutejensis, kuteyensis, kwatae, laciniatum, lacourtianum, lactescens, lactum, laeta, laetum, laeve, laevifolim, laevifrons, laevigata, laevigatum, laevigatus, laevis, lagenifera, lambertiana, lamellata, lanateramula, lanceifolius, lanceolata, lanceolatum, lanceolatus, lanciferum, lancifolia, lappaceum, large, lasiocarpa, lastoursvillense, lata, latericea, latericia, lateriflora, laterifolia, lateritia, latifolia, latiloba, latistipulus, lauraceae, laurentii, laurifolia, laurifolium, laurina, laurinum, lawii, laxa, laxiflora, lecointei, leembruggianus, lehmannii, leiandra, leiocalycina, leiocarpa, leiocarpum, lemairei, lentiscifolia, leonensis, lepicarpa, lepidophyllus, lepidota, lepidotula, lepranda, leprieurii, leprosula, leprosus, leptoderma, leptopetala, leptopoda, lescrauwaetii, letestui, leucocoma, LHC36, licaniiflora, ligustrifolia, ligustrinum, limpato, lindaviana, lindeniana, lindenni, linearicarpum, lineata, lisae, litoralis, litt, littorale, lomatoloba, lomatophylla, longan, longepedunculata, Longflora, longiflora, longifolia, longifolius, longipedicellata, longipedunculata, longipendula, longipes, longipetiolata, longipetiolatus, longisperma, longistylum, longistylus, longitubulosa, loretensis, loubryana, louisii, louro, lowiana, lowianus, lowii, lucentifolium, lucida, lucidus, lunata, lunduensis, lunu-ankenda, lurida, luschnathiana, lutea, mabokeensis, macbridei, machadoana, machilifolia, macrantha, macrobotrys, macrocalyx, macrocarpa, macrocarpon, macrocarpum, macrocarpus, macroceras, macrocoma, macroloba, macrophylla, macrophyllum, macrophyllus, macropodum, macroptera, macrosepala, macrostachya, macrostylis, madagascariense, madang, madeirana, madruno, magnifica, magnificus, magnoliifolia, maingayi, Maingayi, majuscula, mala-elengi, malaanonan, malabarica, malabaricum, malabaricus, malabathrum, malaccense, malaccensis, malacenes, malanica, malayana, malembaensis, mallacensis, malloticarpa, mangarawan, mangerawan, mannii, mapourioides, mappacea, marcgravianum, marchandii, marginata, marginatum, mariae, maripa, markgrafiana, marleniana, marmieri, maroniensis, marowynensis, martianum, martii, martiniana, martinicensis, mataybifolia, mathewsii, matourensis, maxima, maximum, maxwelliana, maynensis, mayumbensis, mazanensis, mecistopteryx, mediocris, megacarpa, megalantha, megalanthum, megalocarpum, megalophylla, megantha, megaphylla, megapotamica, megistocarpa, mekongensis, melaanonan, melaccens, melanocarpa, melanocarpum, melanopoda, melanoxylon, melinoniana, melinonii, membranacea, membranifolium, menasu, mengarawan, mensalis, meridionale, mesozygia, mespiloides, mezii, mezilaurus, micans, michelii, michelli, michellii, miconia, micradenia, micrantha, micranthera, micranthus, micraster, microbotrys, microcalyx, microcarpa, microcarpum, microcephala, microcos, micropetalum, microphylla, mildbraedii, millenii, mindanaensis, minor, minutiflora, mitiis, mitis, modestum, molaris, mollis, mollissima, mollucana, moluccana, mombin, monadelpha, monandra, monbuttensis, monopetalus, montana, moosa, morella, morettii, morii, morototoni, moschata, motleyana, mucuso, muehlbergiana, mukole, multicostata, multiflora, multijuga, multinervia, multiovula, multistipula, munguba, muricata, murure, mutabile, muticus, myriantha, myrianthus, Myrianthus, myristica, myrmecophila, myrmecophyla, myrmecophylla, myrsinoides, myrtaceae, myrtifolia, nana, nanayensis, nannanii, napoense, natalensis, Nees, neesiana, neglecta, negrensis, nemaluma, neriifolia, neriifolius, nervosa, nidularis, nieuwenhuisii, nigra, nigrecens, nigrescens, nigritana, niopoides, nitens, nitida, nitidissima, nitidum, nitidus, nobilis, nodosa, nodulosum, noronhianum, noronhoe, nouragensis, nuciferum, nudiflora, nux-vomica, nymphaeifolia, obanensis, oblanceolata, obliquum, oblonga, oblongata, oblongifolia, oblongum, obovata, obovatum, obscura, obscurum, obstetrix, obtusa, obtusifolia, obtusifolium, obtusifolius, obtusus, occidentalis, ochneocarpa, ochracea, ochrocalyx, ochrophloea, octandra, octandrus, odontophyllum, odora, odorata, odoratissima, odoratissimus, officinalis, ohneocarpa, ohracea, okelensis, olacaceae, olacoides, oldemanii, oleaefolium, oleosa, oleracea, oligandra, oligandrus, oligantha, oligoneura, oliveri, omphalandra, omphalocarpoides, opaca, opacum, operculata, opifera, opposita, oppositifolia, oppositifolius, orellana, orientalis, orinocensis, ormosioides, ornata, osmanthum, osun, ottolanderi, ovale, ovalifolia, ovalis, ovata, oviformis, oxleyanus, oxyphylla, pachycarpa, pachyceras, pachyphyllum, pachyphyllus, pachypoda, pachysteloides, pachytracta, padiformis, paivae, palemb, palembanica, paliidum, pallens, pallescens, pallida, pallidior, pallidum, pallidus, palmata, paludosa, palustris, pamifera, panacoco, panamensis, panicularis, paniculata, paniculatum, pannosa, panurensis, papaverifera, papaveroides, papaya, papilio, papillosus, paradoxa, paraense, paraensis, paraguariense, paraguariensis, parahyba, paramaca, parhyba, parilis, parillo, parinarioides, pariry, parsaensis, parviflora, parviflorum, parvifolia, parvifoliolum, parvifolius, parvifructa, parvistipulata, parvula, parvum, patens, Patens, patoiensis, patrisii, pauciflora, paulae, pavettoides, pavoniana, pavonina, pavonis, paxii, pectinosquamata, pedicelata, pedicellare, pedicellaris, pedicellata, pedunculata, pellegriniana, pellegrinii, peltata, penangensis, penangiana, pendula, penduliflora, penduliflorus, pendulus, pennatifolius, pentagyna, pentandra, pentandrum, pentandrus, percincta, percurrens, peregrina, perpulchrum, perpuncticulatum, perrotetti, perrottetii, persistens, pertusa, peruviana, perviridis, pescotomentosa, petalanthera, petidaris, petiolare, petiolaris, petiolata, petiolatus, petoumo, petraeum, pezizifera, phaeophylla, philippensis, philippinensis, phloiodora, phoberos, pilosa, pilosissimum, pilosula, pilosum, pilosus, pinanga, pinnata, pinnatum, piresiana, piresii, piriri, pisocarpa, pisonis, pitumba, plagiocarpium, plasschaerti, platycalyx, platycephala, platycephalum, platyclados, platyphylla, platysepalum, platyspermum, platythyrsa, pleeana, plukenetii, pnematophora, pocera, podocarpa, poeppigiana, poeppigii, poiteaui, polistachyum, polita, polyandra, polyantha, polyanthum, polybotryum, polycarpa, polygyna, polyneura, polypetala, polyphleba, polyphylla, polystachyum, polystachyus, pomentala, pomiferum, ponga, popenoei, porphyrocarpa, potabile, potabilis, pouteria, praealta, praeclara, praecox, praetermissa, prainiana, prasina, precatoria, preurii, preussii, prieuriana, prieurii, principum, prismatocarpa, procera, procerum, prosoneura, protium, prouacensis, pruinosa, pruniforme, pruriens, pseudokunstleri, pseudolancium, pseudopsidium, pseudostipularis, pseudosumatranum, psilostachya, psittacorum, pterocarpoides, pteroclada, pteropus, ptychandra, pubera, puberula, puberulum, pubescens, pubicalyx, pubiflora, pubipetala, puchury, pulchella, pulcher, pulcherimum, pulcherrima, pulcherrimum, pulcherrimus, pulvinata, punctata, puncticulosa, punctulata, pungens, puoteria, purgans, purpurascens, purpurea, purui, purusensis, pustulata, pycnantha, pynaertii, pyrifolium, pyriformis, quadrifaria, quadrifida, quadrijuga, quercifolia, quercifolium, quintasii, racemifera, racemosa, racemosum, ramboi, ramiflora, ramuliflora, rassak, recurva, recurvata, reflexa, remiger, remota, renghas, reticulata, retinervis, revolutus, rhetsa, rhinopetala, rhoifolia, rhoifolium, riana, richardiana, riedelianum, rigida, rigidum, rigidus, rimosa, rivularis, roaseodora, robur, robusta, robustum, rodiei, rodolphii, rodriguesiana, rodriguesii, rogosa, rohrii, romanzoffiana, rosea, rosiodora, rosodora, rossiana, rostata, rostrata, rostratum, rotundifolius, routledgei, rowlandii, roxburghii, ruber, rubescens, rubiginosa, rubiginosum, rubra, rubrinervis, rubrivenium, rubrostipulata, rufescens, ruficalyx, rufovelutinus, rufovirgata, rufrum, rufum, rugisa, rugosa, rugosum, rugulosa, ruiziana, ruizii, rumphii, rupicola, ruwensorens, ruwensorensis, sagotiana, sagotianum, sagotii, salicina, salikounda, samauma, sanctae, sandwithianum, sangal, sanguinolentum, santalinoides, santaremnensis, sapida, sapindina, saponaria, sapotaceae, sarawakensis, sarmentosa, sarosanthera, scabra, scabrifolia, scandens, scheffleri, scholaris, schomburgkiana, schomburgkianus, schomburgkii, schultesii, schweinfurthii, schwenkii, sciadophylla, sciophilum, sclerophylla, scleroxylon, scortechinii, Scortechinii, scrobiculata, sebifera, sellowiana, semialata, semicuneata, semiglobosa, seminis, senegalense, senegalensis, senssilifolia, septentrionalis, septrionalis, seretii, sericea, sericeum, sericobalanus, serrata, serratifolia, serratifolius, serratus, sertulifera, sessilifolia, sessilis, shawiana, silvatica, silvestris, simaboides, simarouba, simiorum, simplex, simpli, simplicifolia, simplicifolium, sinemariensis, singkawang, singularis, sissoides, smeathmannii, smithiana, smithisi, smythiesii, Smythiesii, soathulata, sola, solanaceae, sorbifolia, sorbilis, soulatri, soyauxii, sparsiflorum, speciosa, speciosum, speciosus, spectabilis, sphaerocarpa, sphaerocarpum, spiciflorus, spinosa, spititatum, spixiana, splendens, spruceana, spruceanum, sprucei, squamata, squarenses, squarrosa, staudtii, steinbachii, stellata, stellatus, stenodictya, stenopetalum, stenoptera, stevensonii, stipitatum, stipulacea, stipulaceum, stipulare, stipularis, stipulatum, stipulifera, stocksii, striata, strictum, strumosum, stylare, suaveolens, subaequalis, subcaudata, subcordata, subcordatum, subcoriacea, subcrenatum, subdimidiata, subdita, subericarpa, subglandulosa, subglauca, subincanum, sublamellatus, subobouatum, subobovatum, subscorpioidea, subsericea, subserratum, subsessilis, subspathulata, subsymetrica, subterminalis, subulata, subulatus, subviolacea, succosa, sucuuba, sumatrana, sumatranum, sumatranus, sumatrensis, sumatriana, sundaicus, superba, surinamense, surinamensis, surtifolia, surumuensis, swartzia, swintonioides, swynnertonni, sylvatica, sylvaticus, sylvestre, sylvestris, symingtonii, synandra, tabularis, tadulingamii, talbotianum, talbotii, tamaquarina, tanarius, tangarana, tapia, tapos, tarapotensis, tauari, taubertiana, tawahense, tempehes, tenella, tenue, tenuiflora, tenuifolia, tenuifolium, terminalis, terniflora, tessmannii, testudinarum, tetragona, tetramera, tetrandra, tetraphylla, tetraptera, thibaudiana, thompsonii, Thouars, thurifera, thyrsiflora, tibourbou, tiliaceus, tiliifolia, tinctoria, tinctorium, tisserantii, toka, tokbrai, tomens, tomentella, tomentosa, toqueve, torta, toxicaria, trachyphylla, tragacantha, travancorica, trianae, triandra, tribola, trichilioides, trichostemon, trichotoma, tricolor, triflora, trifoliata, trifoliatum, trifoliolatum, trifolum, trigona, trigonioides, trijuga, triloba, trimera, trinervia, trinitatis, triplinervia, tristis, trunciflora, tschudyoides, tubifera, tubulatum, tubulosa, tungurut, turbinata, tweediana, ucayaliensis, uchi, ucuubinha, ugandensis, uleana, ulei, ules, ulmifolia, ulmoides, umbellata, umbellifera, umbonata, uncinatum, undulata, uniflora, unifoliolata, unifoliolatum, unijugata, uraguensis, urcelliformis, urceolaris, urens, urophylla, urophyllus, usitata, utile, utilis, vaginans, Vahl, valetani, valida, variabilis, variifolia, velutina, velutinata, velutinum, venenosa, venenosus, venezuelana, venezuelanense, venosa, venulosa, venulosum, venusta, vera, verdoorniana, vernalis, vernicosa, verrucosus, versicolor, verticillata, vestita, vignei, villifera, villosa, villosum, vincentae, vinosa, virescens, virgilioides, virgultosa, viridicans, viridiflora, vismiaefolia, vismiifolia, vitellinum, vogeliana, vogelianum, vogelii, vomitaria, vomitoria, vulgaris, wachenheimii, wallichiana, wallichianum, wallichianus, wallichii, warmingiana, weigeltiana, welwitschii, Wghtii, whiteana, Whiteana, wieringae, wightiana, wightianum, wightii, Willd, williamsii, wilsoniana, woodi, woodii, wullschlaegeliana, xanthocarpa, ypsilophlebia, zabucajo, zaizou, zanthoxyloides, zapallo, zechiana, zenkeri, zeylanica, zeylanicum, zeylanicus, zwageri, zygia"</code></pre>
 </div>
 </div>
+<p>Species includes the following dubious names: <code>{r} paste(sp_wrong, collapse = ",")</code>.</p>
+<p>With the following counts:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>unid <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Indet."</span>, <span class="st">"sp"</span>, <span class="st">"sp."</span>, <span class="st">"Schaeff."</span>,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Mast"</span>, <span class="st">"Welw"</span>, <span class="st">"Stapf"</span>, <span class="st">"Hook"</span>, <span class="st">"Gilg"</span>, <span class="st">"Benth"</span>,</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"flacouirtiaceae"</span>, <span class="st">"Determinado"</span>, <span class="st">"BERMINYAK"</span>, <span class="st">"TIDAK"</span>, <span class="st">"KUNING"</span>, <span class="st">"spp"</span>,</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sp1"</span>, <span class="st">"sp5"</span>, <span class="st">"L"</span>, <span class="st">"muerto"</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>subtaxo <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"guyanensis subsp. Guyanensis"</span>, <span class="st">"acuminatum_subsp.juniperinum"</span>,</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"cuspidata_subsp.dura"</span>, <span class="st">"guyanensis subsp. Guyanensis"</span>,</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"guyanensis_subsp.duckeana"</span>, <span class="st">"opacum_subsp.rabelianum"</span>,</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"panacoco_var.panacoco"</span>, <span class="st">"persistens_subsp.aurantiaca"</span>,</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tomentosa_subsp.maroniensis"</span>, <span class="st">"venosa_subsp.amazonica"</span>,</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"vera_subsp.affinis"</span></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>undesc <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sp.1"</span>, <span class="st">"sp.1-CAY"</span>, <span class="st">"sp.10-CAY"</span>, <span class="st">"sp.11-CAY"</span>, <span class="st">"sp.12-CAY"</span>,</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sp.13-CAY"</span>, <span class="st">"sp.14-CAY"</span>, <span class="st">"sp.15-CAY"</span>, <span class="st">"sp.16-CAY"</span>,</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sp.17-CAY"</span>, <span class="st">"sp.18-CAY"</span>, <span class="st">"sp.1Guyafor"</span>, <span class="st">"sp.2"</span>, <span class="st">"sp.2-CAY"</span>,</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sp.21_DS"</span>, <span class="st">"sp.22-CAY"</span>, <span class="st">"sp.23-CAY"</span>, <span class="st">"sp.24-CAY"</span>, <span class="st">"sp.2BAF"</span>,</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sp.2Guyafor"</span>, <span class="st">"sp.3"</span>, <span class="st">"sp.3-CAY"</span>, <span class="st">"sp.30-CAY"</span>, <span class="st">"sp.33-CAY"</span>,</span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sp.34-CAY"</span>, <span class="st">"sp.35-CAY"</span>, <span class="st">"sp.35Guyafor"</span>, <span class="st">"sp.36-CAY"</span>,</span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sp.38Guyafor"</span>, <span class="st">"sp.3BAF"</span>, <span class="st">"sp.3Guyafor"</span>, <span class="st">"sp.4-CAY"</span>,</span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sp.42-CAY"</span>, <span class="st">"sp.5-CAY"</span>, <span class="st">"sp.5Guyafor"</span>, <span class="st">"sp.6-CAY"</span>, <span class="st">"sp.6Guyafor"</span>,</span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sp.7-CAY"</span>, <span class="st">"sp.70-CAY"</span>, <span class="st">"sp.71-CAY"</span>, <span class="st">"sp.7Guyafor"</span>, <span class="st">"sp.8-CAY"</span>,</span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sp.9-CAY"</span>, <span class="st">"sp.B1"</span>, <span class="st">"sp.B10"</span>, <span class="st">"sp.B2"</span>, <span class="st">"sp.B35"</span>, <span class="st">"sp.B5"</span>, <span class="st">"sp.B8"</span>,</span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sp.B9"</span>, <span class="st">"sp.C"</span>, <span class="st">"sp.D"</span>, <span class="st">"sp.FG13-Holst"</span>, <span class="st">"sp.FG14-Holst"</span>,</span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sp.FG2-Holst"</span>, <span class="st">"sp.FG21-Holst"</span>, <span class="st">"sp.FG9-Holst"</span>, <span class="st">"sp.P1"</span>, <span class="st">"sp.P11"</span>,</span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sp.P22"</span>, <span class="st">"sp.P3"</span>, <span class="st">"sp.P33"</span>, <span class="st">"sp.P4"</span>, <span class="st">"sp.P6"</span>, <span class="st">"sp.P9"</span></span>
-<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>taxo <span class="sc">%&gt;%</span></span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(species) <span class="sc">%&gt;%</span></span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unidentified"</span> <span class="ot">=</span> <span class="fu">sum</span>(species <span class="sc">%in%</span> unid,</span>
-<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>      <span class="at">na.omit =</span> <span class="cn">TRUE</span></span>
-<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sub-taxonomic"</span> <span class="ot">=</span> <span class="fu">sum</span>(species <span class="sc">%in%</span> subtaxo,</span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>      <span class="at">na.omit =</span> <span class="cn">TRUE</span></span>
-<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Undescribed"</span> <span class="ot">=</span> <span class="fu">sum</span>(species <span class="sc">%in%</span> undesc,</span>
-<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">na.omit =</span> <span class="cn">TRUE</span></span>
-<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="st">"type"</span>, <span class="st">"number"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Number of species by issue type."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>taxo <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(family, genus, species) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(species <span class="sc">%in%</span> sp_wrong) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">N =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Number of species issues"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
-<caption>Number of species by issue type.</caption>
+<caption>Number of species issues</caption>
 <thead>
 <tr class="header">
-<th style="text-align: left;">type</th>
-<th style="text-align: right;">number</th>
+<th style="text-align: right;">N</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Unidentified</td>
-<td style="text-align: right;">20</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Sub-taxonomic</td>
-<td style="text-align: right;">11</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Undescribed</td>
-<td style="text-align: right;">66</td>
+<td style="text-align: right;">1083</td>
 </tr>
 </tbody>
 </table>
