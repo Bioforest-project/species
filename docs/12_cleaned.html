@@ -227,67 +227,74 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>fam_wrong <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"#N/A"</span>, <span class="st">"+"</span>, <span class="st">"muerto"</span>, <span class="st">"Indet."</span>, <span class="st">"Not in DB"</span>, <span class="st">"unid."</span>,</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Unidentified"</span>, <span class="st">"unidentified"</span>, <span class="st">"ND"</span>, <span class="st">"No determinado"</span>, <span class="st">"Indet"</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>gen_wrong <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"#N/A"</span>, <span class="st">"A"</span>, <span class="st">"Indet"</span>, <span class="st">"nd"</span>, <span class="st">"sp"</span>, <span class="st">"sp1"</span>, <span class="st">"sp5"</span>, <span class="st">"Indetermined"</span>,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>               <span class="st">"KERUING"</span>, <span class="st">"MERANTI"</span>, <span class="st">"MERSAWA"</span>, <span class="st">"BALAU"</span>, <span class="st">"muerto"</span>, <span class="st">"Unidentified"</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Nd"</span>, <span class="st">"nd10"</span>, <span class="st">"nd11"</span>, <span class="st">"nd14"</span>, <span class="st">"nd15"</span>, <span class="st">"nd16"</span>, <span class="st">"nd17"</span>, <span class="st">"nd2"</span>, <span class="st">"nd22"</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>               <span class="st">"nd23"</span>, <span class="st">"nd25"</span>, <span class="st">"nd26"</span>, <span class="st">"nd27"</span>, <span class="st">"nd28"</span>, <span class="st">"nd29"</span>, <span class="st">"nd33"</span>, <span class="st">"nd34"</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>               <span class="st">"nd4"</span>, <span class="st">"nd6"</span>, <span class="st">"nd7"</span>, <span class="st">"nd9"</span>, <span class="st">"N"</span>, <span class="st">"F"</span>, <span class="st">"cf"</span>, <span class="st">"No"</span>, <span class="st">"UN"</span>, <span class="st">"Un"</span>, <span class="st">"Spt"</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Unident"</span>, <span class="st">"Unknow"</span>, <span class="st">"unknown"</span>, <span class="st">"Unknown"</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>sp_wrong <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Indet"</span>, <span class="st">"Indet."</span>, <span class="st">"sp"</span>, <span class="st">"sp."</span>, <span class="st">"Schaeff"</span>, <span class="st">"Schaeff."</span>, <span class="st">"Mast"</span>, <span class="st">"Welw"</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>              <span class="st">"Stapf"</span>, <span class="st">"Hook"</span>, <span class="st">"Gilg"</span>, <span class="st">"Benth"</span>, <span class="st">"flacouirtiaceae"</span>, <span class="st">"Determinado"</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>              <span class="st">"BERMINYAK"</span>, <span class="st">"TIDAK"</span>, <span class="st">"KUNING"</span>, <span class="st">"spp"</span>, <span class="st">""</span>, <span class="st">"1"</span>, <span class="st">"10"</span>, <span class="st">"11"</span>, <span class="st">"12"</span>, <span class="st">"13"</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>              <span class="st">"14"</span>, <span class="st">"15"</span>, <span class="st">"16"</span>, <span class="st">"17"</span>, <span class="st">"18"</span>, <span class="st">"19"</span>, <span class="st">"2"</span>, <span class="st">"20"</span>, <span class="st">"21"</span>, <span class="st">"22"</span>, <span class="st">"23"</span>, <span class="st">"25"</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>              <span class="st">"27"</span>, <span class="st">"28"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>, <span class="st">"5"</span>, <span class="st">"6"</span>, <span class="st">"7"</span>, <span class="st">"8"</span>, <span class="st">"9"</span>, <span class="st">"a"</span>, <span class="st">"A"</span>, <span class="st">"sp1"</span>, <span class="st">"sp5"</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>              <span class="st">"L"</span>, <span class="st">"muerto"</span>, <span class="st">"JAP1001"</span>, <span class="st">"JAP1028"</span>, <span class="st">"JAP1036"</span>, <span class="st">"JAP1291"</span>, <span class="st">"JAP1398"</span>,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>              <span class="st">"JAP1457"</span>, <span class="st">"JAP1627"</span>, <span class="st">"JAP1725"</span>, <span class="st">"JAP1799"</span>, <span class="st">"JAP1856"</span>, <span class="st">"JAP1873"</span>,</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>              <span class="st">"JAP1882"</span>, <span class="st">"JAP1891"</span>, <span class="st">"jariensis"</span>, <span class="st">"jauari"</span>, <span class="st">"javanica"</span>, <span class="st">"javanicum"</span>,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>              <span class="st">"JCO355"</span>, <span class="st">"JCO407"</span>, <span class="st">"JCO416"</span>, <span class="st">"JCO578"</span>, <span class="st">"JCO597"</span>, <span class="st">"JCO670"</span>, <span class="st">"JCO696"</span>,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>              <span class="st">"JCO710"</span>, <span class="st">"JCO736"</span>, <span class="st">"GFL1876"</span>, <span class="st">"GFL1997"</span>, <span class="st">"GFL2022"</span>, <span class="st">"GFL2211"</span>, </span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>              <span class="st">"GFL2386"</span>, <span class="st">"GFL2411"</span>, <span class="st">"GFL2488"</span>, <span class="st">"GFL2606"</span>, <span class="st">"GFL2703"</span>, <span class="st">"GFL2772"</span>,</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>              <span class="st">"GFL2941"</span>, <span class="st">"GFL3093"</span>, <span class="st">"GFL3170"</span>, <span class="st">"GFL3182"</span>, <span class="st">"GFL3224"</span>, <span class="st">"GFL3284"</span>,</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>              <span class="st">"GFL3295"</span>, <span class="st">"GFL3481"</span>, <span class="st">"GFL3661"</span>, <span class="st">"GFL3686"</span>, <span class="st">"GFL6037"</span>, <span class="st">"GHP102"</span>,</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>              <span class="st">"JAP1000"</span>, <span class="st">"id"</span>, <span class="st">"indet"</span>, <span class="st">"Ridl"</span>, <span class="st">"sp13"</span>, <span class="st">"sp2"</span>, <span class="st">"sp3"</span>, <span class="st">"sp53"</span>,</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>              <span class="st">"species"</span>, <span class="st">"X"</span>, <span class="st">"XIV"</span>, <span class="st">"XVI"</span>, <span class="st">"spp"</span>, <span class="st">"n"</span>, <span class="st">"sp2"</span>, <span class="st">"a"</span>, <span class="st">"int"</span>,</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>              <span class="st">"L"</span>, <span class="st">"sur"</span>, <span class="st">"P"</span>, <span class="st">"4"</span>, <span class="st">"sp3"</span>, <span class="st">"id"</span>, <span class="st">"X"</span>, <span class="st">"2"</span>, <span class="st">"23"</span>, <span class="st">"1"</span>, <span class="st">"XVI"</span>,</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>              <span class="st">"19"</span>, <span class="st">"17"</span>, <span class="st">"5"</span>, <span class="st">"7"</span>, <span class="st">"22"</span>, <span class="st">"21"</span>, <span class="st">"3"</span>, <span class="st">"10"</span>, <span class="st">"11"</span>, <span class="st">"18"</span>, <span class="st">"16"</span>, <span class="st">"8"</span>,</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>              <span class="st">"XIV"</span>, <span class="st">"20"</span>, <span class="st">"14"</span>, <span class="st">"dao"</span>, <span class="st">"13"</span>, <span class="st">"6"</span>, <span class="st">"9"</span>, <span class="st">"25"</span>, <span class="st">"12"</span>, <span class="st">"28"</span>, <span class="st">"15"</span>,</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>              <span class="st">"27"</span>, <span class="st">"pin"</span>, <span class="st">"cf"</span>, <span class="st">"nd"</span>)</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>family_tab <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">family_corrected =</span> <span class="cn">NA</span>,</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">family_raw =</span> fam_wrong,</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">family_correction =</span> <span class="dv">1</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>genus_tab <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">genus_corrected =</span> <span class="cn">NA</span>,</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">genus_raw =</span> gen_wrong,</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">genus_correction =</span> <span class="dv">1</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>species_tab <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">species_corrected =</span> <span class="cn">NA</span>,</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">species_raw =</span> sp_wrong,</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">species_correction =</span> <span class="dv">1</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>corrected <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/raw_taxo_preped_v3.tsv"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">scientific_raw =</span> scientific, <span class="at">vernacular_raw =</span> vernacular,</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">family_raw =</span> family, <span class="at">genus_raw =</span> genus, <span class="at">species_raw =</span> species</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(family_tab) <span class="sc">%&gt;%</span></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">family_corrected =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(family_correction),</span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    family_raw, family_corrected</span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(genus_tab) <span class="sc">%&gt;%</span></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">genus_corrected =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(genus_correction),</span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    genus_raw, genus_corrected</span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(species_tab) <span class="sc">%&gt;%</span></span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">species_corrected =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(species_correction),</span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>    species_raw, species_corrected</span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>  ))</span>
-<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(corrected, <span class="st">"data/derived_data/corrected_taxo_v3.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>fam_wrong <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"#N/A"</span>, <span class="st">"+"</span>, <span class="st">"muerto"</span>, <span class="st">"Indet."</span>, <span class="st">"Not in DB"</span>, <span class="st">"unid."</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Unidentified"</span>, <span class="st">"unidentified"</span>, <span class="st">"ND"</span>, <span class="st">"No determinado"</span>, <span class="st">"Indet"</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>gen_wrong <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">""</span>, <span class="st">"#N/A"</span>, <span class="st">"A"</span>, <span class="st">"Indet"</span>, <span class="st">"nd"</span>, <span class="st">"sp"</span>, <span class="st">"sp1"</span>, <span class="st">"sp5"</span>, <span class="st">"Indetermined"</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"KERUING"</span>, <span class="st">"MERANTI"</span>, <span class="st">"MERSAWA"</span>, <span class="st">"BALAU"</span>, <span class="st">"muerto"</span>, <span class="st">"Unidentified"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Nd"</span>, <span class="st">"nd10"</span>, <span class="st">"nd11"</span>, <span class="st">"nd14"</span>, <span class="st">"nd15"</span>, <span class="st">"nd16"</span>, <span class="st">"nd17"</span>, <span class="st">"nd2"</span>, <span class="st">"nd22"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"nd23"</span>, <span class="st">"nd25"</span>, <span class="st">"nd26"</span>, <span class="st">"nd27"</span>, <span class="st">"nd28"</span>, <span class="st">"nd29"</span>, <span class="st">"nd33"</span>, <span class="st">"nd34"</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"nd4"</span>, <span class="st">"nd6"</span>, <span class="st">"nd7"</span>, <span class="st">"nd9"</span>, <span class="st">"N"</span>, <span class="st">"F"</span>, <span class="st">"cf"</span>, <span class="st">"No"</span>, <span class="st">"UN"</span>, <span class="st">"Un"</span>, <span class="st">"Spt"</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Unident"</span>, <span class="st">"Unknow"</span>, <span class="st">"unknown"</span>, <span class="st">"Unknown"</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>sp_wrong <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Indet"</span>, <span class="st">"Indet."</span>, <span class="st">"sp"</span>, <span class="st">"sp."</span>, <span class="st">"Schaeff"</span>, <span class="st">"Schaeff."</span>, <span class="st">"Mast"</span>, <span class="st">"Welw"</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Stapf"</span>, <span class="st">"Hook"</span>, <span class="st">"Gilg"</span>, <span class="st">"Benth"</span>, <span class="st">"flacouirtiaceae"</span>, <span class="st">"Determinado"</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"BERMINYAK"</span>, <span class="st">"TIDAK"</span>, <span class="st">"KUNING"</span>, <span class="st">"spp"</span>, <span class="st">""</span>, <span class="st">"1"</span>, <span class="st">"10"</span>, <span class="st">"11"</span>, <span class="st">"12"</span>, <span class="st">"13"</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"14"</span>, <span class="st">"15"</span>, <span class="st">"16"</span>, <span class="st">"17"</span>, <span class="st">"18"</span>, <span class="st">"19"</span>, <span class="st">"2"</span>, <span class="st">"20"</span>, <span class="st">"21"</span>, <span class="st">"22"</span>, <span class="st">"23"</span>, <span class="st">"25"</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"27"</span>, <span class="st">"28"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>, <span class="st">"5"</span>, <span class="st">"6"</span>, <span class="st">"7"</span>, <span class="st">"8"</span>, <span class="st">"9"</span>, <span class="st">"a"</span>, <span class="st">"A"</span>, <span class="st">"sp1"</span>, <span class="st">"sp5"</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"L"</span>, <span class="st">"muerto"</span>, <span class="st">"JAP1001"</span>, <span class="st">"JAP1028"</span>, <span class="st">"JAP1036"</span>, <span class="st">"JAP1291"</span>, <span class="st">"JAP1398"</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"JAP1457"</span>, <span class="st">"JAP1627"</span>, <span class="st">"JAP1725"</span>, <span class="st">"JAP1799"</span>, <span class="st">"JAP1856"</span>, <span class="st">"JAP1873"</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">"JAP1882"</span>, <span class="st">"JAP1891"</span>, <span class="st">"jariensis"</span>, <span class="st">"jauari"</span>, <span class="st">"javanica"</span>, <span class="st">"javanicum"</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="st">"JCO355"</span>, <span class="st">"JCO407"</span>, <span class="st">"JCO416"</span>, <span class="st">"JCO578"</span>, <span class="st">"JCO597"</span>, <span class="st">"JCO670"</span>, <span class="st">"JCO696"</span>,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">"JCO710"</span>, <span class="st">"JCO736"</span>, <span class="st">"GFL1876"</span>, <span class="st">"GFL1997"</span>, <span class="st">"GFL2022"</span>, <span class="st">"GFL2211"</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">"GFL2386"</span>, <span class="st">"GFL2411"</span>, <span class="st">"GFL2488"</span>, <span class="st">"GFL2606"</span>, <span class="st">"GFL2703"</span>, <span class="st">"GFL2772"</span>,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="st">"GFL2941"</span>, <span class="st">"GFL3093"</span>, <span class="st">"GFL3170"</span>, <span class="st">"GFL3182"</span>, <span class="st">"GFL3224"</span>, <span class="st">"GFL3284"</span>,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="st">"GFL3295"</span>, <span class="st">"GFL3481"</span>, <span class="st">"GFL3661"</span>, <span class="st">"GFL3686"</span>, <span class="st">"GFL6037"</span>, <span class="st">"GHP102"</span>,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="st">"JAP1000"</span>, <span class="st">"id"</span>, <span class="st">"indet"</span>, <span class="st">"Ridl"</span>, <span class="st">"sp13"</span>, <span class="st">"sp2"</span>, <span class="st">"sp3"</span>, <span class="st">"sp53"</span>,</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"species"</span>, <span class="st">"X"</span>, <span class="st">"XIV"</span>, <span class="st">"XVI"</span>, <span class="st">"spp"</span>, <span class="st">"n"</span>, <span class="st">"sp2"</span>, <span class="st">"a"</span>, <span class="st">"int"</span>,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="st">"L"</span>, <span class="st">"sur"</span>, <span class="st">"P"</span>, <span class="st">"4"</span>, <span class="st">"sp3"</span>, <span class="st">"id"</span>, <span class="st">"X"</span>, <span class="st">"2"</span>, <span class="st">"23"</span>, <span class="st">"1"</span>, <span class="st">"XVI"</span>,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">"19"</span>, <span class="st">"17"</span>, <span class="st">"5"</span>, <span class="st">"7"</span>, <span class="st">"22"</span>, <span class="st">"21"</span>, <span class="st">"3"</span>, <span class="st">"10"</span>, <span class="st">"11"</span>, <span class="st">"18"</span>, <span class="st">"16"</span>, <span class="st">"8"</span>,</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="st">"XIV"</span>, <span class="st">"20"</span>, <span class="st">"14"</span>, <span class="st">"dao"</span>, <span class="st">"13"</span>, <span class="st">"6"</span>, <span class="st">"9"</span>, <span class="st">"25"</span>, <span class="st">"12"</span>, <span class="st">"28"</span>, <span class="st">"15"</span>,</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="st">"27"</span>, <span class="st">"pin"</span>, <span class="st">"cf"</span>, <span class="st">"nd"</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>family_tab <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">family_corrected =</span> <span class="cn">NA</span>,</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">family_raw =</span> fam_wrong,</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">family_correction =</span> <span class="dv">1</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>genus_tab <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">genus_corrected =</span> <span class="cn">NA</span>,</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">genus_raw =</span> gen_wrong,</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">genus_correction =</span> <span class="dv">1</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>species_tab <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">species_corrected =</span> <span class="cn">NA</span>,</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">species_raw =</span> sp_wrong,</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">species_correction =</span> <span class="dv">1</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>corrected <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/raw_taxo_preped_v3.tsv"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">scientific_raw =</span> scientific, <span class="at">vernacular_raw =</span> vernacular,</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">family_raw =</span> family, <span class="at">genus_raw =</span> genus, <span class="at">species_raw =</span> species</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(family_tab) <span class="sc">%&gt;%</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">family_corrected =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(family_correction),</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>      family_raw, family_corrected</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(genus_tab) <span class="sc">%&gt;%</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">genus_corrected =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(genus_correction),</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>    genus_raw, genus_corrected</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(species_tab) <span class="sc">%&gt;%</span></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">species_corrected =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(species_correction),</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>    species_raw, species_corrected</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(corrected, <span class="st">"data/derived_data/corrected_taxo_v3.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
@@ -324,7 +331,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td style="text-align: left;">species_correction</td>
-<td style="text-align: right;">4,028</td>
+<td style="text-align: right;">4,085</td>
 </tr>
 </tbody>
 </table>
@@ -400,7 +407,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">matched =</span> <span class="fu">all</span>(Matched)) <span class="sc">%&gt;%</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(matched) <span class="sc">%&gt;%</span></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">N =</span> <span class="fu">n</span>(), <span class="at">names =</span> <span class="fu">ifelse</span>(<span class="sc">!</span>matched, <span class="fu">paste</span>(spec.name), <span class="st">""</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(matched) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(matched) <span class="sc">%&gt;%</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">","</span>),</span>
@@ -481,7 +488,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> wfo <span class="sc">%&gt;%</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(spec.name) <span class="sc">%&gt;%</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">matched =</span> <span class="fu">all</span>(Matched)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">matched =</span> <span class="fu">all</span>(Matched)) <span class="sc">%&gt;%</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>matched)</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>manual_curration <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>scientific_corrected, <span class="sc">~</span>family_cleaned, <span class="sc">~</span>genus_cleaned, <span class="sc">~</span>species_cleaned,</span>
@@ -748,7 +755,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(spec.name) <span class="sc">%&gt;%</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">fuzzy_dist =</span> <span class="fu">unique</span>(Fuzzy.dist)) <span class="sc">%&gt;%</span></span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(fuzzy_dist) <span class="sc">%&gt;%</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">N =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">N =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Number of misspelled species by the number of misspelled letters."</span>) <span class="co"># nolint</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
@@ -790,8 +797,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(spec.name, scientificName) <span class="sc">%&gt;%</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(spec.name) <span class="sc">%&gt;%</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">n</span>() <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">scientificName =</span> <span class="fu">paste0</span>(scientificName, <span class="at">collapse =</span> <span class="st">", "</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">n</span>() <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">scientificName =</span> <span class="fu">paste0</span>(scientificName, <span class="at">collapse =</span> <span class="st">", "</span>)) <span class="sc">%&gt;%</span></span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Fuzzy match with multiple newly accepted names."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
@@ -961,7 +968,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(spec.name) <span class="sc">%&gt;%</span></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">n</span>() <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">scientificName =</span> <span class="fu">paste0</span>(scientificName, <span class="at">collapse =</span> <span class="st">", "</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">scientificName =</span> <span class="fu">paste0</span>(scientificName, <span class="at">collapse =</span> <span class="st">", "</span>)) <span class="sc">%&gt;%</span></span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Exact match with multiple newly accepted names."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
@@ -1179,11 +1186,11 @@ lgl (10): Squished, Brackets.detected, Number.detected, Unique, Matched, Fuz...
 <span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(wfo_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
-<pre><code>Rows: 15975 Columns: 12
+<pre><code>Rows: 16224 Columns: 13
 ── Column specification ────────────────────────────────────────────────────────
 Delimiter: "\t"
 chr (9): scientific_raw, vernacular_raw, family_raw, genus_raw, species_raw,...
-dbl (3): family_correction, genus_correction, species_correction
+dbl (4): tax_id, family_correction, genus_correction, species_correction
 
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
@@ -1232,11 +1239,11 @@ Joining with `by = join_by(scientific_corrected)`</code></pre>
 </tr>
 <tr class="even">
 <td style="text-align: left;">genus</td>
-<td style="text-align: right;">271</td>
+<td style="text-align: right;">275</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">species</td>
-<td style="text-align: right;">665</td>
+<td style="text-align: right;">661</td>
 </tr>
 </tbody>
 </table>

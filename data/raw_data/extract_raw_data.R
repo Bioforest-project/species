@@ -13,12 +13,27 @@ path <- "../inventories/data/raw_data"
 files <- list.files(path, full.names = TRUE, pattern = "harmonized_data")
 files
 
+# read_harmonized function
+read_harmonized <- function(file) {
+  cols <- c(ScientificName = NA_character_,
+            VernName = NA_character_,
+            Family = NA_character_,
+            Genus = NA_character_,
+            Species = NA_character_)
+  read_csv(file,
+           locale = readr::locale(encoding = "latin1"),
+           col_types = cols()) %>%
+    add_column(!!!cols[!names(cols) %in% names(.)]) %>%
+    mutate(tax_id = as.numeric(as.factor(paste(ScientificName, VernName,
+                                               Family, Genus, Species))))
+}
+
 # explore taxonomy extraction
 file <- files[1]
-read_csv(file, locale = readr::locale(encoding = "latin1")) %>%
+read_harmonized(file) %>%
   select(any_of(c(
     "Site", "ScientificName", "VernName",
-    "Family", "Genus", "Species"
+    "Family", "Genus", "Species", "tax_id"
   ))) %>%
   # in case a column doesn't exist but this should not be the case ?
   unique() %>%
@@ -29,15 +44,15 @@ read_csv(file, locale = readr::locale(encoding = "latin1")) %>%
 
 # make it a function
 extract_taxo <- function(file) {
-  read_csv(file, locale = readr::locale(encoding = "latin1")) %>%
+  read_harmonized(file) %>%
     select(any_of(c(
       "Site", "ScientificName", "VernName",
-      "Family", "Genus", "Species"
+      "Family", "Genus", "Species", "tax_id"
     ))) %>%
     unique() %>%
     mutate_all(as.character) %>%
     rename(site_raw = Site) %>%
-    left_join(sites)
+    left_join(sites, by = join_by(site_raw))
 }
 
 # test

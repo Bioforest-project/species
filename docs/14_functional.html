@@ -258,7 +258,7 @@ div.csl-indent {
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="fu">expression</span>(<span class="st">"Wood Density ["</span> <span class="sc">~</span> g <span class="sc">/</span> cm<span class="sc">^</span><span class="dv">3</span> <span class="sc">~</span> <span class="st">"]"</span>)) <span class="sc">+</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.size =</span> <span class="fu">unit</span>(.<span class="dv">5</span>,<span class="st">"line"</span>))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.size =</span> <span class="fu">unit</span>(.<span class="dv">5</span>, <span class="st">"line"</span>))</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(taxo_wd, <span class="fu">aes</span>(site, wd, <span class="at">col =</span> site)) <span class="sc">+</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_violin</span>() <span class="sc">+</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">width =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
@@ -375,39 +375,41 @@ div.csl-indent {
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>taxo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v3.tsv"</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>try <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/raw_data/try/38775.txt"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(TraitName)) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(AccSpeciesName, TraitName, OriglName, StdValue, OrigValueStr) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>try <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/raw_data/try/38775.txt"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(TraitName)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(AccSpeciesName, TraitName, OriglName, StdValue, OrigValueStr) <span class="sc">%&gt;%</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">TraitName =</span> <span class="fu">recode</span>(TraitName,</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density"</span> <span class="ot">=</span> <span class="st">"wd"</span>, <span class="co"># nolint</span></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded"</span> <span class="ot">=</span> <span class="st">"sla"</span>, <span class="co"># nolint</span></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Leaf nitrogen (N) content per leaf dry mass"</span> <span class="ot">=</span> <span class="st">"n"</span>,</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)"</span> <span class="ot">=</span> <span class="st">"la"</span>, <span class="co">#nolint</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)"</span> <span class="ot">=</span> <span class="st">"la"</span>, <span class="co"># nolint</span></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Plant nitrogen(N) fixation capacity"</span> <span class="ot">=</span> <span class="st">"n_fixation"</span>,</span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Dispersal syndrome"</span> <span class="ot">=</span> <span class="st">"dispersal"</span>,</span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Leaf phenology type"</span> <span class="ot">=</span> <span class="st">"phenology"</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">value =</span> StdValue) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">value =</span> StdValue) <span class="sc">%&gt;%</span></span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">ifelse</span>(TraitName <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"dispersal"</span>, <span class="st">"n_fixation"</span>),</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                        OrigValueStr, value)) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">ifelse</span>(TraitName <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"phenology"</span>), OriglName, value)) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">species =</span> AccSpeciesName, <span class="at">trait =</span> TraitName) <span class="sc">%&gt;%</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>StdValue, <span class="sc">-</span>OriglName, <span class="sc">-</span>OrigValueStr) </span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> try <span class="sc">%&gt;%</span> </span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">obs =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">values_from =</span> <span class="st">"value"</span>, <span class="at">names_from =</span> <span class="st">"trait"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species) <span class="sc">%&gt;%</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">phenology =</span> <span class="fu">paste</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(phenology))), <span class="at">collapse =</span> <span class="st">", "</span>),</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_fixation =</span> <span class="fu">paste</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">tolower</span>(<span class="fu">na.omit</span>(n_fixation)))), <span class="at">collapse =</span> <span class="st">", "</span>), </span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">dispersal =</span> <span class="fu">paste</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(dispersal))), <span class="at">collapse =</span> <span class="st">", "</span>),</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">wd =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(wd), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),    </span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(n), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),    </span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">sla =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(sla), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">la =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(la), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)   </span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(species <span class="sc">%in%</span> taxo<span class="sc">$</span>scientific_cleaned)</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>taxo_try <span class="ot">&lt;-</span> <span class="fu">left_join</span>(taxo, t, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"scientific_cleaned"</span> <span class="ot">=</span> <span class="st">"species"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    OrigValueStr, value</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">ifelse</span>(TraitName <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"phenology"</span>), OriglName, value)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">species =</span> AccSpeciesName, <span class="at">trait =</span> TraitName) <span class="sc">%&gt;%</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>StdValue, <span class="sc">-</span>OriglName, <span class="sc">-</span>OrigValueStr)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> try <span class="sc">%&gt;%</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">obs =</span> <span class="fu">seq_len</span>(<span class="fu">n</span>())) <span class="sc">%&gt;%</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">values_from =</span> <span class="st">"value"</span>, <span class="at">names_from =</span> <span class="st">"trait"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species) <span class="sc">%&gt;%</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">phenology =</span> <span class="fu">paste</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(phenology))), <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_fixation =</span> <span class="fu">paste</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">tolower</span>(<span class="fu">na.omit</span>(n_fixation)))),</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>                       <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">dispersal =</span> <span class="fu">paste</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(dispersal))), <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">wd =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(wd), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(n), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">sla =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(sla), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">la =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(la), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(species <span class="sc">%in%</span> taxo<span class="sc">$</span>scientific_cleaned)</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>taxo_try <span class="ot">&lt;-</span> <span class="fu">left_join</span>(taxo, t, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"scientific_cleaned"</span> <span class="ot">=</span> <span class="st">"species"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We obtained numerous data across species for SLA, WD, and N:</p>
@@ -418,7 +420,7 @@ div.csl-indent {
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="fu">expression</span>(<span class="st">"Wood Density ["</span> <span class="sc">~</span> g <span class="sc">/</span> cm<span class="sc">^</span><span class="dv">3</span> <span class="sc">~</span> <span class="st">"]"</span>)) <span class="sc">+</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.size =</span> <span class="fu">unit</span>(.<span class="dv">5</span>,<span class="st">"line"</span>))</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.size =</span> <span class="fu">unit</span>(.<span class="dv">5</span>, <span class="st">"line"</span>))</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(taxo_try, <span class="fu">aes</span>(site, wd, <span class="at">col =</span> site)) <span class="sc">+</span></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_violin</span>() <span class="sc">+</span></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">width =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
@@ -451,7 +453,7 @@ div.csl-indent {
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="sc">-</span><span class="dv">1</span></span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  } <span class="sc">~</span> <span class="st">"]"</span>)) <span class="sc">+</span></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.size =</span> <span class="fu">unit</span>(.<span class="dv">5</span>,<span class="st">"line"</span>))</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.size =</span> <span class="fu">unit</span>(.<span class="dv">5</span>, <span class="st">"line"</span>))</span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(taxo_try, <span class="fu">aes</span>(site, sla, <span class="at">col =</span> site)) <span class="sc">+</span></span>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_violin</span>() <span class="sc">+</span></span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">width =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
@@ -485,7 +487,7 @@ div.csl-indent {
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="fu">expression</span>(<span class="st">"Leaf Area ["</span> <span class="sc">~</span> mm<span class="sc">^</span><span class="dv">2</span> <span class="sc">~</span> <span class="st">"]"</span>)) <span class="sc">+</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.size =</span> <span class="fu">unit</span>(.<span class="dv">5</span>,<span class="st">"line"</span>))</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.size =</span> <span class="fu">unit</span>(.<span class="dv">5</span>, <span class="st">"line"</span>))</span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(taxo_try, <span class="fu">aes</span>(site, la, <span class="at">col =</span> site)) <span class="sc">+</span></span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_violin</span>() <span class="sc">+</span></span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">width =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
@@ -516,7 +518,7 @@ div.csl-indent {
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="fu">expression</span>(<span class="st">"Nitrogen ["</span> <span class="sc">~</span> mg <span class="sc">/</span> g <span class="sc">~</span> <span class="st">"]"</span>)) <span class="sc">+</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.size =</span> <span class="fu">unit</span>(.<span class="dv">5</span>,<span class="st">"line"</span>))</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.size =</span> <span class="fu">unit</span>(.<span class="dv">5</span>, <span class="st">"line"</span>))</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(taxo_try, <span class="fu">aes</span>(site, n, <span class="at">col =</span> site)) <span class="sc">+</span></span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_violin</span>() <span class="sc">+</span></span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">width =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
@@ -743,7 +745,7 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="fu">expression</span>(h[max])) <span class="sc">+</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.size =</span> <span class="fu">unit</span>(.<span class="dv">5</span>,<span class="st">"line"</span>))</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.key.size =</span> <span class="fu">unit</span>(.<span class="dv">5</span>, <span class="st">"line"</span>))</span>
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(taxo_hmax, <span class="fu">aes</span>(site, hmax, <span class="at">col =</span> site)) <span class="sc">+</span></span>
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_violin</span>() <span class="sc">+</span></span>
 <span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">width =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
@@ -783,28 +785,30 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>try <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/raw_data/try/38775.txt"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(AccSpeciesName, TraitName, StdValue) <span class="sc">%&gt;%</span></span>
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">scientific_cleaned =</span> AccSpeciesName,</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">trait =</span> TraitName, <span class="at">value =</span> StdValue) <span class="sc">%&gt;%</span></span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(scientific_cleaned, trait) <span class="sc">%&gt;%</span></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">value =</span> <span class="fu">mean</span>(value)) <span class="sc">%&gt;%</span></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">trait =</span> <span class="fu">recode</span>(trait,</span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density"</span> <span class="ot">=</span> <span class="st">"wd"</span>, <span class="co"># nolint</span></span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded"</span> <span class="ot">=</span> <span class="st">"sla"</span>, <span class="co"># nolint</span></span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Leaf nitrogen (N) content per leaf dry mass"</span> <span class="ot">=</span> <span class="st">"n"</span>,</span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)"</span> <span class="ot">=</span> <span class="st">"la"</span> <span class="co">#nolint</span></span>
-<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
-<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">values_from =</span> <span class="st">"value"</span>, <span class="at">names_from =</span> <span class="st">"trait"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">wd_try =</span> wd)</span>
-<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>taxo_traits <span class="ot">&lt;-</span> <span class="fu">left_join</span>(taxo, wd) <span class="sc">%&gt;%</span></span>
-<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(h) <span class="sc">%&gt;%</span></span>
-<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(try)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">scientific_cleaned =</span> AccSpeciesName,</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">trait =</span> TraitName, <span class="at">value =</span> StdValue</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(scientific_cleaned, trait) <span class="sc">%&gt;%</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">value =</span> <span class="fu">mean</span>(value)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">trait =</span> <span class="fu">recode</span>(trait,</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density"</span> <span class="ot">=</span> <span class="st">"wd"</span>, <span class="co"># nolint</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded"</span> <span class="ot">=</span> <span class="st">"sla"</span>, <span class="co"># nolint</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Leaf nitrogen (N) content per leaf dry mass"</span> <span class="ot">=</span> <span class="st">"n"</span>,</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)"</span> <span class="ot">=</span> <span class="st">"la"</span> <span class="co"># nolint</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">values_from =</span> <span class="st">"value"</span>, <span class="at">names_from =</span> <span class="st">"trait"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">wd_try =</span> wd)</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>taxo_traits <span class="ot">&lt;-</span> <span class="fu">left_join</span>(taxo, wd) <span class="sc">%&gt;%</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(h) <span class="sc">%&gt;%</span></span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(try)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>taxo_traits <span class="sc">%&gt;%</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(site, scientific_cleaned, wd, ah, hmax, la, sla, n, wd_try) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(site, scientific_cleaned, wd, ah, hmax, la, sla, n, wd_try) <span class="sc">%&gt;%</span></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(trait, value, <span class="sc">-</span>site, <span class="sc">-</span>scientific_cleaned) <span class="sc">%&gt;%</span></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(site, trait, scientific_cleaned) <span class="sc">%&gt;%</span></span>
@@ -847,13 +851,13 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 </tr>
 <tr class="even">
 <td style="text-align: left;">Ecosilva</td>
-<td style="text-align: right;">92</td>
-<td style="text-align: right;">92</td>
-<td style="text-align: right;">119</td>
+<td style="text-align: right;">91</td>
+<td style="text-align: right;">91</td>
+<td style="text-align: right;">120</td>
 <td style="text-align: right;">110</td>
-<td style="text-align: right;">104</td>
+<td style="text-align: right;">103</td>
 <td style="text-align: right;">157</td>
-<td style="text-align: right;">119</td>
+<td style="text-align: right;">118</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Iwokrama</td>
@@ -870,20 +874,20 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">134</td>
 <td style="text-align: right;">134</td>
 <td style="text-align: right;">278</td>
-<td style="text-align: right;">233</td>
+<td style="text-align: right;">234</td>
 <td style="text-align: right;">216</td>
-<td style="text-align: right;">382</td>
+<td style="text-align: right;">381</td>
 <td style="text-align: right;">265</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Jenaro Herrera</td>
-<td style="text-align: right;">69</td>
-<td style="text-align: right;">69</td>
-<td style="text-align: right;">230</td>
-<td style="text-align: right;">181</td>
-<td style="text-align: right;">168</td>
-<td style="text-align: right;">331</td>
-<td style="text-align: right;">192</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">231</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">330</td>
+<td style="text-align: right;">193</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Kabo</td>
@@ -912,28 +916,28 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">4</td>
 <td style="text-align: right;">21</td>
 <td style="text-align: right;">25</td>
-<td style="text-align: right;">76</td>
+<td style="text-align: right;">75</td>
 <td style="text-align: right;">57</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Malinau</td>
-<td style="text-align: right;">214</td>
-<td style="text-align: right;">214</td>
-<td style="text-align: right;">15</td>
-<td style="text-align: right;">100</td>
-<td style="text-align: right;">144</td>
+<td style="text-align: right;">215</td>
+<td style="text-align: right;">215</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">145</td>
 <td style="text-align: right;">485</td>
-<td style="text-align: right;">310</td>
+<td style="text-align: right;">312</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Manare</td>
 <td style="text-align: right;">56</td>
 <td style="text-align: right;">56</td>
 <td style="text-align: right;">150</td>
-<td style="text-align: right;">178</td>
-<td style="text-align: right;">184</td>
+<td style="text-align: right;">179</td>
+<td style="text-align: right;">185</td>
 <td style="text-align: right;">223</td>
-<td style="text-align: right;">147</td>
+<td style="text-align: right;">148</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Mbaiki</td>
@@ -942,8 +946,8 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">17</td>
 <td style="text-align: right;">88</td>
 <td style="text-align: right;">30</td>
-<td style="text-align: right;">349</td>
-<td style="text-align: right;">162</td>
+<td style="text-align: right;">348</td>
+<td style="text-align: right;">161</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Misiones</td>
@@ -952,16 +956,16 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">23</td>
 <td style="text-align: right;">35</td>
 <td style="text-align: right;">55</td>
-<td style="text-align: right;">112</td>
+<td style="text-align: right;">113</td>
 <td style="text-align: right;">72</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Moju</td>
-<td style="text-align: right;">135</td>
-<td style="text-align: right;">135</td>
+<td style="text-align: right;">136</td>
+<td style="text-align: right;">136</td>
 <td style="text-align: right;">258</td>
-<td style="text-align: right;">216</td>
-<td style="text-align: right;">199</td>
+<td style="text-align: right;">217</td>
+<td style="text-align: right;">200</td>
 <td style="text-align: right;">323</td>
 <td style="text-align: right;">247</td>
 </tr>
@@ -980,20 +984,20 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">34</td>
 <td style="text-align: right;">34</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">12</td>
 <td style="text-align: right;">11</td>
+<td style="text-align: right;">10</td>
 <td style="text-align: right;">66</td>
-<td style="text-align: right;">37</td>
+<td style="text-align: right;">36</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Paracou</td>
 <td style="text-align: right;">132</td>
 <td style="text-align: right;">132</td>
 <td style="text-align: right;">348</td>
-<td style="text-align: right;">365</td>
-<td style="text-align: right;">376</td>
+<td style="text-align: right;">366</td>
+<td style="text-align: right;">377</td>
 <td style="text-align: right;">529</td>
-<td style="text-align: right;">353</td>
+<td style="text-align: right;">354</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Peteco</td>
@@ -1009,21 +1013,21 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: left;">STREK</td>
 <td style="text-align: right;">157</td>
 <td style="text-align: right;">157</td>
-<td style="text-align: right;">7</td>
-<td style="text-align: right;">72</td>
-<td style="text-align: right;">107</td>
-<td style="text-align: right;">310</td>
-<td style="text-align: right;">206</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">309</td>
+<td style="text-align: right;">207</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Sao Nicolau</td>
 <td style="text-align: right;">68</td>
 <td style="text-align: right;">68</td>
-<td style="text-align: right;">94</td>
-<td style="text-align: right;">88</td>
-<td style="text-align: right;">80</td>
-<td style="text-align: right;">115</td>
 <td style="text-align: right;">95</td>
+<td style="text-align: right;">89</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">115</td>
+<td style="text-align: right;">96</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Sungai Lalang</td>
@@ -1039,21 +1043,21 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: left;">Tapajos Km114</td>
 <td style="text-align: right;">147</td>
 <td style="text-align: right;">147</td>
-<td style="text-align: right;">284</td>
+<td style="text-align: right;">282</td>
 <td style="text-align: right;">250</td>
-<td style="text-align: right;">223</td>
-<td style="text-align: right;">369</td>
-<td style="text-align: right;">262</td>
+<td style="text-align: right;">222</td>
+<td style="text-align: right;">368</td>
+<td style="text-align: right;">261</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Tapajos Km67</td>
-<td style="text-align: right;">144</td>
-<td style="text-align: right;">144</td>
-<td style="text-align: right;">257</td>
+<td style="text-align: right;">143</td>
+<td style="text-align: right;">143</td>
+<td style="text-align: right;">256</td>
 <td style="text-align: right;">230</td>
-<td style="text-align: right;">208</td>
-<td style="text-align: right;">361</td>
-<td style="text-align: right;">249</td>
+<td style="text-align: right;">207</td>
+<td style="text-align: right;">360</td>
+<td style="text-align: right;">247</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Tene</td>
@@ -1079,11 +1083,11 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: left;">Uppangala</td>
 <td style="text-align: right;">66</td>
 <td style="text-align: right;">66</td>
-<td style="text-align: right;">9</td>
-<td style="text-align: right;">20</td>
-<td style="text-align: right;">18</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">17</td>
 <td style="text-align: right;">112</td>
-<td style="text-align: right;">71</td>
+<td style="text-align: right;">70</td>
 </tr>
 </tbody>
 </table>
@@ -1201,23 +1205,25 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>              <span class="fu">select</span>(scientific_cleaned, wd, hmax, sla, la, n) <span class="sc">%&gt;%</span></span>
 <span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>              <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>              <span class="fu">gather</span>(trait, trait_value_imputed, <span class="sc">-</span>scientific_cleaned)) <span class="sc">%&gt;%</span></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">trait =</span> <span class="fu">recode</span>(trait, <span class="st">"wd"</span> <span class="ot">=</span> <span class="st">"WD"</span>, <span class="st">"sla"</span> <span class="ot">=</span> <span class="st">"SLA"</span>,</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>                        <span class="st">"la"</span> <span class="ot">=</span> <span class="st">"LA"</span>, <span class="st">"n"</span> <span class="ot">=</span> <span class="st">"N"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">definition =</span> <span class="fu">recode</span>(trait,</span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WD"</span> <span class="ot">=</span> <span class="st">"Stem specific wood density"</span>,</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"SLA"</span> <span class="ot">=</span> <span class="st">"Specific leaf area"</span>,</span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"LA"</span> <span class="ot">=</span> <span class="st">"Leaf area"</span>,</span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"N"</span> <span class="ot">=</span> <span class="st">"Leaf nitrogen content per leaf dry mass"</span>,</span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hmax"</span> <span class="ot">=</span> <span class="st">"Asymptotic height"</span></span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">unit =</span> <span class="fu">recode</span>(trait,</span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WD"</span> <span class="ot">=</span> <span class="st">"g cm-3"</span>,</span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"SLA"</span> <span class="ot">=</span> <span class="st">"mm2 mg-1"</span>,</span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"LA"</span> <span class="ot">=</span> <span class="st">"mm2"</span>,</span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"N"</span> <span class="ot">=</span> <span class="st">"mg g-1"</span>,</span>
-<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hmax"</span> <span class="ot">=</span> <span class="st">"m"</span></span>
-<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>  ))</span>
-<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(all_traits, <span class="st">"outputs/traits_v3.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">trait =</span> <span class="fu">recode</span>(trait,</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"wd"</span> <span class="ot">=</span> <span class="st">"WD"</span>, <span class="st">"sla"</span> <span class="ot">=</span> <span class="st">"SLA"</span>,</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"la"</span> <span class="ot">=</span> <span class="st">"LA"</span>, <span class="st">"n"</span> <span class="ot">=</span> <span class="st">"N"</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">definition =</span> <span class="fu">recode</span>(trait,</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WD"</span> <span class="ot">=</span> <span class="st">"Stem specific wood density"</span>,</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"SLA"</span> <span class="ot">=</span> <span class="st">"Specific leaf area"</span>,</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"LA"</span> <span class="ot">=</span> <span class="st">"Leaf area"</span>,</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"N"</span> <span class="ot">=</span> <span class="st">"Leaf nitrogen content per leaf dry mass"</span>,</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hmax"</span> <span class="ot">=</span> <span class="st">"Asymptotic height"</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">unit =</span> <span class="fu">recode</span>(trait,</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WD"</span> <span class="ot">=</span> <span class="st">"g cm-3"</span>,</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"SLA"</span> <span class="ot">=</span> <span class="st">"mm2 mg-1"</span>,</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"LA"</span> <span class="ot">=</span> <span class="st">"mm2"</span>,</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"N"</span> <span class="ot">=</span> <span class="st">"mg g-1"</span>,</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hmax"</span> <span class="ot">=</span> <span class="st">"m"</span></span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(all_traits, <span class="st">"outputs/traits_v3.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 
