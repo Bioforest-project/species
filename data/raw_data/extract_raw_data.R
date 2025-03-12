@@ -25,7 +25,8 @@ read_harmonized <- function(file) {
            col_types = cols()) %>%
     add_column(!!!cols[!names(cols) %in% names(.)]) %>%
     mutate(tax_id = as.numeric(as.factor(paste(ScientificName, VernName,
-                                               Family, Genus, Species))))
+                                               Family, Genus, Species)))) %>% 
+    mutate(file = gsub("../inventories/data/raw_data/", "", file))
 }
 
 # explore taxonomy extraction
@@ -33,7 +34,7 @@ file <- files[1]
 read_harmonized(file) %>%
   select(any_of(c(
     "Site", "ScientificName", "VernName",
-    "Family", "Genus", "Species", "tax_id"
+    "Family", "Genus", "Species", "tax_id", "file"
   ))) %>%
   # in case a column doesn't exist but this should not be the case ?
   unique() %>%
@@ -47,7 +48,7 @@ extract_taxo <- function(file) {
   read_harmonized(file) %>%
     select(any_of(c(
       "Site", "ScientificName", "VernName",
-      "Family", "Genus", "Species", "tax_id"
+      "Family", "Genus", "Species", "tax_id", "file"
     ))) %>%
     unique() %>%
     mutate_all(as.character) %>%
