@@ -1,4 +1,4 @@
-```{r setup}
+```{r set}
 #| message: false
 #| include: false
 library(tidyverse)
@@ -112,42 +112,43 @@ For the first test we thus used:
 ```{r tryrel}
 #| message: false
 #| warning: false
+#| eval: false
 taxo <- read_tsv("outputs/taxonomy_v3.tsv")
+traits <- c(
+  "Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density", # nolint
+  "Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded", # nolint
+  "Leaf nitrogen (N) content per leaf dry mass",
+  "Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)" # nolint
+)
 try <- read_tsv("data/raw_data/try/38775.txt") %>%
-  filter(!is.na(TraitName)) %>%
-  select(AccSpeciesName, TraitName, OriglName, StdValue, OrigValueStr) %>%
-  mutate(TraitName = recode(TraitName,
+  filter(TraitName %in% traits) %>%
+  filter(AccSpeciesName %in% taxo$scientific_cleaned) %>%
+  select(AccSpeciesName, TraitName, StdValue) %>%
+  rename(
+    species = AccSpeciesName,
+    trait = TraitName,
+    value = StdValue
+  ) %>%
+  mutate(trait = recode(trait,
     "Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density" = "wd", # nolint
     "Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded" = "sla", # nolint
     "Leaf nitrogen (N) content per leaf dry mass" = "n",
-    "Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)" = "la", # nolint
-    "Plant nitrogen(N) fixation capacity" = "n_fixation",
-    "Dispersal syndrome" = "dispersal",
-    "Leaf phenology type" = "phenology"
+    "Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)" = "la" # nolint
   )) %>%
-  mutate(value = StdValue) %>%
-  mutate(value = ifelse(TraitName %in% c("dispersal", "n_fixation"),
-    OrigValueStr, value
-  )) %>%
-  mutate(value = ifelse(TraitName %in% c("phenology"), OriglName, value)) %>%
-  rename(species = AccSpeciesName, trait = TraitName) %>%
-  select(-StdValue, -OriglName, -OrigValueStr)
-t <- try %>%
-  mutate(obs = seq_len(n())) %>%
-  pivot_wider(values_from = "value", names_from = "trait") %>%
-  group_by(species) %>%
-  summarise(
-    phenology = paste(sort(unique(na.omit(phenology))), collapse = ", "),
-    n_fixation = paste(sort(unique(tolower(na.omit(n_fixation)))),
-                       collapse = ", "),
-    dispersal = paste(sort(unique(na.omit(dispersal))), collapse = ", "),
-    wd = mean(as.numeric(wd), na.rm = TRUE),
-    n = mean(as.numeric(n), na.rm = TRUE),
-    sla = mean(as.numeric(sla), na.rm = TRUE),
-    la = mean(as.numeric(la), na.rm = TRUE)
-  ) %>%
-  filter(species %in% taxo$scientific_cleaned)
-taxo_try <- left_join(taxo, t, by = c("scientific_cleaned" = "species"))
+  group_by(species, trait) %>%
+  summarise(value = mean(as.numeric(value), na.rm = TRUE)) %>%
+  pivot_wider(values_from = "value", names_from = "trait")
+write_tsv(try, "data/derived_data/try_extract.tsv")
+```
+
+```{r taxo_try}
+#| message: false
+#| warning: false
+try <- read_tsv("data/derived_data/try_extract.tsv") %>%
+  rename(scientific_cleaned = species) %>%
+  rename(wd_try = wd)
+taxo <- read_tsv("outputs/taxonomy_v3.tsv")
+taxo_try <- left_join(taxo, try)
 ```
 
 We obtained numerous data across species for SLA, WD, and N:
@@ -156,12 +157,12 @@ We obtained numerous data across species for SLA, WD, and N:
 #| message: false
 #| warning: false
 #| fig-cap: "Wood density extracted from @kattge2019."
-g1 <- ggplot(taxo_try, aes(wd, col = site)) +
+g1 <- ggplot(taxo_try, aes(wd_try, col = site)) +
   geom_density() +
   theme_bw() +
   xlab(expression("Wood Density [" ~ g / cm^3 ~ "]")) +
   theme(legend.key.size = unit(.5, "line"))
-g2 <- ggplot(taxo_try, aes(site, wd, col = site)) +
+g2 <- ggplot(taxo_try, aes(site, wd_try, col = site)) +
   geom_violin() +
   geom_boxplot(width = .2) +
   coord_flip() +
@@ -334,29 +335,6 @@ fit %>%
   write_tsv("data/derived_data/tallo_pars.tsv")
 ```
 
-We had good convergence and good post-predictive checks.
-
-```{r rhat}
-#| message: false
-#| fig-cap: "Goodness of convergence assessed by Rhat. All Rhat are below 1.05 indicating a very good convergence of all chains." #nolint
-load("data/derived_data/tallo_brms.Rdata")
-mcmc_rhat(bayesplot::rhat(fit$fit))
-```
-
-```{r ppc}
-#| message: false
-#| fig-cap: "Posterior post-predictive check of simulated response variable against observed values indicating a good representation of the whole distribution in posteriors." #nolint
-load("data/derived_data/tallo_brms.Rdata")
-pp_check(fit)
-```
-
-We thus inferred 910 (ah,hmax) couple of parameters.
-
-```{r tabfit}
-load("data/derived_data/tallo_brms.Rdata")
-sjPlot::tab_model(fit)
-```
-
 ```{r ahhmax}
 #| message: false
 #| warning: false
@@ -376,8 +354,9 @@ read_tsv("outputs/taxonomy_v3.tsv") %>%
 #| message: false
 #| warning: false
 #| fig-cap: "Inferred species allometric parameters hmax per site."
+h <- read_tsv("data/derived_data/tallo_pars.tsv")
 taxo_hmax <- read_tsv("outputs/taxonomy_v3.tsv") %>%
-  left_join(read_tsv("data/derived_data/tallo_pars.tsv")) %>%
+  left_join(h) %>%
   filter(!is.na(hmax))
 g1 <- ggplot(taxo_hmax, aes(hmax, col = site)) +
   geom_density() +
@@ -406,33 +385,10 @@ We assembled all traits data from TRY [@kattge2019], BIOMASS [@réjou-méchain20
 #| warning: false
 #| message: false
 #| fig-cap: Species traits pairwise correlations.
-taxo <- read_tsv("outputs/taxonomy_v3.tsv")
-wd <- getWoodDensity(taxo$genus_cleaned, taxo$species_cleaned) %>%
-  group_by(genus, species) %>%
-  summarise(wd = mean(meanWD)) %>%
-  na.omit() %>%
-  rename(genus_cleaned = genus, species_cleaned = species)
-h <- read_tsv("data/derived_data/tallo_pars.tsv")
-try <- read_tsv("data/raw_data/try/38775.txt") %>%
-  select(AccSpeciesName, TraitName, StdValue) %>%
-  na.omit() %>%
-  rename(
-    scientific_cleaned = AccSpeciesName,
-    trait = TraitName, value = StdValue
-  ) %>%
-  group_by(scientific_cleaned, trait) %>%
-  summarise(value = mean(value)) %>%
-  mutate(trait = recode(trait,
-    "Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density" = "wd", # nolint
-    "Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded" = "sla", # nolint
-    "Leaf nitrogen (N) content per leaf dry mass" = "n",
-    "Leaf area (in case of compound leaves undefined if leaf or leaflet, undefined if petiole is in- or excluded)" = "la" # nolint
-  )) %>%
-  pivot_wider(values_from = "value", names_from = "trait") %>%
-  rename(wd_try = wd)
-taxo_traits <- left_join(taxo, wd) %>%
-  left_join(h) %>%
-  left_join(try)
+taxo_traits <- taxo %>%
+  left_join(wd) %>%
+  left_join(try) %>%
+  left_join(h)
 ```
 
 ```{r traitcount}
@@ -558,4 +514,19 @@ all_traits <- taxo_traits %>%
     "hmax" = "m"
   ))
 write_tsv(all_traits, "outputs/traits_v3.tsv")
+```
+
+```{r check_match}
+#| eval: false
+traits <- read_tsv("outputs/traits_v3.tsv")
+taxo <- read_tsv("outputs/taxonomy_v3.tsv")
+taxo %>%
+  filter(
+    !is.na(scientific_cleaned),
+    !is.na(species_cleaned)
+  ) %>%
+  select(scientific_cleaned) %>%
+  unique() %>%
+  mutate(trait = scientific_cleaned %in% traits$scientific_cleaned) %>%
+  filter(!trait)
 ```

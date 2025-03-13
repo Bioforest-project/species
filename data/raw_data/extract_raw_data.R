@@ -3,7 +3,7 @@ library(tidyverse)
 library(googlesheets4)
 
 # site corrections
-sites <- read_sheet("https://docs.google.com/spreadsheets/d/1fq2owxMBLBwwibcdw2uQQFxnIhsMbaH4Qcj_xUwVvSQ/edit?usp=sharing", 2) %>% #nolint
+sites <- read_sheet("https://docs.google.com/spreadsheets/d/1fq2owxMBLBwwibcdw2uQQFxnIhsMbaH4Qcj_xUwVvSQ/edit?usp=sharing", 2) %>% # nolint
   separate_rows(site_raw, sep = ",")
 
 # define were the raw inventories data are
@@ -15,17 +15,22 @@ files
 
 # read_harmonized function
 read_harmonized <- function(file) {
-  cols <- c(ScientificName = NA_character_,
-            VernName = NA_character_,
-            Family = NA_character_,
-            Genus = NA_character_,
-            Species = NA_character_)
+  cols <- c(
+    ScientificName = NA_character_,
+    VernName = NA_character_,
+    Family = NA_character_,
+    Genus = NA_character_,
+    Species = NA_character_
+  )
   read_csv(file,
-           locale = readr::locale(encoding = "latin1"),
-           col_types = cols()) %>%
+    locale = readr::locale(encoding = "latin1"),
+    col_types = cols()
+  ) %>%
     add_column(!!!cols[!names(cols) %in% names(.)]) %>%
-    mutate(tax_id = as.numeric(as.factor(paste(ScientificName, VernName,
-                                               Family, Genus, Species)))) %>% 
+    mutate(tax_id = as.numeric(as.factor(paste(
+      ScientificName, VernName,
+      Family, Genus, Species
+    )))) %>%
     mutate(file = gsub("../inventories/data/raw_data/", "", file))
 }
 
