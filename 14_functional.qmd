@@ -12,7 +12,7 @@ library(ggfortify)
 
 # Functional {.unnumbered}
 
-We used cleaned taxonomy to retrieve data from TRY [@kattge2019], BIOMASS [@réjou-méchain2017], and TALLO [@jucker2022]. This corresponds to **version 3**.
+We used cleaned taxonomy to retrieve data from TRY [@kattge2019], BIOMASS [@réjou-méchain2017], and TALLO [@jucker2022]. This corresponds to **version 4**.
 
 ## Wood density
 
@@ -22,7 +22,7 @@ Using BIOMASS [@réjou-méchain2017], we retrieved wood density for most species
 #| message: false
 #| warning: false
 #| fig-cap: "Wood density extracted from @réjou-méchain2017."
-taxo <- read_tsv("outputs/taxonomy_v3.tsv")
+taxo <- read_tsv("outputs/taxonomy_v4.tsv")
 wd <- getWoodDensity(taxo$genus_cleaned, taxo$species_cleaned) %>%
   group_by(genus, species) %>%
   summarise(wd = mean(meanWD)) %>%
@@ -54,7 +54,7 @@ In order to make a request for data on TRY [@kattge2019], we first retrieved the
 
 ```{r try_sp}
 #| eval: false
-try_sp <- read_tsv("outputs/taxonomy_v3.tsv") %>%
+try_sp <- read_tsv("outputs/taxonomy_v4.tsv") %>%
   select(scientific_cleaned) %>%
   na.omit() %>%
   unique() %>%
@@ -113,7 +113,7 @@ For the first test we thus used:
 #| message: false
 #| warning: false
 #| eval: false
-taxo <- read_tsv("outputs/taxonomy_v3.tsv")
+taxo <- read_tsv("outputs/taxonomy_v4.tsv")
 traits <- c(
   "Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density", # nolint
   "Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded", # nolint
@@ -147,7 +147,7 @@ write_tsv(try, "data/derived_data/try_extract.tsv")
 try <- read_tsv("data/derived_data/try_extract.tsv") %>%
   rename(scientific_cleaned = species) %>%
   rename(wd_try = wd)
-taxo <- read_tsv("outputs/taxonomy_v3.tsv")
+taxo <- read_tsv("outputs/taxonomy_v4.tsv")
 taxo_try <- left_join(taxo, try)
 ```
 
@@ -255,13 +255,13 @@ cowplot::plot_grid(g1, g2, nrow = 2)
 
 ## Tallo
 
-Using TALLO [@jucker2022], we retrieved tree diameter and height measurements for 910 species from our dataset:
+Using TALLO [@jucker2022], we retrieved tree diameter and height measurements for 993 species from our dataset:
 
 ```{r tallo}
 #| warning: false
 #| message: false
 #| fig-cap: "Height-diameter relation for species of our datasets in TALLO."
-tallo <- read_tsv("outputs/taxonomy_v3.tsv") %>%
+tallo <- read_tsv("outputs/taxonomy_v4.tsv") %>%
   select(scientific_cleaned) %>%
   na.omit() %>%
   unique() %>%
@@ -339,7 +339,7 @@ fit %>%
 #| message: false
 #| warning: false
 #| fig-cap: "Inferred species allometric parameters hmax and ah and their relations per site." #nolint
-read_tsv("outputs/taxonomy_v3.tsv") %>%
+read_tsv("outputs/taxonomy_v4.tsv") %>%
   left_join(read_tsv("data/derived_data/tallo_pars.tsv")) %>%
   filter(!is.na(ah)) %>%
   ggplot(aes(ah, hmax)) +
@@ -355,7 +355,7 @@ read_tsv("outputs/taxonomy_v3.tsv") %>%
 #| warning: false
 #| fig-cap: "Inferred species allometric parameters hmax per site."
 h <- read_tsv("data/derived_data/tallo_pars.tsv")
-taxo_hmax <- read_tsv("outputs/taxonomy_v3.tsv") %>%
+taxo_hmax <- read_tsv("outputs/taxonomy_v4.tsv") %>%
   left_join(h) %>%
   filter(!is.na(hmax))
 g1 <- ggplot(taxo_hmax, aes(hmax, col = site)) +
@@ -513,13 +513,13 @@ all_traits <- taxo_traits %>%
     "N" = "mg g-1",
     "hmax" = "m"
   ))
-write_tsv(all_traits, "outputs/traits_v3.tsv")
+write_tsv(all_traits, "outputs/traits_v4.tsv")
 ```
 
 ```{r check_match}
 #| eval: false
-traits <- read_tsv("outputs/traits_v3.tsv")
-taxo <- read_tsv("outputs/taxonomy_v3.tsv")
+traits <- read_tsv("outputs/traits_v4.tsv")
+taxo <- read_tsv("outputs/taxonomy_v4.tsv")
 taxo %>%
   filter(
     !is.na(scientific_cleaned),

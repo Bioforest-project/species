@@ -7,7 +7,7 @@ library(knitr)
 
 # Raw {.unnumbered}
 
-First we explored raw species data content. This corresponds to **version 3**.
+First we explored raw species data content. This corresponds to **version 4**.
 
 ## Taxonomy preparation
 
@@ -15,7 +15,7 @@ We got different types of misstructured taxonomic informations:
 
 -   Good: BAFOG, Iwokrama, Kabo, Malinau, Manare, Montagne Tortue, Paracou, Tene, Uppangala
 -   Vernacular only - taxonomic information only in vernacular name: Jari, Moju, Peteco, Tapajos Km114, Tapajos Km67
--   Scientific only - taxonomic information only in scientific name: Ecosilva, Jenaro Herrera, Kibale, Lesong, Mbaiki, Misiones, Nelliyampathy, STREK, Sungai Lalang, Ulu Muda
+-   Scientific only - taxonomic information only in scientific name: Ecosilva, Jenaro Herrera, Kibale, Lesong, Mbaiki, Misiones, Nelliyampathy, STREK, Sungai Lalang, Ulu Muda, Antimary APU2, Antimary APU3, Corinto, Embrapa Acre, Gola, Iracema, Mil, "Pad Limo 2 Barracos", "Pad Limo Chico Bocao", "Pad Limo Cumaru", "Pad Limo Jatoba", "Pad Limo Pocao", "Pad Limo STCP", "PAD Limoeiro Tabocal", Peixoto, Tirimbina
 -   Scientific in species - scientifc name in the species column: Sao Nicolau
 
 We smoothed all taxonomic information with five columns: scientific, vernacular, family, genus, species (`derived_data/raw_taxo_preped_vX.tsv`).
@@ -26,10 +26,14 @@ We smoothed all taxonomic information with five columns: scientific, vernacular,
 vernacular_only <- c("Moju", "Peteco", "Jari", "Tapajos Km114", "Tapajos Km67")
 scientific_only <- c(
   "Kibale", "Lesong", "Mbaiki", "Ecosilva", "Jenaro Herrera",
-  "Misiones", "Ulu Muda", "Sungai Lalang", "Nelliyampathy", "STREK"
+  "Misiones", "Ulu Muda", "Sungai Lalang", "Nelliyampathy", "STREK",
+  "Antimary APU2", "Antimary APU3", "Corinto", "Embrapa Acre", "Gola",
+  "Iracema", "Mil", "Pad Limo 2 Barracos", "Pad Limo Chico Bocao",
+  "Pad Limo Cumaru", "Pad Limo Jatoba", "Pad Limo Pocao", "Pad Limo STCP",
+  "PAD Limoeiro Tabocal", "Peixoto", "Tirimbina"
 )
 scientific_in_species <- c("Sao Nicolau")
-raw_file <- "raw_taxonomy_v3.tsv"
+raw_file <- "raw_taxonomy_v4.tsv"
 path <- file.path("data", "raw_data", raw_file)
 taxo_easy <- read_tsv(path) %>%
   rename_all(tolower) %>%
@@ -59,16 +63,15 @@ taxo <- bind_rows(
   taxo_scientific_only, taxo_scientific_in_species
 ) %>%
   rename(scientific = scientificname, vernacular = vernname) %>%
-  select(-site_raw) %>%
   separate(genus, "genus", sep = "[\\.]", remove = FALSE) %>%
   separate(species, "species", sep = "[_\\.]", remove = FALSE) %>%
   mutate_all(str_squish)
-write_tsv(taxo, "data/derived_data/raw_taxo_preped_v3.tsv")
+write_tsv(taxo, "data/derived_data/raw_taxo_preped_v4.tsv")
 ```
 
 ## All
 
-We had data for 25 sites:
+We had data for 41 sites:
 
 ```{r stats}
 taxo %>%
@@ -79,11 +82,11 @@ taxo %>%
     species = length(unique(paste(genus, species))),
     scientific = length(unique(na.omit(scientific))),
     vernacular = length(unique(na.omit(vernacular)))
-  ) %>%
+  ) %>% 
   kable(caption = "Numbers per taxonomic levels for each site.")
 ```
 
-In total, we thus add 2,163 species before cleaning:
+In total, we thus add 2,440 species before cleaning:
 
 ```{r totals}
 taxo %>%
@@ -93,7 +96,7 @@ taxo %>%
     species = length(unique(paste(genus, species))),
     scientific = length(unique(na.omit(scientific))),
     vernacular = length(unique(na.omit(vernacular)))
-  ) %>%
+  ) %>% 
   kable(
     format.args = list(big.mark = ","),
     caption = "Total numbers per taxonomic levels."
@@ -171,7 +174,7 @@ gen_wrong <- c(
   "Nd", "nd10", "nd11", "nd14", "nd15", "nd16", "nd17", "nd2", "nd22",
   "nd23", "nd25", "nd26", "nd27", "nd28", "nd29", "nd33", "nd34",
   "nd4", "nd6", "nd7", "nd9", "N", "F", "cf", "No", "UN", "Un", "Spt",
-  "Unident", "Unknow", "unknown", "Unknown"
+  "Unident", "Unknow", "unknown", "Unknown", "ni", "n"
 )
 t <- taxo %>%
   filter(!(genus %in% gen_wrong)) %>%

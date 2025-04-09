@@ -7,7 +7,7 @@ library(knitr)
 
 # Cleaning {.unnumbered}
 
-Then we started by cleaning raw species data content. This corresponds to **version 3**.
+Then we started by cleaning raw species data content. This corresponds to **version 4**.
 
 ## Names corrections
 
@@ -26,7 +26,7 @@ gen_wrong <- c(
   "Nd", "nd10", "nd11", "nd14", "nd15", "nd16", "nd17", "nd2", "nd22",
   "nd23", "nd25", "nd26", "nd27", "nd28", "nd29", "nd33", "nd34",
   "nd4", "nd6", "nd7", "nd9", "N", "F", "cf", "No", "UN", "Un", "Spt",
-  "Unident", "Unknow", "unknown", "Unknown"
+  "Unident", "Unknow", "unknown", "Unknown", "ni", "n"
 )
 sp_wrong <- c(
   "Indet", "Indet.", "sp", "sp.", "Schaeff", "Schaeff.", "Mast", "Welw",
@@ -64,7 +64,7 @@ species_tab <- data.frame(
   species_raw = sp_wrong,
   species_correction = 1
 )
-corrected <- read_tsv("data/derived_data/raw_taxo_preped_v3.tsv") %>%
+corrected <- read_tsv("data/derived_data/raw_taxo_preped_v4.tsv") %>%
   rename(
     scientific_raw = scientific, vernacular_raw = vernacular,
     family_raw = family, genus_raw = genus, species_raw = species
@@ -83,13 +83,13 @@ corrected <- read_tsv("data/derived_data/raw_taxo_preped_v3.tsv") %>%
   mutate(species_corrected = ifelse(is.na(species_correction),
     species_raw, species_corrected
   ))
-write_tsv(corrected, "data/derived_data/corrected_taxo_v3.tsv")
+write_tsv(corrected, "data/derived_data/corrected_taxo_v4.tsv")
 ```
 
 ```{r namecortab}
 #| message: false
 #| warning: false
-read_tsv("data/derived_data/corrected_taxo_v3.tsv") %>%
+read_tsv("data/derived_data/corrected_taxo_v4.tsv") %>%
   select(family_correction, genus_correction, species_correction) %>%
   gather("level") %>%
   na.omit() %>%
@@ -114,7 +114,7 @@ library(WorldFlora)
 library(fuzzyjoin)
 batch_size <- 1000 # adjust to your RAM
 dir.create("data/derived_data/wfo")
-families <- read_tsv("data/derived_data/corrected_taxo_v3.tsv") %>%
+families <- read_tsv("data/derived_data/corrected_taxo_v4.tsv") %>%
   select(family_corrected) %>%
   unique()
 wfo <- read_tsv("data/raw_data/WFO_Backbone.zip")
@@ -127,7 +127,7 @@ wfo_sub <- wfo %>%
     "Escalloniaceae"
   ))
 write_tsv(wfo_sub, "data/derived_data/wfo/backbone.tsv")
-taxo <- read_tsv("data/derived_data/corrected_taxo_v3.tsv") %>%
+taxo <- read_tsv("data/derived_data/corrected_taxo_v4.tsv") %>%
   filter(!is.na(genus_corrected)) %>%
   mutate(species_corrected = ifelse(is.na(species_corrected),
     "", species_corrected
@@ -152,22 +152,22 @@ for (i in 1:n_batch) {
   )
   write_tsv(
     cleaned,
-    paste0("data/derived_data/wfo/wfo_out_v2_part", i, ".tsv")
+    paste0("data/derived_data/wfo/wfo_out_v4_part", i, ".tsv")
   )
 }
 unlink("data/derived_data/wfo/taxo.tsv")
 unlink("data/derived_data/wfo/backbone.tsv")
 cleaned <- read_tsv(list.files("data/derived_data/wfo", full.names = TRUE))
-write_tsv(cleaned, "data/derived_data/wfo_out_v3.tsv")
+write_tsv(cleaned, "data/derived_data/wfo_out_v4.tsv")
 unlink("data/derived_data/wfo", recursive = TRUE)
 ```
 
-3,911 species matched a species from the World Flora Online (WFO) except 8 that can be cured manually:
+4,554 species matched a species from the World Flora Online (WFO) except 38 that can be cured manually:
 
 ```{r matches}
 #| message: false
 #| warning: false
-wfo <- read_tsv("data/derived_data/wfo_out_v3.tsv")
+wfo <- read_tsv("data/derived_data/wfo_out_v4.tsv")
 wfo %>%
   group_by(spec.name) %>%
   summarise(matched = all(Matched)) %>%
@@ -204,14 +204,14 @@ wfo %>%
 
 ## Manual curation
 
-The 8 species that did not match WFO were manually cured by searching manually on WFO and on the web. Some were missed because lacking the family name in the WFO backbone subset, some do not matched species names, some used the subspecies names, and other were really misspelled.
+The 38 species that did not match WFO were manually cured by searching manually on WFO and on the web. Some were missed because lacking the family name in the WFO backbone subset, some do not matched species names, some used the subspecies names, and other were really misspelled.
 
 ```{r manual_curration}
 t <- wfo %>%
   group_by(spec.name) %>%
   summarise(matched = all(Matched)) %>%
   filter(!matched)
-manual_curration <- tribble(
+manual_curration_1 <- tribble(
   ~scientific_corrected, ~family_cleaned, ~genus_cleaned, ~species_cleaned,
   "Alseodaphne ceratoxylon", "Lauraceae", NA, NA,
   "Alseodaphne dewildei", "Lauraceae", NA, NA,
@@ -242,6 +242,21 @@ manual_curration <- tribble(
   "Teijsmanniodendron simpli", "Lamiaceae", "Teijsmanniodendron", NA,
   "Xanoquito", NA, NA, NA,
 ) %>% mutate(cleaning_type = "manual")
+manual_curration_2 <- tribble(
+  ~scientific_corrected, ~family_cleaned, ~genus_cleaned, ~species_cleaned,
+  "Desconocido", NA, NA, NA,
+  "Desconocido Desconocido", NA, NA, NA,
+  "Hedyosmum bonplandianum", "Chloranthaceae", "Hedyosmum", "bonplandianum",
+  "Liana NULL", NA, NA, NA,
+  "Ndengbeyawie", NA, NA, NA,
+  "Piptocarpha poeppigiana", "Asteraceae", "Piptocarpha", "poeppigiana",
+  "Pouteria neoxythece", "Sapotaceae", "Pouteria", NA,
+  "Pseudobombax coriacea", "Malvaceae", "Pseudobombax", NA,
+  "Smeathmannia laevigata", "Passifloraceae", "Smeathmannia", "laevigata",
+  "Tabernaemontana heptanphyllum", NA, NA, NA,
+) %>% mutate(cleaning_type = "manual")
+manual_curration <- bind_rows(manual_curration_1, manual_curration_2)
+missing <- t %>% filter(!(spec.name %in% manual_curration$scientific_corrected))
 kable(manual_curration, caption = "Manually curated taxonomy that did not match WFO.") # nolint
 ```
 
@@ -300,7 +315,9 @@ However, for the moment we will randomly select the first newly accepted name in
 5.  Using manual curation for species not matched
 
 ```{r wfo_clean}
-wfo <- read_tsv("data/derived_data/wfo_out_v3.tsv") %>%
+#| warning: false
+#| message: false
+wfo <- read_tsv("data/derived_data/wfo_out_v4.tsv") %>%
   filter(Matched)
 wfo_exact <- wfo %>%
   filter(Unique)
@@ -325,7 +342,7 @@ wfo_clean <- bind_rows(wfo_exact, wfo_mult) %>%
     cleaning_type = "wfo"
   ) %>%
   bind_rows(manual_curration)
-taxo_cleaned <- read_tsv("data/derived_data/corrected_taxo_v3.tsv") %>%
+taxo_cleaned <- read_tsv("data/derived_data/corrected_taxo_v4.tsv") %>%
   mutate(scientific_corrected = ifelse(!is.na(genus_corrected),
     paste(
       genus_corrected,
@@ -336,12 +353,12 @@ taxo_cleaned <- read_tsv("data/derived_data/corrected_taxo_v3.tsv") %>%
     ), NA
   )) %>%
   left_join(wfo_clean)
-write_tsv(taxo_cleaned, "outputs/taxonomy_v3.tsv")
+write_tsv(taxo_cleaned, "outputs/taxonomy_v4.tsv")
 ```
 
 ```{r wfo_clean_stat}
 #| message: false
-clean <- read_tsv("outputs/taxonomy_v3.tsv")
+clean <- read_tsv("outputs/taxonomy_v4.tsv")
 fam_cor <- select(clean, family_corrected, family_cleaned) %>%
   unique() %>%
   na.omit() %>%

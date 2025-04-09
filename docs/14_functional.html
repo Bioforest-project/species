@@ -240,14 +240,14 @@ div.csl-indent {
 
 </header>
 
-<p>We used cleaned taxonomy to retrieve data from TRY <span class="citation" data-cites="kattge2019">(<a href="99_references.html#ref-kattge2019" role="doc-biblioref">Kattge et al. 2019</a>)</span>, BIOMASS <span class="citation" data-cites="réjou-méchain2017">(<a href="99_references.html#ref-réjou-méchain2017" role="doc-biblioref">Réjou-Méchain et al. 2017</a>)</span>, and TALLO <span class="citation" data-cites="jucker2022">(<a href="99_references.html#ref-jucker2022" role="doc-biblioref">Jucker et al. 2022</a>)</span>. This corresponds to <strong>version 3</strong>.</p>
+<p>We used cleaned taxonomy to retrieve data from TRY <span class="citation" data-cites="kattge2019">(<a href="99_references.html#ref-kattge2019" role="doc-biblioref">Kattge et al. 2019</a>)</span>, BIOMASS <span class="citation" data-cites="réjou-méchain2017">(<a href="99_references.html#ref-réjou-méchain2017" role="doc-biblioref">Réjou-Méchain et al. 2017</a>)</span>, and TALLO <span class="citation" data-cites="jucker2022">(<a href="99_references.html#ref-jucker2022" role="doc-biblioref">Jucker et al. 2022</a>)</span>. This corresponds to <strong>version 4</strong>.</p>
 <section id="wood-density" class="level2">
 <h2 class="anchored" data-anchor-id="wood-density">Wood density</h2>
 <p>Using BIOMASS <span class="citation" data-cites="réjou-méchain2017">(<a href="99_references.html#ref-réjou-méchain2017" role="doc-biblioref">Réjou-Méchain et al. 2017</a>)</span>, we retrieved wood density for most species, with little differences between sites means.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>taxo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v3.tsv"</span>)</span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>taxo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v4.tsv"</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>wd <span class="ot">&lt;-</span> <span class="fu">getWoodDensity</span>(taxo<span class="sc">$</span>genus_cleaned, taxo<span class="sc">$</span>species_cleaned) <span class="sc">%&gt;%</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(genus, species) <span class="sc">%&gt;%</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">wd =</span> <span class="fu">mean</span>(meanWD)) <span class="sc">%&gt;%</span></span>
@@ -288,7 +288,7 @@ div.csl-indent {
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>try_sp <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v3.tsv"</span>) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>try_sp <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v4.tsv"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(scientific_cleaned) <span class="sc">%&gt;%</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
@@ -374,7 +374,7 @@ div.csl-indent {
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>taxo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v3.tsv"</span>)</span>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>taxo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v4.tsv"</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>traits <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Stem specific density (SSD, stem dry mass per stem fresh volume) or wood density"</span>, <span class="co"># nolint</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Leaf area per leaf dry mass (specific leaf area, SLA or 1/LMA): undefined if petiole is in- or excluded"</span>, <span class="co"># nolint</span></span>
@@ -408,7 +408,7 @@ div.csl-indent {
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>try <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/try_extract.tsv"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">scientific_cleaned =</span> species) <span class="sc">%&gt;%</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">wd_try =</span> wd)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>taxo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v3.tsv"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>taxo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v4.tsv"</span>)</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>taxo_try <span class="ot">&lt;-</span> <span class="fu">left_join</span>(taxo, try)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
@@ -544,11 +544,11 @@ div.csl-indent {
 </section>
 <section id="tallo" class="level2">
 <h2 class="anchored" data-anchor-id="tallo">Tallo</h2>
-<p>Using TALLO <span class="citation" data-cites="jucker2022">(<a href="99_references.html#ref-jucker2022" role="doc-biblioref">Jucker et al. 2022</a>)</span>, we retrieved tree diameter and height measurements for 910 species from our dataset:</p>
+<p>Using TALLO <span class="citation" data-cites="jucker2022">(<a href="99_references.html#ref-jucker2022" role="doc-biblioref">Jucker et al. 2022</a>)</span>, we retrieved tree diameter and height measurements for 993 species from our dataset:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>tallo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v3.tsv"</span>) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>tallo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v4.tsv"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(scientific_cleaned) <span class="sc">%&gt;%</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
@@ -632,7 +632,7 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v3.tsv"</span>) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v4.tsv"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="fu">read_tsv</span>(<span class="st">"data/derived_data/tallo_pars.tsv"</span>)) <span class="sc">%&gt;%</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(ah)) <span class="sc">%&gt;%</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(ah, hmax)) <span class="sc">+</span></span>
@@ -655,7 +655,7 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/tallo_pars.tsv"</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>taxo_hmax <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v3.tsv"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>taxo_hmax <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v4.tsv"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(h) <span class="sc">%&gt;%</span></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(hmax))</span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(taxo_hmax, <span class="fu">aes</span>(hmax, <span class="at">col =</span> site)) <span class="sc">+</span></span>
@@ -734,6 +734,26 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 </thead>
 <tbody>
 <tr class="odd">
+<td style="text-align: left;">Antimary APU2</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">130</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">159</td>
+<td style="text-align: right;">128</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Antimary APU3</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">107</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">137</td>
+<td style="text-align: right;">109</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">BAFOG</td>
 <td style="text-align: right;">109</td>
 <td style="text-align: right;">109</td>
@@ -744,14 +764,54 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">241</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">Corinto</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">162</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">195</td>
+<td style="text-align: right;">261</td>
+<td style="text-align: right;">173</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">Ecosilva</td>
-<td style="text-align: right;">91</td>
-<td style="text-align: right;">91</td>
-<td style="text-align: right;">120</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">119</td>
 <td style="text-align: right;">110</td>
-<td style="text-align: right;">103</td>
+<td style="text-align: right;">104</td>
 <td style="text-align: right;">157</td>
-<td style="text-align: right;">118</td>
+<td style="text-align: right;">119</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Embrapa Acre</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">122</td>
+<td style="text-align: right;">117</td>
+<td style="text-align: right;">112</td>
+<td style="text-align: right;">157</td>
+<td style="text-align: right;">121</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Gola</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">233</td>
+<td style="text-align: right;">126</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Iracema</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">158</td>
+<td style="text-align: right;">140</td>
+<td style="text-align: right;">130</td>
+<td style="text-align: right;">198</td>
+<td style="text-align: right;">154</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Iwokrama</td>
@@ -765,22 +825,22 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 </tr>
 <tr class="even">
 <td style="text-align: left;">Jari</td>
-<td style="text-align: right;">133</td>
-<td style="text-align: right;">133</td>
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">134</td>
 <td style="text-align: right;">279</td>
 <td style="text-align: right;">234</td>
 <td style="text-align: right;">216</td>
-<td style="text-align: right;">381</td>
-<td style="text-align: right;">264</td>
+<td style="text-align: right;">382</td>
+<td style="text-align: right;">265</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Jenaro Herrera</td>
 <td style="text-align: right;">69</td>
 <td style="text-align: right;">69</td>
-<td style="text-align: right;">230</td>
-<td style="text-align: right;">181</td>
-<td style="text-align: right;">168</td>
-<td style="text-align: right;">330</td>
+<td style="text-align: right;">231</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">329</td>
 <td style="text-align: right;">192</td>
 </tr>
 <tr class="even">
@@ -810,16 +870,16 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">4</td>
 <td style="text-align: right;">21</td>
 <td style="text-align: right;">25</td>
-<td style="text-align: right;">75</td>
+<td style="text-align: right;">76</td>
 <td style="text-align: right;">57</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Malinau</td>
-<td style="text-align: right;">214</td>
-<td style="text-align: right;">214</td>
-<td style="text-align: right;">15</td>
-<td style="text-align: right;">100</td>
-<td style="text-align: right;">144</td>
+<td style="text-align: right;">215</td>
+<td style="text-align: right;">215</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">145</td>
 <td style="text-align: right;">485</td>
 <td style="text-align: right;">311</td>
 </tr>
@@ -835,35 +895,45 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Mbaiki</td>
-<td style="text-align: right;">194</td>
-<td style="text-align: right;">194</td>
+<td style="text-align: right;">195</td>
+<td style="text-align: right;">195</td>
 <td style="text-align: right;">17</td>
-<td style="text-align: right;">88</td>
-<td style="text-align: right;">30</td>
-<td style="text-align: right;">348</td>
-<td style="text-align: right;">161</td>
+<td style="text-align: right;">89</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">349</td>
+<td style="text-align: right;">162</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">Mil</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">Misiones</td>
 <td style="text-align: right;">13</td>
 <td style="text-align: right;">13</td>
 <td style="text-align: right;">23</td>
 <td style="text-align: right;">35</td>
 <td style="text-align: right;">55</td>
-<td style="text-align: right;">112</td>
+<td style="text-align: right;">113</td>
 <td style="text-align: right;">72</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Moju</td>
-<td style="text-align: right;">136</td>
-<td style="text-align: right;">136</td>
-<td style="text-align: right;">257</td>
-<td style="text-align: right;">217</td>
-<td style="text-align: right;">200</td>
+<td style="text-align: right;">135</td>
+<td style="text-align: right;">135</td>
+<td style="text-align: right;">258</td>
+<td style="text-align: right;">216</td>
+<td style="text-align: right;">199</td>
 <td style="text-align: right;">323</td>
 <td style="text-align: right;">246</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Montagne Tortue</td>
 <td style="text-align: right;">68</td>
 <td style="text-align: right;">68</td>
@@ -873,7 +943,7 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">246</td>
 <td style="text-align: right;">174</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Nelliyampathy</td>
 <td style="text-align: right;">34</td>
 <td style="text-align: right;">34</td>
@@ -882,6 +952,76 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">10</td>
 <td style="text-align: right;">66</td>
 <td style="text-align: right;">36</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PAD Limoeiro Tabocal</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">149</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">129</td>
+<td style="text-align: right;">187</td>
+<td style="text-align: right;">144</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pad Limo 2 Barracos</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">83</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">80</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pad Limo Chico Bocao</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">131</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pad Limo Cumaru</td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">145</td>
+<td style="text-align: right;">130</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">181</td>
+<td style="text-align: right;">142</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pad Limo Jatoba</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">121</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">135</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pad Limo Pocao</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">91</td>
+<td style="text-align: right;">83</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">113</td>
+<td style="text-align: right;">88</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pad Limo STCP</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">129</td>
+<td style="text-align: right;">119</td>
+<td style="text-align: right;">113</td>
+<td style="text-align: right;">156</td>
+<td style="text-align: right;">125</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Paracou</td>
@@ -894,6 +1034,16 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">353</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">Peixoto</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">127</td>
+<td style="text-align: right;">115</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">171</td>
+<td style="text-align: right;">122</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">Peteco</td>
 <td style="text-align: right;">127</td>
 <td style="text-align: right;">127</td>
@@ -903,17 +1053,17 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">291</td>
 <td style="text-align: right;">206</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">STREK</td>
-<td style="text-align: right;">158</td>
-<td style="text-align: right;">158</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">73</td>
-<td style="text-align: right;">108</td>
-<td style="text-align: right;">310</td>
-<td style="text-align: right;">205</td>
-</tr>
 <tr class="odd">
+<td style="text-align: left;">STREK</td>
+<td style="text-align: right;">156</td>
+<td style="text-align: right;">156</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">107</td>
+<td style="text-align: right;">310</td>
+<td style="text-align: right;">204</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">Sao Nicolau</td>
 <td style="text-align: right;">68</td>
 <td style="text-align: right;">68</td>
@@ -923,7 +1073,7 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">115</td>
 <td style="text-align: right;">95</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Sungai Lalang</td>
 <td style="text-align: right;">38</td>
 <td style="text-align: right;">38</td>
@@ -933,27 +1083,27 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">68</td>
 <td style="text-align: right;">50</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Tapajos Km114</td>
 <td style="text-align: right;">147</td>
 <td style="text-align: right;">147</td>
-<td style="text-align: right;">282</td>
+<td style="text-align: right;">283</td>
 <td style="text-align: right;">250</td>
-<td style="text-align: right;">223</td>
-<td style="text-align: right;">368</td>
+<td style="text-align: right;">222</td>
+<td style="text-align: right;">369</td>
 <td style="text-align: right;">261</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Tapajos Km67</td>
-<td style="text-align: right;">143</td>
-<td style="text-align: right;">143</td>
-<td style="text-align: right;">257</td>
-<td style="text-align: right;">230</td>
-<td style="text-align: right;">207</td>
-<td style="text-align: right;">360</td>
-<td style="text-align: right;">247</td>
-</tr>
 <tr class="odd">
+<td style="text-align: left;">Tapajos Km67</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">258</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">208</td>
+<td style="text-align: right;">361</td>
+<td style="text-align: right;">249</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">Tene</td>
 <td style="text-align: right;">102</td>
 <td style="text-align: right;">102</td>
@@ -962,6 +1112,16 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">33</td>
 <td style="text-align: right;">190</td>
 <td style="text-align: right;">102</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Tirimbina</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">197</td>
+<td style="text-align: right;">216</td>
+<td style="text-align: right;">287</td>
+<td style="text-align: right;">193</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Ulu Muda</td>
@@ -1117,14 +1277,14 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"N"</span> <span class="ot">=</span> <span class="st">"mg g-1"</span>,</span>
 <span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hmax"</span> <span class="ot">=</span> <span class="st">"m"</span></span>
 <span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>  ))</span>
-<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(all_traits, <span class="st">"outputs/traits_v3.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(all_traits, <span class="st">"outputs/traits_v4.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>traits <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/traits_v3.tsv"</span>)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>taxo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v3.tsv"</span>)</span>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>traits <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/traits_v4.tsv"</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>taxo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v4.tsv"</span>)</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>taxo <span class="sc">%&gt;%</span></span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
 <span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(scientific_cleaned),</span>

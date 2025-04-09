@@ -27,10 +27,9 @@ read_harmonized <- function(file) {
     col_types = cols()
   ) %>%
     add_column(!!!cols[!names(cols) %in% names(.)]) %>%
-    mutate(tax_id = as.numeric(as.factor(paste(
-      ScientificName, VernName,
-      Family, Genus, Species
-    )))) %>%
+    mutate(raw_taxonomy = paste(
+      ScientificName, "-", VernName, "-",
+      Family, Genus, Species)) %>% 
     mutate(file = gsub("../inventories/data/raw_data/", "", file))
 }
 
@@ -39,9 +38,8 @@ file <- files[1]
 read_harmonized(file) %>%
   select(any_of(c(
     "Site", "ScientificName", "VernName",
-    "Family", "Genus", "Species", "tax_id", "file"
+    "Family", "Genus", "Species", "raw_taxonomy", "file"
   ))) %>%
-  # in case a column doesn't exist but this should not be the case ?
   unique() %>%
   mutate_all(as.character) %>%
   # in case a column is badly read
@@ -53,11 +51,12 @@ extract_taxo <- function(file) {
   read_harmonized(file) %>%
     select(any_of(c(
       "Site", "ScientificName", "VernName",
-      "Family", "Genus", "Species", "tax_id", "file"
+      "Family", "Genus", "Species", "raw_taxonomy", "file"
     ))) %>%
     unique() %>%
     mutate_all(as.character) %>%
     rename(site_raw = Site) %>%
+    filter(!is.na(site_raw)) %>% 
     left_join(sites, by = join_by(site_raw))
 }
 
@@ -71,8 +70,10 @@ raw_taxo <- lapply(files, extract_taxo) %>%
 # check that no site are missing
 raw_taxo %>%
   filter(is.na(site)) %>%
-  select(site_raw, site) %>%
+  select(site_raw, site, file) %>%
   unique()
 
 # save
-write_tsv(raw_taxo, "data/raw_data/raw_taxonomy_v3.tsv")
+raw_taxo %>% 
+  select(-site_raw, -file) %>% 
+  write_tsv("data/raw_data/raw_taxonomy_v4.tsv")

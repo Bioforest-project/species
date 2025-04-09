@@ -1,3 +1,4 @@
+-   species 0.1.0.9021: v4 with new sites and raw_taxonomy column
 -   species 0.1.0.9020: adding tax_id to ease merge with inventory
 -   species 0.1.0.9019: data v3 with 25 sites
 -   species 0.1.0.9018: try v2 #2

@@ -220,7 +220,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>Then we started by cleaning raw species data content. This corresponds to <strong>version 3</strong>.</p>
+<p>Then we started by cleaning raw species data content. This corresponds to <strong>version 4</strong>.</p>
 <section id="names-corrections" class="level2">
 <h2 class="anchored" data-anchor-id="names-corrections">Names corrections</h2>
 <p>First we cleaned family, genus and species names using contingency table built on the information of dubious names from the previous chapter.</p>
@@ -237,7 +237,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Nd"</span>, <span class="st">"nd10"</span>, <span class="st">"nd11"</span>, <span class="st">"nd14"</span>, <span class="st">"nd15"</span>, <span class="st">"nd16"</span>, <span class="st">"nd17"</span>, <span class="st">"nd2"</span>, <span class="st">"nd22"</span>,</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"nd23"</span>, <span class="st">"nd25"</span>, <span class="st">"nd26"</span>, <span class="st">"nd27"</span>, <span class="st">"nd28"</span>, <span class="st">"nd29"</span>, <span class="st">"nd33"</span>, <span class="st">"nd34"</span>,</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"nd4"</span>, <span class="st">"nd6"</span>, <span class="st">"nd7"</span>, <span class="st">"nd9"</span>, <span class="st">"N"</span>, <span class="st">"F"</span>, <span class="st">"cf"</span>, <span class="st">"No"</span>, <span class="st">"UN"</span>, <span class="st">"Un"</span>, <span class="st">"Spt"</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Unident"</span>, <span class="st">"Unknow"</span>, <span class="st">"unknown"</span>, <span class="st">"Unknown"</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Unident"</span>, <span class="st">"Unknow"</span>, <span class="st">"unknown"</span>, <span class="st">"Unknown"</span>, <span class="st">"ni"</span>, <span class="st">"n"</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>sp_wrong <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Indet"</span>, <span class="st">"Indet."</span>, <span class="st">"sp"</span>, <span class="st">"sp."</span>, <span class="st">"Schaeff"</span>, <span class="st">"Schaeff."</span>, <span class="st">"Mast"</span>, <span class="st">"Welw"</span>,</span>
@@ -275,7 +275,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">species_raw =</span> sp_wrong,</span>
 <span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">species_correction =</span> <span class="dv">1</span></span>
 <span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>corrected <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/raw_taxo_preped_v3.tsv"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>corrected <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/raw_taxo_preped_v4.tsv"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
 <span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">scientific_raw =</span> scientific, <span class="at">vernacular_raw =</span> vernacular,</span>
 <span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">family_raw =</span> family, <span class="at">genus_raw =</span> genus, <span class="at">species_raw =</span> species</span>
@@ -294,13 +294,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">species_corrected =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(species_correction),</span>
 <span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>    species_raw, species_corrected</span>
 <span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>  ))</span>
-<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(corrected, <span class="st">"data/derived_data/corrected_taxo_v3.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(corrected, <span class="st">"data/derived_data/corrected_taxo_v4.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_tsv</span>(<span class="st">"data/derived_data/corrected_taxo_v3.tsv"</span>) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_tsv</span>(<span class="st">"data/derived_data/corrected_taxo_v4.tsv"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(family_correction, genus_correction, species_correction) <span class="sc">%&gt;%</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="st">"level"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
@@ -327,11 +327,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="even">
 <td style="text-align: left;">genus_correction</td>
-<td style="text-align: right;">1,569</td>
+<td style="text-align: right;">2,493</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">species_correction</td>
-<td style="text-align: right;">4,085</td>
+<td style="text-align: right;">9,787</td>
 </tr>
 </tbody>
 </table>
@@ -349,7 +349,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fuzzyjoin)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>batch_size <span class="ot">&lt;-</span> <span class="dv">1000</span> <span class="co"># adjust to your RAM</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"data/derived_data/wfo"</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>families <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/corrected_taxo_v3.tsv"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>families <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/corrected_taxo_v4.tsv"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(family_corrected) <span class="sc">%&gt;%</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>()</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>wfo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/raw_data/WFO_Backbone.zip"</span>)</span>
@@ -362,7 +362,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Escalloniaceae"</span></span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  ))</span>
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(wfo_sub, <span class="st">"data/derived_data/wfo/backbone.tsv"</span>)</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>taxo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/corrected_taxo_v3.tsv"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>taxo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/corrected_taxo_v4.tsv"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(genus_corrected)) <span class="sc">%&gt;%</span></span>
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">species_corrected =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(species_corrected),</span>
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">""</span>, species_corrected</span>
@@ -387,21 +387,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">write_tsv</span>(</span>
 <span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>    cleaned,</span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">"data/derived_data/wfo/wfo_out_v2_part"</span>, i, <span class="st">".tsv"</span>)</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">"data/derived_data/wfo/wfo_out_v4_part"</span>, i, <span class="st">".tsv"</span>)</span>
 <span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">"data/derived_data/wfo/taxo.tsv"</span>)</span>
 <span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">"data/derived_data/wfo/backbone.tsv"</span>)</span>
 <span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>cleaned <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="fu">list.files</span>(<span class="st">"data/derived_data/wfo"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(cleaned, <span class="st">"data/derived_data/wfo_out_v3.tsv"</span>)</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(cleaned, <span class="st">"data/derived_data/wfo_out_v4.tsv"</span>)</span>
 <span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="st">"data/derived_data/wfo"</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>3,911 species matched a species from the World Flora Online (WFO) except 8 that can be cured manually:</p>
+<p>4,554 species matched a species from the World Flora Online (WFO) except 38 that can be cured manually:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>wfo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/wfo_out_v3.tsv"</span>)</span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>wfo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/wfo_out_v4.tsv"</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>wfo <span class="sc">%&gt;%</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(spec.name) <span class="sc">%&gt;%</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">matched =</span> <span class="fu">all</span>(Matched)) <span class="sc">%&gt;%</span></span>
@@ -427,7 +427,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">TRUE</td>
-<td style="text-align: right;">3,911</td>
+<td style="text-align: right;">4,554</td>
 <td style="text-align: left;"></td>
 </tr>
 </tbody>
@@ -467,13 +467,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">exact</td>
-<td style="text-align: right;">224</td>
-<td style="text-align: right;">3,228</td>
+<td style="text-align: right;">253</td>
+<td style="text-align: right;">3,800</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">fuzzy</td>
-<td style="text-align: right;">90</td>
-<td style="text-align: right;">369</td>
+<td style="text-align: right;">103</td>
+<td style="text-align: right;">398</td>
 </tr>
 </tbody>
 </table>
@@ -482,7 +482,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="manual-curation" class="level2">
 <h2 class="anchored" data-anchor-id="manual-curation">Manual curation</h2>
-<p>The 8 species that did not match WFO were manually cured by searching manually on WFO and on the web. Some were missed because lacking the family name in the WFO backbone subset, some do not matched species names, some used the subspecies names, and other were really misspelled.</p>
+<p>The 38 species that did not match WFO were manually cured by searching manually on WFO and on the web. Some were missed because lacking the family name in the WFO backbone subset, some do not matched species names, some used the subspecies names, and other were really misspelled.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -490,7 +490,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(spec.name) <span class="sc">%&gt;%</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">matched =</span> <span class="fu">all</span>(Matched)) <span class="sc">%&gt;%</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>matched)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>manual_curration <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>manual_curration_1 <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>scientific_corrected, <span class="sc">~</span>family_cleaned, <span class="sc">~</span>genus_cleaned, <span class="sc">~</span>species_cleaned,</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Alseodaphne ceratoxylon"</span>, <span class="st">"Lauraceae"</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Alseodaphne dewildei"</span>, <span class="st">"Lauraceae"</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span>
@@ -521,7 +521,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Teijsmanniodendron simpli"</span>, <span class="st">"Lamiaceae"</span>, <span class="st">"Teijsmanniodendron"</span>, <span class="cn">NA</span>,</span>
 <span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Xanoquito"</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span>
 <span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">cleaning_type =</span> <span class="st">"manual"</span>)</span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(manual_curration, <span class="at">caption =</span> <span class="st">"Manually curated taxonomy that did not match WFO."</span>) <span class="co"># nolint</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>manual_curration_2 <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>scientific_corrected, <span class="sc">~</span>family_cleaned, <span class="sc">~</span>genus_cleaned, <span class="sc">~</span>species_cleaned,</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Desconocido"</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Desconocido Desconocido"</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Hedyosmum bonplandianum"</span>, <span class="st">"Chloranthaceae"</span>, <span class="st">"Hedyosmum"</span>, <span class="st">"bonplandianum"</span>,</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Liana NULL"</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Ndengbeyawie"</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Piptocarpha poeppigiana"</span>, <span class="st">"Asteraceae"</span>, <span class="st">"Piptocarpha"</span>, <span class="st">"poeppigiana"</span>,</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Pouteria neoxythece"</span>, <span class="st">"Sapotaceae"</span>, <span class="st">"Pouteria"</span>, <span class="cn">NA</span>,</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Pseudobombax coriacea"</span>, <span class="st">"Malvaceae"</span>, <span class="st">"Pseudobombax"</span>, <span class="cn">NA</span>,</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Smeathmannia laevigata"</span>, <span class="st">"Passifloraceae"</span>, <span class="st">"Smeathmannia"</span>, <span class="st">"laevigata"</span>,</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Tabernaemontana heptanphyllum"</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">cleaning_type =</span> <span class="st">"manual"</span>)</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>manual_curration <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(manual_curration_1, manual_curration_2)</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>missing <span class="ot">&lt;-</span> t <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>(spec.name <span class="sc">%in%</span> manual_curration<span class="sc">$</span>scientific_corrected))</span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(manual_curration, <span class="at">caption =</span> <span class="st">"Manually curated taxonomy that did not match WFO."</span>) <span class="co"># nolint</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
@@ -739,6 +754,76 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">manual</td>
 </tr>
+<tr class="odd">
+<td style="text-align: left;">Desconocido</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">manual</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Desconocido Desconocido</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">manual</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hedyosmum bonplandianum</td>
+<td style="text-align: left;">Chloranthaceae</td>
+<td style="text-align: left;">Hedyosmum</td>
+<td style="text-align: left;">bonplandianum</td>
+<td style="text-align: left;">manual</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Liana NULL</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">manual</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ndengbeyawie</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">manual</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Piptocarpha poeppigiana</td>
+<td style="text-align: left;">Asteraceae</td>
+<td style="text-align: left;">Piptocarpha</td>
+<td style="text-align: left;">poeppigiana</td>
+<td style="text-align: left;">manual</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pouteria neoxythece</td>
+<td style="text-align: left;">Sapotaceae</td>
+<td style="text-align: left;">Pouteria</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">manual</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pseudobombax coriacea</td>
+<td style="text-align: left;">Malvaceae</td>
+<td style="text-align: left;">Pseudobombax</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">manual</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Smeathmannia laevigata</td>
+<td style="text-align: left;">Passifloraceae</td>
+<td style="text-align: left;">Smeathmannia</td>
+<td style="text-align: left;">laevigata</td>
+<td style="text-align: left;">manual</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tabernaemontana heptanphyllum</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">manual</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -770,19 +855,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">211</td>
+<td style="text-align: right;">222</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">148</td>
+<td style="text-align: right;">163</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">63</td>
+<td style="text-align: right;">70</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">4</td>
-<td style="text-align: right;">37</td>
+<td style="text-align: right;">46</td>
 </tr>
 </tbody>
 </table>
@@ -816,16 +901,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
+<td style="text-align: left;">Acioa pallens</td>
+<td style="text-align: left;">Senegalia nigrescens, Dactyladenia pallescens, Aulacocalyx pallens, Viola macloskeyi</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">Aglaia cordifolia</td>
 <td style="text-align: left;">Acacia hastulata, Tilia platyphyllos subsp. cordifolia, Aglaia exstipulata, Aglaia elaeagnoidea, Macaranga cordifolia</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Aglaia polyandra</td>
 <td style="text-align: left;">Aglaia tomentosa, Aglaia simplicifolia</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Alangium</td>
 <td style="text-align: left;">Rhizophora, Forsythia</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Alsophila</td>
+<td style="text-align: left;">Rinorea, Machaonia, Gentiana, Paxistima, Procris</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Aniba albescens</td>
@@ -840,12 +933,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: left;">Celtis jessoensis, Trema micranthum, Celtis tetrandra, Celtis iguanaea</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">Colubrina acreana</td>
+<td style="text-align: left;">Colubrina arborescens, Colubrina beccariana, Emmenosperma papuanum</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Crogbei</td>
+<td style="text-align: left;">Medicosma, Hypericum, Barleria</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cyathea</td>
+<td style="text-align: left;">Aphelandra, Celastrus, Cynanchum, Synechanthus</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">Drypetes Vahl</td>
 <td style="text-align: left;">Drypetes venusta, Drypetes natalensis var. natalensis, Drypetes floribunda</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Enademia</td>
 <td style="text-align: left;">Grevillea, Crateva</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ficus donnell</td>
+<td style="text-align: left;">Ficus insculpta, Ficus velutina, Ficus thonningii, Ficus glumosa</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fragrea</td>
@@ -872,82 +981,86 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: left;">Campsiandra laurifolia, Zygia latifolia</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">Kafer</td>
+<td style="text-align: left;">Symplocos, Coffea</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">Knema tomentosa</td>
 <td style="text-align: left;">Desmos cochinchinensis, Maesa macrophylla, Pergularia tomentosa, Palicourea tomentosa, Urena lobata subsp. lobata, Urena lobata subsp. sinuata</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Magnolia candollii</td>
 <td style="text-align: left;">Magnolia liliifera, Magnolia acuminata var. acuminata</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Maltanranthos</td>
 <td style="text-align: left;">Caryopteris, Catanthera</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Measopsis</td>
 <td style="text-align: left;">Marrubium, Fraxinus</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Meranti</td>
 <td style="text-align: left;">Evolvulus, Croton, Cyphokentia, Ceratonia, Myrsine, Pentapetes</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Mesua congestiflora</td>
 <td style="text-align: left;">Macroscepis pleistantha, Ternstroemia congestiflora, Miconia leacongestiflora</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Mesua cornata</td>
 <td style="text-align: left;">Kayea kunstleri, Kayea coriacea</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Paropsia guineensis</td>
 <td style="text-align: left;">Chamaecrista mimosoides, Carapa procera, Garcinia smeathmanii</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Pelawan</td>
 <td style="text-align: left;">Myristica, Pterospermum, Pellionia</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Perospermum</td>
 <td style="text-align: left;">Bonamia, Bhesa</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Pouteria eyma</td>
 <td style="text-align: left;">Pouteria cuspidata subsp. dura, Pleioluma firma, Elaeoluma nuda, Micropholis guyanensis subsp. guyanensis</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Pouteria pouteria</td>
 <td style="text-align: left;">Pleioluma baueri, Planchonella contermina, Pouteria torta subsp. tuberculata, Xantolis hookeri, Pouteria glomerata subsp. glomerata, Chrysophyllum pomiferum, Pouteria durlandii subsp. durlandii, Chrysophyllum sanguinolentum subsp. spurium</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Protium protium</td>
 <td style="text-align: left;">Protium heptaphyllum subsp. heptaphyllum, Protium paniculatum var. riedelianum</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Ragala balata</td>
 <td style="text-align: left;">Rotala rubra, Myristica bialata var. bialata, Erythrophysa alata</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Randia Longflora</td>
 <td style="text-align: left;">Oxyceros longiflorus, Euclinia longiflora, Rothmannia longiflora</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Shorea lepranda</td>
 <td style="text-align: left;">Anthoshorea henryana, Rubroshorea leprosula, Rubroshorea lepidota, Rubroshorea platycarpa</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Solanum granulosum</td>
 <td style="text-align: left;">Lycianthes pauciflora, Solanum, Lycianthes glandulosa</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Solanum sanctae</td>
 <td style="text-align: left;">Solanum incanum, Solanum, Solanum torvum</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Zeylanica</td>
 <td style="text-align: left;">Crotalaria, Casearia</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">shorea parvifolia</td>
 <td style="text-align: left;">Rubroshorea parvifolia, Rubroshorea ovata</td>
 </tr>
@@ -1002,88 +1115,104 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: left;">Antidesma montanum var. montanum, Antidesma montanum var. wallichii</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">Astrocaryum aculeatum</td>
+<td style="text-align: left;">Astrocaryum rodriguesii, Bactris balanophora</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">Byrsonima crassifolia</td>
 <td style="text-align: left;">Byrsonima verbascifolia, Byrsonima cinerea</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Callicarpa tomentosa</td>
 <td style="text-align: left;">Callicarpa kochiana var. kochiana, Callicarpa macrophylla, Callicarpa candicans var. candicans</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Diospyros vestita</td>
 <td style="text-align: left;">Diospyros sericea, Diospyros sumatrana</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Elaeocarpus longipetiolatus</td>
 <td style="text-align: left;">Elaeocarpus stipularis var. longipetiolatus, Elaeocarpus culminicola</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Eugenia racemosa</td>
 <td style="text-align: left;">Eugenia biflora, Barringtonia racemosa</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Ficus anthelminthica</td>
 <td style="text-align: left;">Ficus maxima, Ficus insipida, Ficus obtusiuscula</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Ficus citrifolia</td>
 <td style="text-align: left;">Ficus maxima, Ficus drupacea</td>
 </tr>
+<tr class="odd">
+<td style="text-align: left;">Ficus clusiifolia</td>
+<td style="text-align: left;">Ficus obtusifolia, Ficus elastica</td>
+</tr>
 <tr class="even">
+<td style="text-align: left;">Ficus frondosa</td>
+<td style="text-align: left;">Ficus polyantha, Ficus albert-smithii</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">Gustavia angusta</td>
 <td style="text-align: left;">Gustavia angustifolia, Gustavia augusta</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Inga macrophylla</td>
 <td style="text-align: left;">Inga pilosula, Inga portobellensis</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Inga pavoniana</td>
 <td style="text-align: left;">Inga sapindoides, Inga nobilis subsp. nobilis</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Lasianthus acuminatus</td>
 <td style="text-align: left;">Lasianthus acuminatus, Polyspora excelsa</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Licania guianensis</td>
 <td style="text-align: left;">Moquilea guianensis, Hymenopus heteromorphus var. heteromorphus</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Licania macrophylla</td>
 <td style="text-align: left;">Hymenopus macrophyllus, Licania laxiflora</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Licania pallida</td>
 <td style="text-align: left;">Leptobalanus octandrus subsp. pallidus, Moquilea brittoniana</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Marlierea subulata</td>
 <td style="text-align: left;">Myrcia subulata, Myrcia skortzoviana</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Miconia candolleana</td>
 <td style="text-align: left;">Miconia cinnamomifolia, Miconia cornifolia</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Myristica tomentosa</td>
 <td style="text-align: left;">Horsfieldia tomentosa, Myristica fatua subsp. fatua, Myristica malabarica, Knema laurina var. laurina</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Nectandra grandis</td>
 <td style="text-align: left;">Rhodostemonodaphne grandis, Nectandra mollis</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Piptadenia suaveolens</td>
 <td style="text-align: left;">Piptadenia retusa, Marlimorimia psilostachya</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Plectronia didyma</td>
 <td style="text-align: left;">Psydrax dicoccos var. dicoccos, Psydrax dicoccos</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Prunus dulcis</td>
 <td style="text-align: left;">Prunus amygdalus, Prunus avium</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Psychotria brachiata</td>
+<td style="text-align: left;">Rudgea citrifolia, Palicourea brachiata</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Psychotria marginata</td>
@@ -1094,12 +1223,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: left;">Derris, Pterocarpus, Dalbergia</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">Salacia multiflora</td>
+<td style="text-align: left;">Salacia polyantha, Hippocratea volubilis</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">Shorea leprosula</td>
 <td style="text-align: left;">Rubroshorea leprosula, Rubroshorea platycarpa</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Shorea parvifolia</td>
 <td style="text-align: left;">Rubroshorea parvifolia, Rubroshorea ovata</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sickingia tinctoria</td>
+<td style="text-align: left;">Simira tinctoria, Simira rubescens</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Sloanea obtusa</td>
@@ -1134,94 +1271,66 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>wfo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/wfo_out_v3.tsv"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Matched)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 4429 Columns: 43
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: "\t"
-chr (30): spec.name, spec.name.ORIG, taxonID, scientificNameID, localID, sci...
-dbl  (3): Fuzzy.dist, OriSeq, Subseq
-lgl (10): Squished, Brackets.detected, Number.detected, Unique, Matched, Fuz...
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>wfo_exact <span class="ot">&lt;-</span> wfo <span class="sc">%&gt;%</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Unique)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>wfo_mult <span class="ot">&lt;-</span> wfo <span class="sc">%&gt;%</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>Unique) <span class="sc">%&gt;%</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(spec.name) <span class="sc">%&gt;%</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(New.accepted) <span class="sc">%&gt;%</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">1</span>)</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>wfo_clean <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(wfo_exact, wfo_mult) <span class="sc">%&gt;%</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    spec.name, family, genus, specificEpithet,</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    scientificName</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">scientific_corrected =</span> spec.name,</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">family_cleaned =</span> family,</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">genus_cleaned =</span> genus,</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">species_cleaned =</span> specificEpithet,</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">scientific_cleaned =</span> scientificName</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">cleaning_type =</span> <span class="st">"wfo"</span></span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(manual_curration)</span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>taxo_cleaned <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/corrected_taxo_v3.tsv"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">scientific_corrected =</span> <span class="fu">ifelse</span>(<span class="sc">!</span><span class="fu">is.na</span>(genus_corrected),</span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste</span>(</span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>      genus_corrected,</span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ifelse</span>(<span class="sc">!</span><span class="fu">is.na</span>(species_corrected),</span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>        species_corrected,</span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">""</span></span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>    ), <span class="cn">NA</span></span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(wfo_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 16224 Columns: 14
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: "\t"
-chr (10): scientific_raw, vernacular_raw, family_raw, genus_raw, species_raw...
-dbl  (4): tax_id, family_correction, genus_correction, species_correction
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-Joining with `by = join_by(scientific_corrected)`</code></pre>
-</div>
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(taxo_cleaned, <span class="st">"outputs/taxonomy_v3.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>wfo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/wfo_out_v4.tsv"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Matched)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>wfo_exact <span class="ot">&lt;-</span> wfo <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Unique)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>wfo_mult <span class="ot">&lt;-</span> wfo <span class="sc">%&gt;%</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>Unique) <span class="sc">%&gt;%</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(spec.name) <span class="sc">%&gt;%</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(New.accepted) <span class="sc">%&gt;%</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">1</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>wfo_clean <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(wfo_exact, wfo_mult) <span class="sc">%&gt;%</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    spec.name, family, genus, specificEpithet,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    scientificName</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">scientific_corrected =</span> spec.name,</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">family_cleaned =</span> family,</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">genus_cleaned =</span> genus,</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">species_cleaned =</span> specificEpithet,</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">scientific_cleaned =</span> scientificName</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">cleaning_type =</span> <span class="st">"wfo"</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(manual_curration)</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>taxo_cleaned <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"data/derived_data/corrected_taxo_v4.tsv"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">scientific_corrected =</span> <span class="fu">ifelse</span>(<span class="sc">!</span><span class="fu">is.na</span>(genus_corrected),</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste</span>(</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>      genus_corrected,</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ifelse</span>(<span class="sc">!</span><span class="fu">is.na</span>(species_corrected),</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>        species_corrected,</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">""</span></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>    ), <span class="cn">NA</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(wfo_clean)</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(taxo_cleaned, <span class="st">"outputs/taxonomy_v4.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>clean <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v3.tsv"</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>fam_cor <span class="ot">&lt;-</span> <span class="fu">select</span>(clean, family_corrected, family_cleaned) <span class="sc">%&gt;%</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(family_corrected <span class="sc">!=</span> family_cleaned)</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>gen_cor <span class="ot">&lt;-</span> <span class="fu">select</span>(clean, genus_corrected, genus_cleaned) <span class="sc">%&gt;%</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(genus_corrected <span class="sc">!=</span> genus_cleaned)</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>sp_cor <span class="ot">&lt;-</span> <span class="fu">select</span>(clean, species_corrected, species_cleaned) <span class="sc">%&gt;%</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(species_corrected <span class="sc">!=</span> species_cleaned)</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">level =</span> <span class="fu">c</span>(<span class="st">"family"</span>, <span class="st">"genus"</span>, <span class="st">"species"</span>),</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(fam_cor), <span class="fu">nrow</span>(gen_cor), <span class="fu">nrow</span>(sp_cor))</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Number of synonymy, misspelling, and update corrections per taxonomic level"</span>) <span class="co"># nolint</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>clean <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v4.tsv"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>fam_cor <span class="ot">&lt;-</span> <span class="fu">select</span>(clean, family_corrected, family_cleaned) <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(family_corrected <span class="sc">!=</span> family_cleaned)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>gen_cor <span class="ot">&lt;-</span> <span class="fu">select</span>(clean, genus_corrected, genus_cleaned) <span class="sc">%&gt;%</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(genus_corrected <span class="sc">!=</span> genus_cleaned)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>sp_cor <span class="ot">&lt;-</span> <span class="fu">select</span>(clean, species_corrected, species_cleaned) <span class="sc">%&gt;%</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(species_corrected <span class="sc">!=</span> species_cleaned)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">level =</span> <span class="fu">c</span>(<span class="st">"family"</span>, <span class="st">"genus"</span>, <span class="st">"species"</span>),</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(fam_cor), <span class="fu">nrow</span>(gen_cor), <span class="fu">nrow</span>(sp_cor))</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Number of synonymy, misspelling, and update corrections per taxonomic level"</span>) <span class="co"># nolint</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
@@ -1235,15 +1344,15 @@ Joining with `by = join_by(scientific_corrected)`</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">family</td>
-<td style="text-align: right;">115</td>
+<td style="text-align: right;">194</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">genus</td>
-<td style="text-align: right;">272</td>
+<td style="text-align: right;">323</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">species</td>
-<td style="text-align: right;">665</td>
+<td style="text-align: right;">769</td>
 </tr>
 </tbody>
 </table>
