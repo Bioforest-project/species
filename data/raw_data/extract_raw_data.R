@@ -27,9 +27,8 @@ read_harmonized <- function(file) {
     col_types = cols()
   ) %>%
     add_column(!!!cols[!names(cols) %in% names(.)]) %>%
-    mutate(raw_taxonomy = paste(
-      ScientificName, "-", VernName, "-",
-      Family, Genus, Species)) %>% 
+    mutate(raw_taxonomy = paste(ScientificName, "-", VernName, "-",
+                                Family, Genus, Species)) %>%
     mutate(file = gsub("../inventories/data/raw_data/", "", file))
 }
 
@@ -56,7 +55,7 @@ extract_taxo <- function(file) {
     unique() %>%
     mutate_all(as.character) %>%
     rename(site_raw = Site) %>%
-    filter(!is.na(site_raw)) %>% 
+    filter(!is.na(site_raw)) %>%
     left_join(sites, by = join_by(site_raw))
 }
 
@@ -74,6 +73,6 @@ raw_taxo %>%
   unique()
 
 # save
-raw_taxo %>% 
-  select(-site_raw, -file) %>% 
+raw_taxo %>%
+  select(-site_raw, -file) %>%
   write_tsv("data/raw_data/raw_taxonomy_v4.tsv")

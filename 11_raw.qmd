@@ -82,7 +82,7 @@ taxo %>%
     species = length(unique(paste(genus, species))),
     scientific = length(unique(na.omit(scientific))),
     vernacular = length(unique(na.omit(vernacular)))
-  ) %>% 
+  ) %>%
   kable(caption = "Numbers per taxonomic levels for each site.")
 ```
 
@@ -96,7 +96,7 @@ taxo %>%
     species = length(unique(paste(genus, species))),
     scientific = length(unique(na.omit(scientific))),
     vernacular = length(unique(na.omit(vernacular)))
-  ) %>% 
+  ) %>%
   kable(
     format.args = list(big.mark = ","),
     caption = "Total numbers per taxonomic levels."
