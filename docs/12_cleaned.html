@@ -323,7 +323,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">family_correction</td>
-<td style="text-align: right;">1,038</td>
+<td style="text-align: right;">1,035</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">genus_correction</td>
@@ -427,7 +427,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">TRUE</td>
-<td style="text-align: right;">4,554</td>
+<td style="text-align: right;">4,553</td>
 <td style="text-align: left;"></td>
 </tr>
 </tbody>
@@ -468,12 +468,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td style="text-align: left;">exact</td>
 <td style="text-align: right;">253</td>
-<td style="text-align: right;">3,800</td>
+<td style="text-align: right;">3,798</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">fuzzy</td>
-<td style="text-align: right;">103</td>
-<td style="text-align: right;">398</td>
+<td style="text-align: right;">105</td>
+<td style="text-align: right;">397</td>
 </tr>
 </tbody>
 </table>
@@ -533,10 +533,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Pseudobombax coriacea"</span>, <span class="st">"Malvaceae"</span>, <span class="st">"Pseudobombax"</span>, <span class="cn">NA</span>,</span>
 <span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Smeathmannia laevigata"</span>, <span class="st">"Passifloraceae"</span>, <span class="st">"Smeathmannia"</span>, <span class="st">"laevigata"</span>,</span>
 <span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Tabernaemontana heptanphyllum"</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">cleaning_type =</span> <span class="st">"manual"</span>)</span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>manual_curration <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(manual_curration_1, manual_curration_2)</span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>missing <span class="ot">&lt;-</span> t <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>(spec.name <span class="sc">%in%</span> manual_curration<span class="sc">$</span>scientific_corrected))</span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(manual_curration, <span class="at">caption =</span> <span class="st">"Manually curated taxonomy that did not match WFO."</span>) <span class="co"># nolint</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Achatocarpus praecox"</span>, <span class="st">"Achatocarpaceae"</span>, <span class="st">"Achatocarpus"</span>, <span class="st">"praecox"</span></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">cleaning_type =</span> <span class="st">"manual"</span>)</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>manual_curration <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(manual_curration_1, manual_curration_2)</span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>missing <span class="ot">&lt;-</span> t <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>(spec.name <span class="sc">%in%</span> manual_curration<span class="sc">$</span>scientific_corrected))</span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(manual_curration, <span class="at">caption =</span> <span class="st">"Manually curated taxonomy that did not match WFO."</span>) <span class="co"># nolint</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
@@ -824,6 +825,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">manual</td>
 </tr>
+<tr class="odd">
+<td style="text-align: left;">Achatocarpus praecox</td>
+<td style="text-align: left;">Achatocarpaceae</td>
+<td style="text-align: left;">Achatocarpus</td>
+<td style="text-align: left;">praecox</td>
+<td style="text-align: left;">manual</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -863,11 +871,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">70</td>
+<td style="text-align: right;">69</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">4</td>
-<td style="text-align: right;">46</td>
+<td style="text-align: right;">48</td>
 </tr>
 </tbody>
 </table>
@@ -1344,7 +1352,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">family</td>
-<td style="text-align: right;">194</td>
+<td style="text-align: right;">192</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">genus</td>
@@ -1352,7 +1360,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td style="text-align: left;">species</td>
-<td style="text-align: right;">769</td>
+<td style="text-align: right;">770</td>
 </tr>
 </tbody>
 </table>

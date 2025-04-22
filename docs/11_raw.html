@@ -293,7 +293,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">species =</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">paste</span>(genus, species))),</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">scientific =</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(scientific))),</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">vernacular =</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(vernacular)))</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Numbers per taxonomic levels for each site."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
@@ -456,7 +456,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Misiones</td>
-<td style="text-align: right;">42</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">94</td>
 <td style="text-align: right;">115</td>
 <td style="text-align: right;">123</td>
@@ -653,7 +653,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">species =</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">paste</span>(genus, species))),</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">scientific =</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(scientific))),</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">vernacular =</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(vernacular)))</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">","</span>),</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Total numbers per taxonomic levels."</span></span>
@@ -673,7 +673,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">226</td>
+<td style="text-align: right;">221</td>
 <td style="text-align: right;">1,305</td>
 <td style="text-align: right;">2,440</td>
 <td style="text-align: right;">6,513</td>
@@ -771,7 +771,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="at">collapse =</span> <span class="st">", "</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Acanthaceae, Achariaceae, Achatocarpaceae, Alangiaceae, Anacardiaceae, ANACARDIACEAE, Anarcadiaceae, Anarcardiaceae, Annonaceae, ANNONACEAE, Apocynaceae, APOCYNACEAE, Aponyceae, Aquifoliaceae, AQUIFOLIACEAE, Araliaceae, ARALIACEAE, Araucariaceae, Arecaceae, ARECACEAE, Asparagaceae, ASTERACEAE, Bignoniaceae, BIGNONIACEAE, Bixaceae, Bombacaceae, BOMBACACEAE, Boraginaceae, BORAGINACEAE, Burseraceae, BURSERACEAE, Calophyllaceae, Cannabaceae, Capparaceae, CAPPARACEAE, Cardiopteridaceae, Caricaceae, CARICACEAE, Caryocaraceae, CECROPIACEAE, Celastraceae, CELASTRACEAE, Centroplacaceae, CHLORANTHACEAE, Chrysobalanaceae, CHRYSOBALANACEAE, CLETHRACEAE, Clusiaceae, CLUSIACEAE, Combretaceae, COMBRETACEAE, Compositae, Convolvulaceae, Cordiaceae, Crypteroniaceae, CYATHEACEAE, DESCONOCIDA, DESCONOCIDO, Dichapetalaceae, DICHAPETALACEAE, Dilleniaceae, DILLENIACEAE, Dipterocarpaceae, Ebenaceae, Elaeocarpaceae, ELAEOCARPACEAE, Erythroxylaceae, ERYTHROXYLACEAE, Euphorbiaceae, EUPHORBIACEAE, Fabaceae, FABACEAE, FABACEAE/CAES., FABACEAE/MIM., FABACEAE/PAP., Fagaceae, Flacourtiaceae, FLACOURTIACEAE, Gentianaceae, Gnetaceae, Goupiaceae, Greyiaceae, Hernandiaceae, HERNANDIACEAE, Humiriaceae, HUMIRIACEAE, Hypericaceae, Icacinaceae, ICACINACEAE, Irvingiaceae, Ixonanthaceae, Juglandaceae, Lacistemataceae, Lamiaceae, Lauracea, Lauraceae, LAURACEAE, Lecythidaceae, LECYTHIDACEAE, Leguminosae, Linaceae, Lissorcarpaceae, Loganiaceae, Lythraceae, Magnoliaceae, MAGNOLIACEAE, Malpighiaceae, MALPIGHIACEAE, Malvacea, Malvaceae, MALVACEAE, MARCGRAVIACEAE, Melastomaceae, Melastomataceae, MELASTOMATACEAE, Meliaceae, MELIACEAE, Memecyclaceae, Menispermaceae, MENISPERMACEAE, Metteniusaceae, Monimiaceae, MONIMIACEAE, Moraceae, MORACEAE, Myristicacea, Myristicaceae, MYRISTICACEAE, Myrsinaceae, MYRSINACEAE, Myrtaceae, MYRTACEAE, NULL, Nyctaginaceae, NYCTAGINACEAE, Nyssaceae, Ochnaceae, OCHNACEAE, Olacaceae, OLACACEAE, Oleaceae, Opiliaceae, Oxalidaceae, Oxalidales, Pandaceae, Pentaphylacaceae, Peraceae, Peridiscaceae, Petiveriaceae, Phyllanthaceae, Phytolaccaceae, Picrodendraceae, PIPERACEAE, Podocarpaceae, Polygalaceae, Polygonaceae, POLYGONACEAE, Primulaceae, Proteaceae, Putranjavaceae, Putranjivaceae, PUTRANJIVACEAE, Quiinaceae, QUIINACEAE, Rhabdodendraceae, Rhamnaceae, RHAMNACEAE, Rhizophoracea, Rhizophoraceae, RHIZOPHORACEAE, Rosaceae, Rubiacea, Rubiaceae, RUBIACEAE, Rutacea, Rutaceae, RUTACEAE, Sabiaceae, SABIACEAE, Salicaceae, Santalaceae, Sapindaceae, SAPINDACEAE, Sapotaceae, SAPOTACEAE, Saxifragaceae, Simaroubaceae, SIMAROUBACEAE, Siparunaceae, Solanaceae, SOLANACEAE, Staphyleaceae, Stemonuraceae, Sterculiaceae, STERCULIACEAE, Styracaceae, STYRACACEAE, Symplocaceae, SYMPLOCACEAE, Tetrameristaceae, Theacea, Theaceae, TheaCEAE, Thymelaceae, Thymelaeaceae, Thymelaeceae, Tiliaceae, TILIACEAE, Ulmaceae, ULMACEAE, Urticaceae, Verbenaceae, VERBENACEAE, Violaceae, VIOLACEAE, Vitaceae, Vochysiaceae, VOCHYSIACEAE"</code></pre>
+<pre><code>[1] "Acanthaceae, Achariaceae, Alangiaceae, Anacardiaceae, ANACARDIACEAE, Anarcadiaceae, Anarcardiaceae, Annonaceae, ANNONACEAE, Apocynaceae, APOCYNACEAE, Aponyceae, Aquifoliaceae, AQUIFOLIACEAE, Araliaceae, ARALIACEAE, Araucariaceae, Arecaceae, ARECACEAE, Asparagaceae, ASTERACEAE, Bignoniaceae, BIGNONIACEAE, Bixaceae, Bombacaceae, BOMBACACEAE, Boraginaceae, BORAGINACEAE, Burseraceae, BURSERACEAE, Calophyllaceae, Cannabaceae, Capparaceae, CAPPARACEAE, Cardiopteridaceae, Caricaceae, CARICACEAE, Caryocaraceae, CECROPIACEAE, Celastraceae, CELASTRACEAE, Centroplacaceae, CHLORANTHACEAE, Chrysobalanaceae, CHRYSOBALANACEAE, CLETHRACEAE, Clusiaceae, CLUSIACEAE, Combretaceae, COMBRETACEAE, Compositae, Convolvulaceae, Cordiaceae, Crypteroniaceae, CYATHEACEAE, DESCONOCIDA, DESCONOCIDO, Dichapetalaceae, DICHAPETALACEAE, Dilleniaceae, DILLENIACEAE, Dipterocarpaceae, Ebenaceae, Elaeocarpaceae, ELAEOCARPACEAE, Erythroxylaceae, ERYTHROXYLACEAE, Euphorbiaceae, EUPHORBIACEAE, Fabaceae, FABACEAE, FABACEAE/CAES., FABACEAE/MIM., FABACEAE/PAP., Fagaceae, Flacourtiaceae, FLACOURTIACEAE, Gentianaceae, Gnetaceae, Goupiaceae, Greyiaceae, Hernandiaceae, HERNANDIACEAE, Humiriaceae, HUMIRIACEAE, Hypericaceae, Icacinaceae, ICACINACEAE, Irvingiaceae, Ixonanthaceae, Juglandaceae, Lacistemataceae, Lamiaceae, Lauracea, Lauraceae, LAURACEAE, Lecythidaceae, LECYTHIDACEAE, Leguminosae, Linaceae, Lissorcarpaceae, Loganiaceae, Lythraceae, Magnoliaceae, MAGNOLIACEAE, Malpighiaceae, MALPIGHIACEAE, Malvacea, Malvaceae, MALVACEAE, MARCGRAVIACEAE, Melastomaceae, Melastomataceae, MELASTOMATACEAE, Meliaceae, MELIACEAE, Memecyclaceae, Menispermaceae, MENISPERMACEAE, Metteniusaceae, Monimiaceae, MONIMIACEAE, Moraceae, MORACEAE, Myristicacea, Myristicaceae, MYRISTICACEAE, Myrsinaceae, MYRSINACEAE, Myrtaceae, MYRTACEAE, NULL, Nyctaginaceae, NYCTAGINACEAE, Nyssaceae, Ochnaceae, OCHNACEAE, Olacaceae, OLACACEAE, Oleaceae, Opiliaceae, Oxalidaceae, Oxalidales, Pandaceae, Pentaphylacaceae, Peraceae, Peridiscaceae, Petiveriaceae, Phyllanthaceae, Picrodendraceae, PIPERACEAE, Podocarpaceae, Polygalaceae, Polygonaceae, POLYGONACEAE, Primulaceae, Proteaceae, Putranjavaceae, Putranjivaceae, PUTRANJIVACEAE, Quiinaceae, QUIINACEAE, Rhabdodendraceae, Rhamnaceae, RHAMNACEAE, Rhizophoracea, Rhizophoraceae, RHIZOPHORACEAE, Rosaceae, Rubiacea, Rubiaceae, RUBIACEAE, Rutacea, Rutaceae, RUTACEAE, Sabiaceae, SABIACEAE, Salicaceae, Santalaceae, Sapindaceae, SAPINDACEAE, Sapotaceae, SAPOTACEAE, Saxifragaceae, Simaroubaceae, SIMAROUBACEAE, Siparunaceae, Solanaceae, SOLANACEAE, Staphyleaceae, Stemonuraceae, Sterculiaceae, STERCULIACEAE, Styracaceae, STYRACACEAE, Symplocaceae, SYMPLOCACEAE, Tetrameristaceae, Theacea, Theaceae, TheaCEAE, Thymelaceae, Thymelaeaceae, Thymelaeceae, Tiliaceae, TILIACEAE, Ulmaceae, ULMACEAE, Urticaceae, Verbenaceae, VERBENACEAE, Violaceae, VIOLACEAE, Vitaceae, Vochysiaceae, VOCHYSIACEAE"</code></pre>
 </div>
 </div>
 <p>With the following counts:</p>
@@ -795,7 +795,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">11</td>
+<td style="text-align: right;">8</td>
 </tr>
 </tbody>
 </table>
@@ -920,7 +920,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">1265</td>
+<td style="text-align: right;">1264</td>
 </tr>
 </tbody>
 </table>

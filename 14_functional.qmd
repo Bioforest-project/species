@@ -255,7 +255,7 @@ cowplot::plot_grid(g1, g2, nrow = 2)
 
 ## Tallo
 
-Using TALLO [@jucker2022], we retrieved tree diameter and height measurements for 993 species from our dataset:
+Using TALLO [@jucker2022], we retrieved tree diameter and height measurements for 994 species from our dataset:
 
 ```{r tallo}
 #| warning: false
@@ -294,7 +294,7 @@ $$
 #| eval: false
 library(brms)
 library(tidybayes)
-mdata <- read_tsv("outputs/taxonomy_v3.tsv") %>%
+mdata <- read_tsv("outputs/taxonomy_v4.tsv") %>%
   select(scientific_cleaned) %>%
   na.omit() %>%
   unique() %>%
@@ -420,6 +420,7 @@ We used simple predictive mean matching (PMM) data imputation with `mice` to fur
 library(mice)
 imputation <- taxo_traits %>%
   select(scientific_cleaned, wd, hmax, sla, la, n) %>%
+  filter(!is.na(scientific_cleaned)) %>%
   unique() %>%
   mice(maxit = 100)
 complete(imputation) %>%

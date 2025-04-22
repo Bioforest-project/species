@@ -254,6 +254,7 @@ manual_curration_2 <- tribble(
   "Pseudobombax coriacea", "Malvaceae", "Pseudobombax", NA,
   "Smeathmannia laevigata", "Passifloraceae", "Smeathmannia", "laevigata",
   "Tabernaemontana heptanphyllum", NA, NA, NA,
+  "Achatocarpus praecox", "Achatocarpaceae", "Achatocarpus", "praecox"
 ) %>% mutate(cleaning_type = "manual")
 manual_curration <- bind_rows(manual_curration_1, manual_curration_2)
 missing <- t %>% filter(!(spec.name %in% manual_curration$scientific_corrected))
