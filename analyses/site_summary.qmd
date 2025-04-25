@@ -46,7 +46,7 @@ kable(data.frame(site = params$site))
 
 ## Taxonomy
 
-Raw taxonomic information provided by PIs with the harmonization application include faily, genus and species names associated with scientific name (binomial Latin name) and sometime with vernacular name (locally used common name).
+Raw taxonomic information provided by PIs with the harmonization application include family, genus and species names associated with scientific name (binomial Latin name) and sometime with vernacular name (locally used common name).
 
 ```{r raw}
 data %>%
@@ -172,7 +172,8 @@ autoplot(
   geom_hline(aes(yintercept = 0), col = "black", linetype = "dotted") +
   geom_vline(aes(xintercept = 0), col = "black", linetype = "dotted") +
   theme_bw() +
-  geom_density_2d_filled(alpha = .5)
+  geom_density_2d_filled(alpha = .5) +
+  scale_fill_viridis_d("Species density")
 ```
 
 ## Shared table
@@ -194,5 +195,9 @@ Associated to this document you will find a table named `{site}_species.tsv` in 
 -   trait_value_imputed: the trait imputed value in case of missing raw value
 -   definition: the trait definition
 -   unit: the trait unit
+
+## Links
+
+All analyses can be found at <https://bioforest-project.github.io/species/> with corresponding code at <https://github.com/Bioforest-project/species> . Specifically, the code to generate this document is available at : <https://github.com/Bioforest-project/species/blob/main/analyses/site_summary.qmd>.
 
 ## References
