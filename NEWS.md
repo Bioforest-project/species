@@ -1,3 +1,4 @@
+-   species 0.1.0.9023: automatic report v0
 -   species 0.1.0.9022: update misiones v2
 -   species 0.1.0.9021: v4 with new sites and raw_taxonomy column
 -   species 0.1.0.9020: adding tax_id to ease merge with inventory

@@ -544,7 +544,7 @@ div.csl-indent {
 </section>
 <section id="tallo" class="level2">
 <h2 class="anchored" data-anchor-id="tallo">Tallo</h2>
-<p>Using TALLO <span class="citation" data-cites="jucker2022">(<a href="99_references.html#ref-jucker2022" role="doc-biblioref">Jucker et al. 2022</a>)</span>, we retrieved tree diameter and height measurements for 993 species from our dataset:</p>
+<p>Using TALLO <span class="citation" data-cites="jucker2022">(<a href="99_references.html#ref-jucker2022" role="doc-biblioref">Jucker et al. 2022</a>)</span>, we retrieved tree diameter and height measurements for 994 species from our dataset:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -588,7 +588,7 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidybayes)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>mdata <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v3.tsv"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>mdata <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"outputs/taxonomy_v4.tsv"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(scientific_cleaned) <span class="sc">%&gt;%</span></span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
@@ -738,8 +738,8 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">61</td>
 <td style="text-align: right;">61</td>
 <td style="text-align: right;">130</td>
-<td style="text-align: right;">122</td>
-<td style="text-align: right;">115</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">116</td>
 <td style="text-align: right;">159</td>
 <td style="text-align: right;">128</td>
 </tr>
@@ -767,29 +767,29 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: left;">Corinto</td>
 <td style="text-align: right;">44</td>
 <td style="text-align: right;">44</td>
-<td style="text-align: right;">162</td>
-<td style="text-align: right;">174</td>
-<td style="text-align: right;">195</td>
+<td style="text-align: right;">163</td>
+<td style="text-align: right;">175</td>
+<td style="text-align: right;">196</td>
 <td style="text-align: right;">261</td>
-<td style="text-align: right;">173</td>
+<td style="text-align: right;">174</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Ecosilva</td>
-<td style="text-align: right;">92</td>
-<td style="text-align: right;">92</td>
-<td style="text-align: right;">119</td>
+<td style="text-align: right;">91</td>
+<td style="text-align: right;">91</td>
+<td style="text-align: right;">120</td>
 <td style="text-align: right;">110</td>
-<td style="text-align: right;">104</td>
+<td style="text-align: right;">103</td>
 <td style="text-align: right;">157</td>
-<td style="text-align: right;">119</td>
+<td style="text-align: right;">118</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Embrapa Acre</td>
 <td style="text-align: right;">60</td>
 <td style="text-align: right;">60</td>
 <td style="text-align: right;">122</td>
-<td style="text-align: right;">116</td>
-<td style="text-align: right;">111</td>
+<td style="text-align: right;">117</td>
+<td style="text-align: right;">112</td>
 <td style="text-align: right;">157</td>
 <td style="text-align: right;">121</td>
 </tr>
@@ -815,33 +815,33 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Iwokrama</td>
-<td style="text-align: right;">45</td>
-<td style="text-align: right;">45</td>
-<td style="text-align: right;">87</td>
-<td style="text-align: right;">71</td>
-<td style="text-align: right;">71</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">88</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">72</td>
 <td style="text-align: right;">112</td>
-<td style="text-align: right;">90</td>
+<td style="text-align: right;">91</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Jari</td>
-<td style="text-align: right;">134</td>
-<td style="text-align: right;">134</td>
-<td style="text-align: right;">278</td>
-<td style="text-align: right;">234</td>
-<td style="text-align: right;">216</td>
-<td style="text-align: right;">382</td>
-<td style="text-align: right;">265</td>
+<td style="text-align: right;">133</td>
+<td style="text-align: right;">133</td>
+<td style="text-align: right;">277</td>
+<td style="text-align: right;">233</td>
+<td style="text-align: right;">215</td>
+<td style="text-align: right;">381</td>
+<td style="text-align: right;">264</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Jenaro Herrera</td>
-<td style="text-align: right;">69</td>
-<td style="text-align: right;">69</td>
-<td style="text-align: right;">230</td>
-<td style="text-align: right;">181</td>
-<td style="text-align: right;">168</td>
-<td style="text-align: right;">329</td>
-<td style="text-align: right;">191</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">231</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">330</td>
+<td style="text-align: right;">193</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Kabo</td>
@@ -875,13 +875,13 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Malinau</td>
-<td style="text-align: right;">214</td>
-<td style="text-align: right;">214</td>
-<td style="text-align: right;">15</td>
-<td style="text-align: right;">100</td>
-<td style="text-align: right;">144</td>
-<td style="text-align: right;">485</td>
-<td style="text-align: right;">311</td>
+<td style="text-align: right;">215</td>
+<td style="text-align: right;">215</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">145</td>
+<td style="text-align: right;">484</td>
+<td style="text-align: right;">312</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Manare</td>
@@ -895,13 +895,13 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Mbaiki</td>
-<td style="text-align: right;">194</td>
-<td style="text-align: right;">194</td>
+<td style="text-align: right;">195</td>
+<td style="text-align: right;">195</td>
 <td style="text-align: right;">17</td>
-<td style="text-align: right;">88</td>
-<td style="text-align: right;">30</td>
+<td style="text-align: right;">89</td>
+<td style="text-align: right;">31</td>
 <td style="text-align: right;">348</td>
-<td style="text-align: right;">161</td>
+<td style="text-align: right;">162</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Mil</td>
@@ -918,20 +918,20 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">13</td>
 <td style="text-align: right;">13</td>
 <td style="text-align: right;">23</td>
-<td style="text-align: right;">35</td>
-<td style="text-align: right;">55</td>
-<td style="text-align: right;">112</td>
-<td style="text-align: right;">72</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">111</td>
+<td style="text-align: right;">71</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Moju</td>
 <td style="text-align: right;">135</td>
 <td style="text-align: right;">135</td>
-<td style="text-align: right;">257</td>
+<td style="text-align: right;">258</td>
 <td style="text-align: right;">216</td>
 <td style="text-align: right;">199</td>
 <td style="text-align: right;">323</td>
-<td style="text-align: right;">245</td>
+<td style="text-align: right;">247</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Montagne Tortue</td>
@@ -1018,8 +1018,8 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: right;">65</td>
 <td style="text-align: right;">65</td>
 <td style="text-align: right;">129</td>
-<td style="text-align: right;">118</td>
-<td style="text-align: right;">113</td>
+<td style="text-align: right;">119</td>
+<td style="text-align: right;">114</td>
 <td style="text-align: right;">156</td>
 <td style="text-align: right;">126</td>
 </tr>
@@ -1037,11 +1037,11 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: left;">Peixoto</td>
 <td style="text-align: right;">61</td>
 <td style="text-align: right;">61</td>
-<td style="text-align: right;">127</td>
-<td style="text-align: right;">115</td>
-<td style="text-align: right;">109</td>
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">110</td>
 <td style="text-align: right;">173</td>
-<td style="text-align: right;">123</td>
+<td style="text-align: right;">125</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Peteco</td>
@@ -1055,13 +1055,13 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 </tr>
 <tr class="odd">
 <td style="text-align: left;">STREK</td>
-<td style="text-align: right;">156</td>
-<td style="text-align: right;">156</td>
-<td style="text-align: right;">7</td>
-<td style="text-align: right;">73</td>
-<td style="text-align: right;">108</td>
-<td style="text-align: right;">309</td>
-<td style="text-align: right;">205</td>
+<td style="text-align: right;">157</td>
+<td style="text-align: right;">157</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">74</td>
+<td style="text-align: right;">109</td>
+<td style="text-align: right;">308</td>
+<td style="text-align: right;">207</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Sao Nicolau</td>
@@ -1087,19 +1087,19 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: left;">Tapajos Km114</td>
 <td style="text-align: right;">147</td>
 <td style="text-align: right;">147</td>
-<td style="text-align: right;">283</td>
+<td style="text-align: right;">284</td>
 <td style="text-align: right;">250</td>
-<td style="text-align: right;">222</td>
+<td style="text-align: right;">223</td>
 <td style="text-align: right;">369</td>
-<td style="text-align: right;">261</td>
+<td style="text-align: right;">262</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Tapajos Km67</td>
-<td style="text-align: right;">144</td>
-<td style="text-align: right;">144</td>
-<td style="text-align: right;">256</td>
+<td style="text-align: right;">143</td>
+<td style="text-align: right;">143</td>
+<td style="text-align: right;">257</td>
 <td style="text-align: right;">230</td>
-<td style="text-align: right;">208</td>
+<td style="text-align: right;">207</td>
 <td style="text-align: right;">361</td>
 <td style="text-align: right;">249</td>
 </tr>
@@ -1117,11 +1117,11 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <td style="text-align: left;">Tirimbina</td>
 <td style="text-align: right;">50</td>
 <td style="text-align: right;">50</td>
-<td style="text-align: right;">182</td>
+<td style="text-align: right;">183</td>
 <td style="text-align: right;">197</td>
-<td style="text-align: right;">215</td>
+<td style="text-align: right;">216</td>
 <td style="text-align: right;">287</td>
-<td style="text-align: right;">192</td>
+<td style="text-align: right;">193</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Ulu Muda</td>
@@ -1169,7 +1169,7 @@ a_{h,s} \sim N (a_{h}, \sigma_a^2)
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mice)</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>imputation <span class="ot">&lt;-</span> taxo_traits <span class="sc">%&gt;%</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(scientific_cleaned, wd, hmax, sla, la, n) <span class="sc">%&gt;%</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(scientific_cleaned)) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(scientific_cleaned)) <span class="sc">%&gt;%</span></span>
 <span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mice</span>(<span class="at">maxit =</span> <span class="dv">100</span>)</span>
 <span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="fu">complete</span>(imputation) <span class="sc">%&gt;%</span></span>

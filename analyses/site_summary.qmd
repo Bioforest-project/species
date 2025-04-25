@@ -1,0 +1,198 @@
+---
+title: "Site species"
+author: "Schmitt, S."
+date: last-modified
+format:
+  pdf:
+    number-sections: false
+    link-citations: true
+    colorlinks: true
+    fig-pos: H
+params:
+  site: "Misiones"
+  path: "misiones_species.tsv"
+execute:
+  echo: false
+bibliography: ../references.bib
+---
+
+The purpose of this document is to provide site PIs with the collected species, phylogenetic and functional trait data for their site. **You are invited to provide feedback if any values seem incorrect to you, or if you have local comparative data, especially for functional traits**. Bear in mind, however, that this is based on global databases, especially for functional traits. Obtained species data are shared with this reports in TSV file described at the end of this document.
+
+```{r set}
+#| include: false
+library(tidyverse)
+library(knitr)
+library(ggfortify)
+options(knitr.kable.NA = "")
+data <- read_tsv("../outputs/taxonomy_v4.tsv") %>%
+  filter(site == params$site) %>%
+  select(
+    -site, -raw_taxonomy, -family_corrected, -family_correction,
+    -genus_corrected, -genus_correction,
+    -species_corrected, -species_correction, -scientific_corrected
+  ) %>%
+  left_join(read_tsv("../outputs/traits_v4.tsv")) %>%
+  filter(trait != "hmax")
+write_tsv(data, params$path)
+```
+
+## Site
+
+This report corresponds to:
+
+```{r site}
+kable(data.frame(site = params$site))
+```
+
+## Taxonomy
+
+Raw taxonomic information provided by PIs with the harmonization application include faily, genus and species names associated with scientific name (binomial Latin name) and sometime with vernacular name (locally used common name).
+
+```{r raw}
+data %>%
+  summarise(
+    family = length(unique(na.omit(family_raw))),
+    genus = length(unique(na.omit(genus_raw))),
+    species = length(unique(paste(genus_raw, species_raw))),
+    scientific = length(unique(na.omit(scientific_raw))),
+    vernacular = length(unique(na.omit(vernacular_raw)))
+  ) %>%
+  kable(
+    format.args = list(big.mark = ","),
+    caption = "Total numbers per raw taxonomic levels."
+  )
+```
+
+First we cleaned family, genus and species names using contingency table built on the information of dubious names. Then we used `WorldFlora` and `fuzzyjoin` for synonymy and misspelling corrections. Finally, species that did not match WFO were manually cured by searching manually on WFO and on the web. This resulted in the following corrections.
+
+```{r cleaning}
+fam_cor <- select(data, family_raw, family_cleaned) %>%
+  mutate_all(~ ifelse(is.na(.), "NA", .)) %>%
+  unique() %>%
+  na.omit() %>%
+  filter(family_raw != family_cleaned)
+gen_cor <- select(data, genus_raw, genus_cleaned) %>%
+  mutate_all(~ ifelse(is.na(.), "NA", .)) %>%
+  unique() %>%
+  na.omit() %>%
+  filter(genus_raw != genus_cleaned)
+sp_cor <- select(data, species_raw, species_cleaned) %>%
+  mutate_all(~ ifelse(is.na(.), "NA", .)) %>%
+  unique() %>%
+  na.omit() %>%
+  filter(species_raw != species_cleaned)
+data.frame(
+  level = c("family", "genus", "species"),
+  n = c(nrow(fam_cor), nrow(gen_cor), nrow(sp_cor))
+) %>%
+  pivot_wider(names_from = level, values_from = n) %>%
+  kable(caption = "Number of synonymy, misspelling, and update corrections per taxonomic level") # nolint
+```
+
+Cleaning resulted in the following totals per taxonomic level:
+
+```{r cleaned}
+data %>%
+  summarise(
+    family = length(unique(na.omit(family_cleaned))),
+    genus = length(unique(na.omit(genus_cleaned))),
+    species = length(unique(paste(genus_cleaned, species_cleaned)))
+  ) %>%
+  kable(
+    format.args = list(big.mark = ","),
+    caption = "Total numbers per cleaned taxonomic levels."
+  )
+```
+
+## Functional traits
+
+We used cleaned taxonomy to retrieve data from TRY [@kattge2019] and BIOMASS [@réjou-méchain2017]. Using BIOMASS [@réjou-méchain2017], we retrieved wood density for most species. From TRY [@kattge2019], we requested leaf nitrogen content, leaf are per leaf dry mass, wood density, and leaf area. We assembled all traits data from TRY [@kattge2019] and BIOMASS [@réjou-méchain2017], and obtained the following consolidated traits:
+
+-   **N**: leaf nitrogen content per leaf dry mass, mg g^-1^
+-   **SLA**: leaf area per leaf dry mass, mm^2^ mg^-1^
+-   **WD**: wood density, g cm^-3^
+-   **LA**: leaf area, mm^2^
+
+```{r traits_dist}
+#| message: false
+#| warning: false
+data %>%
+  select(genus_cleaned, species_cleaned, trait, trait_value_raw) %>%
+  na.omit() %>%
+  mutate(trait = recode(trait,
+    "WD" = '"WD ["~g~cm^{-3}~"]"',
+    "SLA" = '"SLA ["~mm^2~mg^{-1}~"]"',
+    "N" = '"N ["~mg~g^{-1}~"]"',
+    "LA" = '"LA ["~mm^2~"]"'
+  )) %>%
+  ggplot(aes(trait_value_raw)) +
+  geom_histogram() +
+  facet_wrap(~trait, scales = "free", labeller = label_parsed) +
+  theme_bw() +
+  xlab("") +
+  ylab("")
+```
+
+```{r traits_count}
+#| message: false
+#| warning: false
+n_tot <- data %>%
+  select(genus_cleaned, species_cleaned) %>%
+  unique() %>%
+  nrow()
+data %>%
+  select(genus_cleaned, species_cleaned, trait, trait_value_raw) %>%
+  na.omit() %>%
+  group_by(genus_cleaned, species_cleaned, trait) %>%
+  summarise(trait_value_raw = mean(trait_value_raw)) %>%
+  group_by(trait) %>%
+  summarise(count = n(), percent = n() / n_tot * 100) %>%
+  kable(caption = "Trait coverage across site species", digits = 2)
+```
+
+Bu as the count are showing, a lot of traits data are missing. We used simple predictive mean matching (PMM) data imputation with `mice` to further impute missing trait values. We obtained the PCA below:
+
+```{r pca}
+#| message: false
+#| warning: false
+#| fig-cap: "Imputed traits principal component analysis."
+autoplot(
+  princomp(select(data, trait, trait_value_imputed) %>%
+             pivot_wider(names_from = trait,
+                         values_from = trait_value_imputed) %>%
+             unnest() %>%
+             mutate(SLA = log(SLA), LA = log(LA)), cor = TRUE),
+  loadings.label.size = 6,
+  loadings.label.colour = "red", loadings.label.vjust = 1.1,
+  loadings.label.repel = TRUE,
+  loadings = TRUE, loadings.label = TRUE, loadings.colour = "red",
+  alpha = 0.25
+) +
+  coord_equal() +
+  geom_hline(aes(yintercept = 0), col = "black", linetype = "dotted") +
+  geom_vline(aes(xintercept = 0), col = "black", linetype = "dotted") +
+  theme_bw() +
+  geom_density_2d_filled(alpha = .5)
+```
+
+## Shared table
+
+Associated to this document you will find a table named `{site}_species.tsv` in TSV format with the following information:
+
+-   scientific_raw: scientific name with the raw information as read in the inventories
+-   vernacular_raw: vernacular name with the raw information as read in the inventories
+-   family_raw: family name with the raw information as read in the inventories
+-   genus_raw: genus name with the raw information as read in the inventories
+-   species_raw: species name with the raw information as read in the inventories
+-   scientific_cleaned: scientific name with the synonymy and misspelling corrections with WFO and manual corrections
+-   family cleaned: family name with the synonymy and misspelling corrections with WFO and manual corrections
+-   genus_cleaned: genus name with the synonymy and misspelling corrections with WFO and manual corrections
+-   species_cleaned: species name with the synonymy and misspelling corrections with WFO and manual corrections
+-   cleaning_type: WFO automatic cleaning or using manual curation
+-   trait: the trait acronym or code
+-   trait_value_raw: the trait raw value
+-   trait_value_imputed: the trait imputed value in case of missing raw value
+-   definition: the trait definition
+-   unit: the trait unit
+
+## References
