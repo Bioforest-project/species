@@ -9,7 +9,6 @@ book:
     - index.qmd
     - 11_raw.qmd
     - 12_cleaned.qmd
-    - 13_phylogeny.qmd
     - 14_functional.qmd
   appendices:
     - 99_references.qmd

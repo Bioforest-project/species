@@ -3,11 +3,20 @@
 #| include: false
 library(tidyverse)
 library(knitr)
+version <- 5
+raw_file <- file.path("data", "raw_data", paste0(
+  "raw_taxonomy_v",
+  version, ".tsv"
+))
+preped_file <- file.path(
+  "data", "derived_data",
+  paste0("raw_taxo_preped_v", version, ".tsv")
+)
 ```
 
 # Raw {.unnumbered}
 
-First we explored raw species data content. This corresponds to **version 4**.
+First we explored raw species data content. This corresponds to **version 5**.
 
 ## Taxonomy preparation
 
@@ -15,7 +24,7 @@ We got different types of misstructured taxonomic informations:
 
 -   Good: BAFOG, Iwokrama, Kabo, Malinau, Manare, Montagne Tortue, Paracou, Tene, Uppangala
 -   Vernacular only - taxonomic information only in vernacular name: Jari, Moju, Peteco, Tapajos Km114, Tapajos Km67
--   Scientific only - taxonomic information only in scientific name: Ecosilva, Jenaro Herrera, Kibale, Lesong, Mbaiki, Misiones, Nelliyampathy, STREK, Sungai Lalang, Ulu Muda, Antimary APU2, Antimary APU3, Corinto, Embrapa Acre, Gola, Iracema, Mil, "Pad Limo 2 Barracos", "Pad Limo Chico Bocao", "Pad Limo Cumaru", "Pad Limo Jatoba", "Pad Limo Pocao", "Pad Limo STCP", "PAD Limoeiro Tabocal", Peixoto, Tirimbina
+-   Scientific only - taxonomic information only in scientific name: Ecosilva, Jenaro Herrera, Kibale, Lesong, Mbaiki, Misiones, Nelliyampathy, STREK, Sungai Lalang, Ulu Muda, Antimary APU2, Antimary APU3, Corinto, Embrapa Acre, Gola, Iracema, Mil, "Pad Limo 2 Barracos", "Pad Limo Chico Bocao", "Pad Limo Cumaru", "Pad Limo Jatoba", "Pad Limo Pocao", "Pad Limo STCP", "PAD Limoeiro Tabocal", Peixoto, Tirimbina, Ser Filipinas
 -   Scientific in species - scientifc name in the species column: Sao Nicolau
 
 We smoothed all taxonomic information with five columns: scientific, vernacular, family, genus, species (`derived_data/raw_taxo_preped_vX.tsv`).
@@ -30,30 +39,28 @@ scientific_only <- c(
   "Antimary APU2", "Antimary APU3", "Corinto", "Embrapa Acre", "Gola",
   "Iracema", "Mil", "Pad Limo 2 Barracos", "Pad Limo Chico Bocao",
   "Pad Limo Cumaru", "Pad Limo Jatoba", "Pad Limo Pocao", "Pad Limo STCP",
-  "PAD Limoeiro Tabocal", "Peixoto", "Tirimbina"
+  "PAD Limoeiro Tabocal", "Peixoto", "Tirimbina", "Ser Filipinas"
 )
 scientific_in_species <- c("Sao Nicolau")
-raw_file <- "raw_taxonomy_v4.tsv"
-path <- file.path("data", "raw_data", raw_file)
-taxo_easy <- read_tsv(path) %>%
+taxo_easy <- read_tsv(raw_file) %>%
   rename_all(tolower) %>%
   filter(!(site %in% c(
     vernacular_only,
     scientific_only,
     scientific_in_species
   )))
-taxo_vernacular_only <- read_tsv(path) %>%
+taxo_vernacular_only <- read_tsv(raw_file) %>%
   rename_all(tolower) %>%
   filter(site %in% vernacular_only) %>%
   separate(vernname, c("vernname", "scientificname"), sep = "\\[") %>%
   separate(vernname, "vernname", sep = "\\/") %>%
   mutate(scientificname = gsub("]", "", scientificname)) %>%
   separate(scientificname, c("genus", "species"), remove = FALSE)
-taxo_scientific_only <- read_tsv(path) %>%
+taxo_scientific_only <- read_tsv(raw_file) %>%
   rename_all(tolower) %>%
   filter(site %in% scientific_only) %>%
   separate(scientificname, c("genus", "species"), remove = FALSE)
-taxo_scientific_in_species <- read_tsv(path) %>%
+taxo_scientific_in_species <- read_tsv(raw_file) %>%
   rename_all(tolower) %>%
   filter(site %in% scientific_in_species) %>%
   separate(species, c("a", "species")) %>%
@@ -65,8 +72,11 @@ taxo <- bind_rows(
   rename(scientific = scientificname, vernacular = vernname) %>%
   separate(genus, "genus", sep = "[\\.]", remove = FALSE) %>%
   separate(species, "species", sep = "[_\\.]", remove = FALSE) %>%
-  mutate_all(str_squish)
-write_tsv(taxo, "data/derived_data/raw_taxo_preped_v4.tsv")
+  mutate(across(
+    c("scientific", "vernacular", "family", "genus", "species"),
+    str_squish
+  ))
+write_tsv(taxo, preped_file)
 ```
 
 ## All

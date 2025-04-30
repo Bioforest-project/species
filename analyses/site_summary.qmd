@@ -150,7 +150,7 @@ data %>%
   kable(caption = "Trait coverage across site species", digits = 2)
 ```
 
-Bu as the count are showing, a lot of traits data are missing. We used simple predictive mean matching (PMM) data imputation with `mice` to further impute missing trait values. We obtained the PCA below:
+Bu as the count are showing, a lot of traits data are missing. We used simple [predictive mean matching](https://en.wikipedia.org/wiki/Predictive_mean_matching) (PMM) data imputation with `mice` [@Zhang2016] to further impute missing trait values. We obtained the PCA below:
 
 ```{r pca}
 #| message: false
@@ -158,10 +158,12 @@ Bu as the count are showing, a lot of traits data are missing. We used simple pr
 #| fig-cap: "Imputed traits principal component analysis."
 autoplot(
   princomp(select(data, trait, trait_value_imputed) %>%
-             pivot_wider(names_from = trait,
-                         values_from = trait_value_imputed) %>%
-             unnest() %>%
-             mutate(SLA = log(SLA), LA = log(LA)), cor = TRUE),
+    pivot_wider(
+      names_from = trait,
+      values_from = trait_value_imputed
+    ) %>%
+    unnest() %>%
+    mutate(SLA = log(SLA), LA = log(LA)), cor = TRUE),
   loadings.label.size = 6,
   loadings.label.colour = "red", loadings.label.vjust = 1.1,
   loadings.label.repel = TRUE,

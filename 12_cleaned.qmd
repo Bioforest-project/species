@@ -3,11 +3,25 @@
 #| include: false
 library(tidyverse)
 library(knitr)
+version <- 5
+preped_file <- file.path(
+  "data", "derived_data",
+  paste0("raw_taxo_preped_v", version, ".tsv")
+)
+corrected_file <- file.path(
+  "data", "derived_data",
+  paste0("corrected_taxo_v", version, ".tsv")
+)
+wfo_file <- file.path(
+  "data", "derived_data",
+  paste0("wfo_out_v", version, ".tsv")
+)
+taxonomy_file <- file.path("outputs", paste0("taxonomy_v", version, ".tsv"))
 ```
 
 # Cleaning {.unnumbered}
 
-Then we started by cleaning raw species data content. This corresponds to **version 4**.
+Then we started by cleaning raw species data content. This corresponds to **version 5**.
 
 ## Names corrections
 
@@ -64,7 +78,7 @@ species_tab <- data.frame(
   species_raw = sp_wrong,
   species_correction = 1
 )
-corrected <- read_tsv("data/derived_data/raw_taxo_preped_v4.tsv") %>%
+corrected <- read_tsv(preped_file) %>%
   rename(
     scientific_raw = scientific, vernacular_raw = vernacular,
     family_raw = family, genus_raw = genus, species_raw = species
@@ -83,13 +97,13 @@ corrected <- read_tsv("data/derived_data/raw_taxo_preped_v4.tsv") %>%
   mutate(species_corrected = ifelse(is.na(species_correction),
     species_raw, species_corrected
   ))
-write_tsv(corrected, "data/derived_data/corrected_taxo_v4.tsv")
+write_tsv(corrected, corrected_file)
 ```
 
 ```{r namecortab}
 #| message: false
 #| warning: false
-read_tsv("data/derived_data/corrected_taxo_v4.tsv") %>%
+read_tsv(corrected_file) %>%
   select(family_correction, genus_correction, species_correction) %>%
   gather("level") %>%
   na.omit() %>%
@@ -114,7 +128,7 @@ library(WorldFlora)
 library(fuzzyjoin)
 batch_size <- 1000 # adjust to your RAM
 dir.create("data/derived_data/wfo")
-families <- read_tsv("data/derived_data/corrected_taxo_v4.tsv") %>%
+families <- read_tsv(corrected_file) %>%
   select(family_corrected) %>%
   unique()
 wfo <- read_tsv("data/raw_data/WFO_Backbone.zip")
@@ -127,7 +141,7 @@ wfo_sub <- wfo %>%
     "Escalloniaceae"
   ))
 write_tsv(wfo_sub, "data/derived_data/wfo/backbone.tsv")
-taxo <- read_tsv("data/derived_data/corrected_taxo_v4.tsv") %>%
+taxo <- read_tsv(corrected_file) %>%
   filter(!is.na(genus_corrected)) %>%
   mutate(species_corrected = ifelse(is.na(species_corrected),
     "", species_corrected
@@ -152,13 +166,13 @@ for (i in 1:n_batch) {
   )
   write_tsv(
     cleaned,
-    paste0("data/derived_data/wfo/wfo_out_v4_part", i, ".tsv")
+    paste0("data/derived_data/wfo/wfo_out_part", i, ".tsv")
   )
 }
 unlink("data/derived_data/wfo/taxo.tsv")
 unlink("data/derived_data/wfo/backbone.tsv")
 cleaned <- read_tsv(list.files("data/derived_data/wfo", full.names = TRUE))
-write_tsv(cleaned, "data/derived_data/wfo_out_v4.tsv")
+write_tsv(cleaned, wfo_file)
 unlink("data/derived_data/wfo", recursive = TRUE)
 ```
 
@@ -167,7 +181,7 @@ unlink("data/derived_data/wfo", recursive = TRUE)
 ```{r matches}
 #| message: false
 #| warning: false
-wfo <- read_tsv("data/derived_data/wfo_out_v4.tsv")
+wfo <- read_tsv(wfo_file)
 wfo %>%
   group_by(spec.name) %>%
   summarise(matched = all(Matched)) %>%
@@ -318,7 +332,7 @@ However, for the moment we will randomly select the first newly accepted name in
 ```{r wfo_clean}
 #| warning: false
 #| message: false
-wfo <- read_tsv("data/derived_data/wfo_out_v4.tsv") %>%
+wfo <- read_tsv(wfo_file) %>%
   filter(Matched)
 wfo_exact <- wfo %>%
   filter(Unique)
@@ -327,7 +341,12 @@ wfo_mult <- wfo %>%
   group_by(spec.name) %>%
   filter(New.accepted) %>%
   sample_n(1)
-wfo_clean <- bind_rows(wfo_exact, wfo_mult) %>%
+wfo_mult_non_new <- wfo %>%
+  filter(!Unique) %>%
+  group_by(spec.name) %>%
+  filter(all(!New.accepted)) %>%
+  sample_n(1)
+wfo_clean <- bind_rows(wfo_exact, wfo_mult, wfo_mult_non_new) %>%
   select(
     spec.name, family, genus, specificEpithet,
     scientificName
@@ -342,8 +361,13 @@ wfo_clean <- bind_rows(wfo_exact, wfo_mult) %>%
   mutate(
     cleaning_type = "wfo"
   ) %>%
-  bind_rows(manual_curration)
-taxo_cleaned <- read_tsv("data/derived_data/corrected_taxo_v4.tsv") %>%
+  bind_rows(manual_curration) %>%
+  mutate(scientific_cleaned = ifelse(is.na(genus_cleaned) &
+    is.na(species_cleaned),
+  NA,
+  scientific_cleaned
+  ))
+taxo_cleaned <- read_tsv(corrected_file) %>%
   mutate(scientific_corrected = ifelse(!is.na(genus_corrected),
     paste(
       genus_corrected,
@@ -353,13 +377,14 @@ taxo_cleaned <- read_tsv("data/derived_data/corrected_taxo_v4.tsv") %>%
       )
     ), NA
   )) %>%
+  mutate(scientific_corrected = str_squish(scientific_corrected)) %>%
   left_join(wfo_clean)
-write_tsv(taxo_cleaned, "outputs/taxonomy_v4.tsv")
+write_tsv(taxo_cleaned, taxonomy_file)
 ```
 
 ```{r wfo_clean_stat}
 #| message: false
-clean <- read_tsv("outputs/taxonomy_v4.tsv")
+clean <- read_tsv(taxonomy_file)
 fam_cor <- select(clean, family_corrected, family_cleaned) %>%
   unique() %>%
   na.omit() %>%

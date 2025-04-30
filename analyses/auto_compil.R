@@ -6,9 +6,13 @@ for (site in sites) {
   quarto::quarto_render(
     input = "analyses/site_summary.qmd",
     output_file = file_name,
-    execute_params = list(site = site,
-                          path = file.path("..", "outputs", "site_summary",
-                                           paste0(site, "_species.tsv")))
+    execute_params = list(
+      site = site,
+      path = file.path(
+        "..", "outputs", "site_summary",
+        paste0(site, "_species.tsv")
+      )
+    )
   )
   file.rename(
     from = file_name,
